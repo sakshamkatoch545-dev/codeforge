@@ -20,6 +20,10 @@ export const Navbar: React.FC<NavbarProps> = ({ currentUser, onLogout }) => {
         CodeForge
       </Link>
       <nav className="space-x-8 flex items-center">
+        <Link to="/" className="relative text-gray-700 dark:text-gray-200 hover:text-brand-600 font-bold text-lg transition-colors group">
+          Home
+          <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-brand-500 transition-all duration-300 group-hover:w-full"></span>
+        </Link>
         <Link to="/problems" className="relative text-gray-700 dark:text-gray-200 hover:text-brand-600 font-bold text-lg transition-colors group">
           Problems
           <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-brand-500 transition-all duration-300 group-hover:w-full"></span>

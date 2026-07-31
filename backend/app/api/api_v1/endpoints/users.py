@@ -65,7 +65,10 @@ def read_leaderboard(
     """
     Get user leaderboard rankings based on accepted problem submissions and points.
     """
-    users = db.query(models.User).filter(models.User.is_active == True).all()
+    users = db.query(models.User).filter(
+        models.User.is_active == True,
+        models.User.username != "demo-user"
+    ).all()
     leaderboard = []
 
     for u in users:

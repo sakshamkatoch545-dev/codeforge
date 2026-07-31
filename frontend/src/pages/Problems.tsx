@@ -50,7 +50,7 @@ export default function Problems() {
   return (
     <div className="relative min-h-[calc(100vh-4rem)]">
 
-      <div className="relative z-10 max-w-6xl mx-auto p-6 mt-8">
+      <div className="relative z-10 max-w-6xl mx-auto p-6 mt-16">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end mb-10 gap-6">
           <h1 className="text-5xl font-black tracking-tighter text-gray-900 dark:text-white uppercase mb-0">Problems</h1>
           

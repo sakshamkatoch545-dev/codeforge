@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import Editor from '@monaco-editor/react'
 import { api, Problem, Submission, TestCase } from '../api'
+import { getStarterCode, problemsMetadata, getWrappedCode as getWrappedCodeFromConfig } from '../problemsConfig'
 
 export default function ProblemDetail() {
   const { slug } = useParams()
@@ -43,31 +44,7 @@ export default function ProblemDetail() {
   }, [slug])
 
   const updateStarterCode = (problemSlug: string, lang: string) => {
-    if (problemSlug.includes('two-sum')) {
-      setCode(
-        lang === 'python'
-          ? `def twoSum(nums, target):\n    #here goes the code\n    pass`
-          : `function twoSum(nums, target) {\n    //here goes the code\n}`
-      )
-    } else if (problemSlug.includes('reverse-string')) {
-      setCode(
-        lang === 'python'
-          ? `def reverseString(s):\n    #here goes the code\n    pass`
-          : `function reverseString(s) {\n    //here goes the code\n}`
-      )
-    } else {
-      setCode(
-        lang === 'python'
-          ? `def solve():\n    #here goes the code\n    pass`
-          : lang === 'javascript'
-          ? `function solve() {\n    //here goes the code\n}`
-          : lang === 'c'
-          ? `#include <stdio.h>\n\nvoid solve() {\n    // here goes the code\n}\n\nint main() {\n    solve();\n    return 0;\n}`
-          : lang === 'cpp'
-          ? `#include <iostream>\nusing namespace std;\n\nvoid solve() {\n    // here goes the code\n}\n\nint main() {\n    solve();\n    return 0;\n}`
-          : `import java.util.*;\n\npublic class Main {\n    public static void main(String[] args) {\n        // here goes the code\n    }\n}`
-      )
-    }
+    setCode(getStarterCode(problemSlug, lang));
   }
 
   // Update starter code when language changes
@@ -78,32 +55,7 @@ export default function ProblemDetail() {
 
   const getWrappedCode = () => {
     if (!problem) return code;
-    
-    if (problem.slug.includes('two-sum')) {
-      if (language === 'python') {
-        return `import sys\nimport json\n\n${code}\n\nif __name__ == '__main__':\n    lines = sys.stdin.read().splitlines()\n    if len(lines) >= 2:\n        nums = json.loads(lines[0])\n        target = json.loads(lines[1])\n        print(json.dumps(twoSum(nums, target)).replace(" ", ""))`
-      } else if (language === 'javascript') {
-        return `const fs = require('fs');\n\n${code}\n\nconst input = fs.readFileSync(0, 'utf-8').trim().split('\\n');\nif (input.length >= 2) {\n    const nums = JSON.parse(input[0]);\n    const target = JSON.parse(input[1]);\n    console.log(JSON.stringify(twoSum(nums, target)).replace(/ /g, ''));\n}`
-      }
-    } else if (problem.slug.includes('reverse-string')) {
-      if (language === 'python') {
-        return `import sys\n\n${code}\n\nif __name__ == '__main__':\n    s = sys.stdin.read().strip()\n    print(reverseString(s))`
-      } else if (language === 'javascript') {
-        return `const fs = require('fs');\n\n${code}\n\nconst input = fs.readFileSync(0, 'utf-8').trim();\nconsole.log(reverseString(input));`
-      }
-    }
-    
-    // Default fallback wrapper
-    if (language === 'python') {
-      return `import sys\n\n${code}\n\nif __name__ == '__main__':\n    solve()`
-    } else if (language === 'javascript') {
-      return `const fs = require('fs');\n\n${code}\n\nsolve();`
-    }
-    
-    // For cpp and java, we expect the user to have written main() already in the starter code
-    return code;
-    
-    return code;
+    return getWrappedCodeFromConfig(problem.slug, language, code);
   }
 
   const handleRun = async () => {
@@ -208,10 +160,10 @@ export default function ProblemDetail() {
   }
 
   return (
-    <div className="relative flex h-[calc(100vh-4rem)]">
+    <div className="flex flex-col lg:flex-row gap-6 mb-12 mt-20 mx-6 max-w-7xl lg:mx-auto">
 
       {/* Problem Description Panel */}
-      <div className="relative z-10 w-1/2 p-8 overflow-y-auto border-r border-white/20 dark:border-white/10 glass-panel !shadow-none !rounded-none flex flex-col justify-between">
+      <div className="relative z-10 w-full lg:w-1/2 p-8 border border-white/20 dark:border-white/10 glass-panel shadow-2xl rounded-2xl flex flex-col justify-between min-h-[500px]">
         <div>
           <div className="flex items-center gap-3 mb-4">
             <span
@@ -245,42 +197,11 @@ export default function ProblemDetail() {
       </div>
 
       {/* Code Editor Panel */}
-      <div className="relative z-10 w-1/2 flex flex-col bg-white/40 dark:bg-gray-900/40 backdrop-blur-md">
-        <div className="h-14 bg-white/60 dark:bg-gray-950/60 backdrop-blur-md border-b border-white/20 dark:border-white/10 flex items-center px-6 justify-end">
-          <div className="space-x-3 flex items-center">
-            <select
-              value={language}
-              onChange={(e) => setLanguage(e.target.value)}
-              className="bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white border-none rounded-lg py-1.5 px-3 text-sm outline-none font-medium cursor-pointer"
-            >
-              <option value="python">Python</option>
-              <option value="javascript">JavaScript</option>
-              <option value="c">C</option>
-              <option value="cpp">C++</option>
-              <option value="java">Java</option>
-            </select>
-            {running && (
-              <span className="text-sm text-brand-600 animate-pulse font-medium">Running...</span>
-            )}
-            <button
-              onClick={handleRun}
-              disabled={running || submitting}
-              className="px-4 py-1.5 text-sm font-bold glass-button rounded-lg transition disabled:opacity-50 text-gray-800 dark:text-gray-200"
-            >
-              Run Code
-            </button>
-            <button
-              onClick={handleSubmit}
-              disabled={submitting || running}
-              className="px-5 py-1.5 text-sm font-bold glass-button-primary rounded-lg transition disabled:opacity-50"
-            >
-              {submitting ? 'Submitting...' : 'Submit'}
-            </button>
-          </div>
-        </div>
+      <div className="relative z-10 w-full lg:w-1/2 flex flex-col bg-white/40 dark:bg-gray-900/40 backdrop-blur-md glass-panel shadow-2xl rounded-2xl overflow-hidden">
+
 
         {/* Editor Container */}
-        <div className="flex-1">
+        <div className="h-[550px] border-b border-white/20 dark:border-white/10">
           <Editor
             height="100%"
             language={language}
@@ -297,9 +218,45 @@ export default function ProblemDetail() {
           />
         </div>
 
+        {/* Controls Bar (Moved away from header and made larger) */}
+        <div className="h-20 bg-white/60 dark:bg-gray-950/60 backdrop-blur-md flex items-center px-8 justify-between">
+          <div className="flex items-center">
+            <select
+              value={language}
+              onChange={(e) => setLanguage(e.target.value)}
+              className="bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white border-none rounded-xl py-2.5 px-5 text-lg outline-none font-bold cursor-pointer shadow-sm"
+            >
+              <option value="python">Python</option>
+              <option value="javascript">JavaScript</option>
+              <option value="c">C</option>
+              <option value="cpp">C++</option>
+              <option value="java">Java</option>
+            </select>
+          </div>
+          <div className="space-x-4 flex items-center">
+            {running && (
+              <span className="text-lg text-brand-600 animate-pulse font-bold mr-2">Running...</span>
+            )}
+            <button
+              onClick={handleRun}
+              disabled={running || submitting}
+              className="px-8 py-3 text-lg font-black glass-button rounded-xl transition disabled:opacity-50 text-gray-800 dark:text-gray-200 shadow-md hover:scale-105"
+            >
+              Run Code
+            </button>
+            <button
+              onClick={handleSubmit}
+              disabled={submitting || running}
+              className="px-8 py-3 text-lg font-black glass-button-primary rounded-xl transition disabled:opacity-50 shadow-md shadow-brand-500/30 hover:scale-105"
+            >
+              {submitting ? 'Submitting...' : 'Submit'}
+            </button>
+          </div>
+        </div>
+
         {/* Results Panel overlay */}
         {(submission || submitting || error || runResult) && (
-          <div className="absolute bottom-0 left-0 right-0 glass-panel !rounded-t-2xl !rounded-b-none border-t border-white/20 dark:border-white/10 shadow-2xl p-6 transition-all duration-300 z-20 max-h-96 overflow-y-auto">
+          <div className="absolute bottom-20 left-0 right-0 glass-panel !rounded-t-2xl !rounded-b-none border-t border-white/20 dark:border-white/10 shadow-2xl p-6 transition-all duration-300 z-20 max-h-96 overflow-y-auto">
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-lg font-bold text-gray-900 dark:text-white">
                 {runResult ? 'Run Output' : 'Submission Result'}

@@ -39,7 +39,7 @@ export default function Leaderboard() {
   return (
     <div className="relative min-h-[calc(100vh-4rem)]">
 
-      <div className="relative z-10 max-w-5xl mx-auto p-6 mt-8">
+      <div className="relative z-10 max-w-5xl mx-auto p-6 mt-16">
         <div className="flex items-center justify-between mb-8">
           <div>
             <h1 className="text-4xl font-black uppercase tracking-tighter text-gray-900 dark:text-white flex items-center gap-3">
