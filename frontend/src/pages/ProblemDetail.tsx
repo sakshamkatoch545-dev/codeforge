@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import Editor from '@monaco-editor/react'
 import { api, Problem, Submission, TestCase } from '../api'
+import BackgroundAnimation from '../components/BackgroundAnimation'
 
 export default function ProblemDetail() {
   const { slug } = useParams()
@@ -199,16 +200,7 @@ export default function ProblemDetail() {
 
   return (
     <div className="relative flex h-[calc(100vh-4rem)] bg-gray-50 dark:bg-gray-950 overflow-hidden transition-colors duration-500">
-      {/* Animated Background Elements */}
-      <div className="absolute inset-0 bg-grid animate-grid-scroll z-0"></div>
-      <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
-        <div className="absolute top-1/4 -left-12 w-96 h-96 bg-[#fffdd0] rounded-full mix-blend-multiply filter blur-3xl opacity-50 animate-blob dark:opacity-30 dark:mix-blend-screen"></div>
-        <div className="absolute top-1/4 -right-12 w-96 h-96 bg-white rounded-full mix-blend-multiply filter blur-3xl opacity-50 animate-blob animation-delay-2000 dark:opacity-30 dark:mix-blend-screen"></div>
-        <div className="absolute -bottom-16 left-1/3 w-96 h-96 bg-[#fffdd0] rounded-full mix-blend-multiply filter blur-3xl opacity-50 animate-blob animation-delay-4000 dark:opacity-30 dark:mix-blend-screen"></div>
-        <div className="absolute top-0 right-1/4 w-96 h-96 bg-purple-400/80 rounded-full mix-blend-multiply filter blur-3xl opacity-40 animate-blob animation-delay-2000 dark:opacity-20 dark:mix-blend-screen"></div>
-        <div className="absolute bottom-1/4 left-1/4 w-96 h-96 bg-red-400/80 rounded-full mix-blend-multiply filter blur-3xl opacity-40 animate-blob animation-delay-4000 dark:opacity-20 dark:mix-blend-screen"></div>
-        <div className="absolute top-1/2 right-1/3 w-96 h-96 bg-pink-400/80 rounded-full mix-blend-multiply filter blur-3xl opacity-40 animate-blob dark:opacity-20 dark:mix-blend-screen"></div>
-      </div>
+      <BackgroundAnimation />
 
       {/* Problem Description Panel */}
       <div className="relative z-10 w-1/2 p-8 overflow-y-auto border-r border-white/20 dark:border-white/10 glass-panel !shadow-none !rounded-none flex flex-col justify-between">

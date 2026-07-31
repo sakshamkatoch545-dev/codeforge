@@ -1,20 +1,10 @@
 import { Link } from 'react-router-dom';
+import BackgroundAnimation from '../components/BackgroundAnimation';
 
 const Home = () => {
   return (
     <div className="relative min-h-[calc(100vh-4rem)] flex flex-col items-center justify-center overflow-hidden bg-gray-50 dark:bg-gray-950 transition-colors duration-500">
-      
-      {/* Animated Background Elements */}
-      <div className="absolute inset-0 bg-grid animate-grid-scroll z-0"></div>
-      <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
-        <div className="absolute top-0 -left-4 w-72 h-72 bg-[#fffdd0] rounded-full mix-blend-multiply filter blur-3xl opacity-50 animate-blob dark:opacity-30 dark:mix-blend-screen"></div>
-        <div className="absolute top-0 -right-4 w-72 h-72 bg-white rounded-full mix-blend-multiply filter blur-3xl opacity-50 animate-blob animation-delay-2000 dark:opacity-30 dark:mix-blend-screen"></div>
-        <div className="absolute -bottom-8 left-20 w-72 h-72 bg-[#fffdd0] rounded-full mix-blend-multiply filter blur-3xl opacity-50 animate-blob animation-delay-4000 dark:opacity-30 dark:mix-blend-screen"></div>
-        <div className="absolute bottom-1/4 right-20 w-72 h-72 bg-purple-400 rounded-full mix-blend-multiply filter blur-3xl opacity-40 animate-blob animation-delay-2000 dark:opacity-20 dark:mix-blend-screen"></div>
-        <div className="absolute top-1/3 left-1/3 w-72 h-72 bg-red-400 rounded-full mix-blend-multiply filter blur-3xl opacity-40 animate-blob animation-delay-4000 dark:opacity-20 dark:mix-blend-screen"></div>
-        <div className="absolute bottom-0 right-1/3 w-72 h-72 bg-pink-400 rounded-full mix-blend-multiply filter blur-3xl opacity-40 animate-blob dark:opacity-20 dark:mix-blend-screen"></div>
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-gradient-to-tr from-brand-600/20 via-transparent to-purple-600/20 rounded-full blur-3xl opacity-50 animate-gradient-xy"></div>
-      </div>
+      <BackgroundAnimation />
 
       <div className="relative z-10 max-w-7xl mx-auto px-6 py-20 lg:px-8 flex flex-col items-center text-center">
         
