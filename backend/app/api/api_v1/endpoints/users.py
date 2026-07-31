@@ -42,6 +42,21 @@ def read_user_me(
     """
     return current_user
 
+@router.get("/me/solved", response_model=List[int])
+def read_user_solved(
+    db: Session = Depends(deps.get_db),
+    current_user: models.User = Depends(deps.get_current_active_user),
+) -> Any:
+    """
+    Get list of solved problem IDs for the current user.
+    """
+    accepted_subs = db.query(Submission).filter(
+        Submission.user_id == current_user.id,
+        Submission.status == SubmissionStatus.ACCEPTED
+    ).all()
+    solved_problem_ids = list(set([s.problem_id for s in accepted_subs]))
+    return solved_problem_ids
+
 @router.get("/leaderboard")
 def read_leaderboard(
     db: Session = Depends(deps.get_db),

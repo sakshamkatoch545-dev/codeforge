@@ -91,6 +91,11 @@ export const api = {
     return response.data
   },
 
+  async getSolvedProblems(): Promise<number[]> {
+    const response = await client.get<number[]>('/users/me/solved')
+    return response.data
+  },
+
   async getLeaderboard(): Promise<LeaderboardUser[]> {
     const response = await client.get<LeaderboardUser[]>('/users/leaderboard')
     return response.data
