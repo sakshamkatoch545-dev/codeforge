@@ -43,15 +43,20 @@ export const Navbar: React.FC<NavbarProps> = ({ currentUser, onLogout }) => {
             </Link>
             <button
               onClick={onLogout}
-              className="bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 px-3.5 py-1.5 rounded-lg font-medium hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/30 dark:hover:text-red-300 transition text-sm"
+              className="bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 px-3.5 py-1.5 rounded-lg font-medium hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/30 dark:hover:text-red-300 transition text-sm cursor-pointer"
             >
               Log Out
             </button>
           </div>
         ) : (
-          <Link to="/login" className="px-6 py-2 rounded-xl bg-gradient-to-r from-brand-600 to-purple-500 text-white font-bold hover:scale-105 transform transition-all duration-300 shadow-lg shadow-brand-500/30">
-            Login
-          </Link>
+          <div className="flex items-center gap-3">
+            <Link to="/login" className="px-5 py-2 rounded-xl text-gray-700 dark:text-gray-200 font-bold hover:text-brand-600 dark:hover:text-brand-400 transition-all">
+              Sign In
+            </Link>
+            <Link to="/login" className="px-5 py-2 rounded-xl bg-gradient-to-r from-brand-600 to-purple-500 text-white font-bold hover:scale-105 transform transition-all duration-300 shadow-lg shadow-brand-500/30">
+              Register
+            </Link>
+          </div>
         )}
       </nav>
     </header>
