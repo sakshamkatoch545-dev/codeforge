@@ -35,3 +35,8 @@ class User(UserInDBBase):
 # Additional properties stored in DB
 class UserInDB(UserInDBBase):
     hashed_password: str
+
+class OAuthLoginRequest(BaseModel):
+    provider: str
+    email: EmailStr
+    username: Optional[str] = None

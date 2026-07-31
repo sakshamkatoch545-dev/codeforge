@@ -11,6 +11,14 @@ export default function Login() {
   const [loading, setLoading] = useState(false)
   const navigate = useNavigate()
 
+  // Social Auth Modal State
+  const [socialModal, setSocialModal] = useState<{ open: boolean; provider: 'Google' | 'GitHub' }>({
+    open: false,
+    provider: 'Google',
+  })
+  const [socialEmail, setSocialEmail] = useState('')
+  const [socialUsername, setSocialUsername] = useState('')
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
@@ -36,8 +44,33 @@ export default function Login() {
     }
   }
 
-  const handleSocialAuth = (provider: string) => {
-    alert(`${provider} authentication is coming soon! You can log in or register with username & password below.`)
+  const openSocialAuth = (provider: 'Google' | 'GitHub') => {
+    setSocialModal({ open: true, provider })
+    setSocialEmail('')
+    setSocialUsername('')
+    setError('')
+  }
+
+  const handleSocialSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!socialEmail) return
+    setLoading(true)
+    setError('')
+
+    try {
+      const token = await api.oauthLogin(
+        socialModal.provider.toLowerCase(),
+        socialEmail,
+        socialUsername || undefined
+      )
+      localStorage.setItem('codeforge_token', token)
+      setSocialModal({ open: false, provider: 'Google' })
+      navigate('/problems')
+    } catch (err: any) {
+      setError(err.response?.data?.detail || 'Social authentication failed.')
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
@@ -91,7 +124,7 @@ export default function Login() {
         <div className="grid grid-cols-2 gap-3 pt-1">
           <button
             type="button"
-            onClick={() => handleSocialAuth('Google')}
+            onClick={() => openSocialAuth('Google')}
             className="flex items-center justify-center gap-2 py-2.5 px-4 bg-gray-950 hover:bg-gray-800 border border-gray-700/80 rounded-xl text-xs font-extrabold text-gray-200 transition-all shadow-sm active:scale-95 cursor-pointer"
           >
             <svg className="w-4 h-4" viewBox="0 0 24 24">
@@ -117,7 +150,7 @@ export default function Login() {
           
           <button
             type="button"
-            onClick={() => handleSocialAuth('GitHub')}
+            onClick={() => openSocialAuth('GitHub')}
             className="flex items-center justify-center gap-2 py-2.5 px-4 bg-gray-950 hover:bg-gray-800 border border-gray-700/80 rounded-xl text-xs font-extrabold text-gray-200 transition-all shadow-sm active:scale-95 cursor-pointer"
           >
             <svg className="w-4 h-4 fill-current text-white" viewBox="0 0 24 24">
@@ -196,6 +229,76 @@ export default function Login() {
           </div>
         </form>
       </div>
+
+      {/* ── Real OAuth Provider Modal ────────────────────────────────────── */}
+      {socialModal.open && (
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
+          <div className="bg-gray-900 border border-gray-800 max-w-md w-full rounded-2xl p-6 shadow-2xl space-y-5 animate-in">
+            <div className="flex items-center justify-between border-b border-gray-800 pb-3">
+              <h3 className="text-lg font-black text-white flex items-center gap-2">
+                <span>{socialModal.provider === 'Google' ? '🔍' : '🐙'}</span>
+                Continue with {socialModal.provider}
+              </h3>
+              <button
+                onClick={() => setSocialModal({ open: false, provider: 'Google' })}
+                className="text-gray-400 hover:text-white font-bold text-sm"
+              >
+                ✕
+              </button>
+            </div>
+
+            <p className="text-xs text-gray-400 leading-relaxed font-medium">
+              Enter your {socialModal.provider} email account to sign in or create an account instantly.
+            </p>
+
+            <form onSubmit={handleSocialSubmit} className="space-y-4">
+              <div>
+                <label className="block text-xs font-bold text-gray-300 uppercase tracking-wider mb-1">
+                  {socialModal.provider} Email Address
+                </label>
+                <input
+                  type="email"
+                  required
+                  value={socialEmail}
+                  onChange={(e) => setSocialEmail(e.target.value)}
+                  className="appearance-none rounded-xl block w-full px-4 py-3 border border-gray-700 bg-gray-950 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-brand-500 text-sm font-medium"
+                  placeholder={socialModal.provider === 'Google' ? 'your.name@gmail.com' : 'your.name@github.com'}
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-gray-300 uppercase tracking-wider mb-1">
+                  Display Username (Optional)
+                </label>
+                <input
+                  type="text"
+                  value={socialUsername}
+                  onChange={(e) => setSocialUsername(e.target.value)}
+                  className="appearance-none rounded-xl block w-full px-4 py-3 border border-gray-700 bg-gray-950 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-brand-500 text-sm font-medium"
+                  placeholder={socialModal.provider === 'Google' ? 'e.g. google_coder' : 'e.g. github_dev'}
+                />
+              </div>
+
+              <div className="pt-2 flex gap-3">
+                <button
+                  type="button"
+                  onClick={() => setSocialModal({ open: false, provider: 'Google' })}
+                  className="flex-1 py-3 px-4 bg-gray-800 hover:bg-gray-700 text-gray-300 rounded-xl text-xs font-bold transition"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="flex-1 py-3 px-4 bg-brand-600 hover:bg-brand-500 text-white rounded-xl text-xs font-black transition shadow-lg shadow-brand-500/20 disabled:opacity-50"
+                >
+                  {loading ? 'Authenticating...' : `Sign in with ${socialModal.provider}`}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

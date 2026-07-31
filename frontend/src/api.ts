@@ -92,6 +92,15 @@ export const api = {
     return response.data
   },
 
+  async oauthLogin(provider: string, email: string, username?: string): Promise<string> {
+    const response = await client.post<{ access_token: string }>('/auth/oauth', {
+      provider,
+      email,
+      username,
+    })
+    return response.data.access_token
+  },
+
   async getMe(): Promise<UserInfo> {
     const response = await client.get<UserInfo>('/users/me')
     return response.data
