@@ -185,6 +185,115 @@ PROBLEMS_DATA = [
         "test_cases": [
             {"input": "1 3\n2\n", "output": "2.00000\n", "hidden": False}
         ]
+    },
+    {
+        "title": "Merge k Sorted Lists",
+        "slug": "merge-k-sorted-lists",
+        "difficulty": DifficultyEnum.HARD,
+        "description": "You are given an array of k linked-lists lists, each linked-list is sorted in ascending order.\n\nMerge all the linked-lists into one sorted linked-list and return it.\n\nExample 1:\nInput: lists = [[1,4,5],[1,3,4],[2,6]]\nOutput: [1,1,2,3,4,4,5,6]",
+        "test_cases": [
+            {"input": "3\n1 4 5\n1 3 4\n2 6\n", "output": "1 1 2 3 4 4 5 6\n", "hidden": False}
+        ]
+    },
+    {
+        "title": "Search in Rotated Sorted Array",
+        "slug": "search-in-rotated-sorted-array",
+        "difficulty": DifficultyEnum.MEDIUM,
+        "description": "There is an integer array nums sorted in ascending order (with distinct values).\n\nPrior to being passed to your function, nums is possibly rotated at an unknown pivot index k (1 <= k < nums.length) such that the resulting array is [nums[k], nums[k+1], ..., nums[n-1], nums[0], nums[1], ..., nums[k-1]] (0-indexed).\n\nGiven the array nums after the possible rotation and an integer target, return the index of target if it is in nums, or -1 if it is not in nums.\n\nExample 1:\nInput: nums = [4,5,6,7,0,1,2], target = 0\nOutput: 4",
+        "test_cases": [
+            {"input": "4 5 6 7 0 1 2\n0\n", "output": "4\n", "hidden": False}
+        ]
+    },
+    {
+        "title": "First Missing Positive",
+        "slug": "first-missing-positive",
+        "difficulty": DifficultyEnum.HARD,
+        "description": "Given an unsorted integer array nums, return the smallest missing positive integer.\n\nYou must implement an algorithm that runs in O(n) time and uses O(1) auxiliary space.\n\nExample 1:\nInput: nums = [1,2,0]\nOutput: 3\n\nExample 2:\nInput: nums = [3,4,-1,1]\nOutput: 2",
+        "test_cases": [
+            {"input": "1 2 0\n", "output": "3\n", "hidden": False},
+            {"input": "3 4 -1 1\n", "output": "2\n", "hidden": True}
+        ]
+    },
+    {
+        "title": "Permutations",
+        "slug": "permutations",
+        "difficulty": DifficultyEnum.MEDIUM,
+        "description": "Given an array nums of distinct integers, return all the possible permutations. You can return the answer in any order.\n\nExample 1:\nInput: nums = [1,2,3]\nOutput: [[1,2,3],[1,3,2],[2,1,3],[2,3,1],[3,1,2],[3,2,1]]",
+        "test_cases": [
+            {"input": "1 2 3\n", "output": "[[1,2,3],[1,3,2],[2,1,3],[2,3,1],[3,1,2],[3,2,1]]\n", "hidden": False}
+        ]
+    },
+    {
+        "title": "Merge Intervals",
+        "slug": "merge-intervals",
+        "difficulty": DifficultyEnum.MEDIUM,
+        "description": "Given an array of intervals where intervals[i] = [starti, endi], merge all overlapping intervals, and return an array of the non-overlapping intervals that cover all the intervals in the input.\n\nExample 1:\nInput: intervals = [[1,3],[2,6],[8,10],[15,18]]\nOutput: [[1,6],[8,10],[15,18]]",
+        "test_cases": [
+            {"input": "1 3\n2 6\n8 10\n15 18\n", "output": "[[1,6],[8,10],[15,18]]\n", "hidden": False}
+        ]
+    },
+    {
+        "title": "Jump Game",
+        "slug": "jump-game",
+        "difficulty": DifficultyEnum.MEDIUM,
+        "description": "You are given an integer array nums. You are initially positioned at the array's first index, and each element in the array represents your maximum jump length at that position.\n\nReturn true if you can reach the last index, or false otherwise.\n\nExample 1:\nInput: nums = [2,3,1,1,4]\nOutput: true",
+        "test_cases": [
+            {"input": "2 3 1 1 4\n", "output": "true\n", "hidden": False}
+        ]
+    },
+    {
+        "title": "Unique Paths",
+        "slug": "unique-paths",
+        "difficulty": DifficultyEnum.MEDIUM,
+        "description": "There is a robot on an m x n grid. The robot is initially located at the top-left corner (i.e., grid[0][0]). The robot tries to move to the bottom-right corner (i.e., grid[m-1][n-1]). The robot can only move either down or right at any point in time.\n\nGiven the two integers m and n, return the number of possible unique paths that the robot can take to reach the bottom-right corner.\n\nExample 1:\nInput: m = 3, n = 7\nOutput: 28",
+        "test_cases": [
+            {"input": "3 7\n", "output": "28\n", "hidden": False}
+        ]
+    },
+    {
+        "title": "Edit Distance",
+        "slug": "edit-distance",
+        "difficulty": DifficultyEnum.HARD,
+        "description": "Given two strings word1 and word2, return the minimum number of operations required to convert word1 to word2.\n\nYou have the following three operations permitted on a word:\n- Insert a character\n- Delete a character\n- Replace a character\n\nExample 1:\nInput: word1 = \"horse\", word2 = \"ros\"\nOutput: 3",
+        "test_cases": [
+            {"input": "horse\nros\n", "output": "3\n", "hidden": False}
+        ]
+    },
+    {
+        "title": "Word Search",
+        "slug": "word-search",
+        "difficulty": DifficultyEnum.MEDIUM,
+        "description": "Given an m x n grid of characters board and a string word, return true if word exists in the grid.\n\nThe word can be constructed from letters of sequentially adjacent cells, where adjacent cells are horizontally or vertically neighboring. The same letter cell may not be used more than once.\n\nExample 1:\nInput: board = [[\"A\",\"B\",\"C\",\"E\"],[\"S\",\"F\",\"C\",\"S\"],[\"A\",\"D\",\"E\",\"E\"]], word = \"ABCCED\"\nOutput: true",
+        "test_cases": [
+            {"input": "3 4\nA B C E\nS F C S\nA D E E\nABCCED\n", "output": "true\n", "hidden": False}
+        ]
+    },
+    {
+        "title": "Best Time to Buy and Sell Stock",
+        "slug": "best-time-to-buy-and-sell-stock",
+        "difficulty": DifficultyEnum.EASY,
+        "description": "You are given an array prices where prices[i] is the price of a given stock on the ith day.\n\nYou want to maximize your profit by choosing a single day to buy one stock and choosing a different day in the future to sell that stock.\n\nReturn the maximum profit you can achieve from this transaction. If you cannot achieve any profit, return 0.\n\nExample 1:\nInput: prices = [7,1,5,3,6,4]\nOutput: 5\nExplanation: Buy on day 2 (price = 1) and sell on day 5 (price = 6), profit = 6-1 = 5.",
+        "test_cases": [
+            {"input": "7 1 5 3 6 4\n", "output": "5\n", "hidden": False}
+        ]
+    },
+    {
+        "title": "Linked List Cycle",
+        "slug": "linked-list-cycle",
+        "difficulty": DifficultyEnum.EASY,
+        "description": "Given head, the head of a linked list, determine if the linked list has a cycle in it.\n\nThere is a cycle in a linked list if there is some node in the list that can be reached again by continuously following the next pointer. Internally, pos is used to denote the index of the node that tail's next pointer is connected to. Note that pos is not passed as a parameter.\n\nReturn true if there is a cycle in the linked list. Otherwise, return false.\n\nExample 1:\nInput: head = [3,2,0,-4], pos = 1\nOutput: true",
+        "test_cases": [
+            {"input": "3 2 0 -4\n1\n", "output": "true\n", "hidden": False}
+        ]
+    },
+    {
+        "title": "Longest Consecutive Sequence",
+        "slug": "longest-consecutive-sequence",
+        "difficulty": DifficultyEnum.MEDIUM,
+        "description": "Given an unsorted array of integers nums, return the length of the longest consecutive elements sequence.\n\nYou must write an algorithm that runs in O(n) time.\n\nExample 1:\nInput: nums = [100,4,200,1,3,2]\nOutput: 4\nExplanation: The longest consecutive elements sequence is [1, 2, 3, 4]. Therefore its length is 4.",
+        "test_cases": [
+            {"input": "100 4 200 1 3 2\n", "output": "4\n", "hidden": False}
+        ]
     }
 ]
 
