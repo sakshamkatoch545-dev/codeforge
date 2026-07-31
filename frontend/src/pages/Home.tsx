@@ -1,6 +1,14 @@
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 
 const Home = () => {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    const token = localStorage.getItem('codeforge_token');
+    setIsLoggedIn(!!token);
+  }, []);
+
   return (
     <div className="relative min-h-[calc(100vh-4rem)] flex flex-col items-center justify-center">
 
@@ -31,9 +39,11 @@ const Home = () => {
             <Link to="/problems" className="w-full sm:w-auto px-8 py-4 rounded-xl glass-button-primary font-bold text-lg hover:scale-105 transform transition-all duration-300">
               Start Coding Now
             </Link>
-            <Link to="/login" className="w-full sm:w-auto px-8 py-4 rounded-xl backdrop-blur-md bg-gradient-to-r from-pink-600/80 to-purple-600/80 text-white font-bold text-lg hover:scale-105 transform transition-all duration-300 shadow-lg shadow-pink-500/20 border border-white/30">
-              Create an Account
-            </Link>
+            {!isLoggedIn && (
+              <Link to="/login" className="w-full sm:w-auto px-8 py-4 rounded-xl backdrop-blur-md bg-gradient-to-r from-pink-600/80 to-purple-600/80 text-white font-bold text-lg hover:scale-105 transform transition-all duration-300 shadow-lg shadow-pink-500/20 border border-white/30">
+                Create an Account
+              </Link>
+            )}
             <Link to="/leaderboard" className="w-full sm:w-auto px-8 py-4 rounded-xl glass-button font-bold text-lg text-gray-800 dark:text-white hover:scale-105 transform transition-all duration-300">
               View Leaderboard
             </Link>

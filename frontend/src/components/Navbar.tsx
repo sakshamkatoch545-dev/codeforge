@@ -14,7 +14,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentUser, onLogout }) => {
       <Link to="/" className="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-brand-600 to-purple-600 dark:from-brand-400 dark:to-purple-400 tracking-tight flex items-center gap-3 uppercase group">
         <div className="relative flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-600 to-purple-500 shadow-lg shadow-brand-500/40 group-hover:scale-110 transition-transform duration-300">
           <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.2} d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
         </div>
         CodeForge

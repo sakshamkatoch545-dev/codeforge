@@ -45,6 +45,9 @@ export interface UserInfo {
   is_active: boolean
   is_superuser: boolean
   created_at: string
+  login_days: number
+  coding_days: number
+  practice_count: number
 }
 
 export interface LeaderboardUser {
@@ -54,6 +57,9 @@ export interface LeaderboardUser {
   solved_count: number
   points: number
   total_submissions: number
+  login_days: number
+  coding_days: number
+  practice_count: number
 }
 
 export interface TestCase {
@@ -113,6 +119,11 @@ export const api = {
     return response.data
   },
 
+  async getProblemById(id: number): Promise<Problem> {
+    const response = await client.get<Problem>(`/problems/${id}`)
+    return response.data
+  },
+
   async getProblemTestcases(id: number): Promise<TestCase[]> {
     const response = await client.get<TestCase[]>(`/problems/${id}/testcases`)
     return response.data
@@ -134,6 +145,11 @@ export const api = {
 
   async getMySubmissions(): Promise<Submission[]> {
     const response = await client.get<Submission[]>('/submissions/')
+    return response.data
+  },
+
+  async deleteSubmission(id: number): Promise<Submission> {
+    const response = await client.delete<Submission>(`/submissions/${id}`)
     return response.data
   },
 

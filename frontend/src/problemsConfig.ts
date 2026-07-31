@@ -15,8 +15,8 @@ export const problemsMetadata: Record<string, ProblemMetadata> = {
   'reverse-string': {
     slug: 'reverse-string',
     funcName: 'reverseString',
-    params: ['str'],
-    returnType: 'val'
+    params: ['char-array'],
+    returnType: 'inplace-str'
   },
   'palindrome-number': {
     slug: 'palindrome-number',
@@ -215,10 +215,73 @@ export function getStarterCode(slug: string, language: string): string {
   }
 }
 
+/**
+ * Detects whether user wrote a "raw / free-form" program that already handles
+ * stdin and produces stdout on its own — vs. a LeetCode-style function/class solution
+ * that needs a harness around it.
+ *
+ * Rules per language:
+ *  Python     → raw if code has `if __name__` OR no `class Solution` AND no `def <funcName>`
+ *  JavaScript → raw if code has `process.stdin`, `require('fs')`, `readline` OR no class/function match
+ *  Java       → raw if code has `public static void main`
+ *  C / C++    → raw if code has `int main(`
+ */
+function isFreeFormCode(code: string, language: string, meta: ProblemMetadata): boolean {
+  const trimmed = code.trim();
+  switch (language) {
+    case 'python':
+      if (trimmed.includes('if __name__')) return true;
+      if (trimmed.includes('input()') || trimmed.includes('sys.stdin')) {
+        // Has input handling but no Solution class / named function → raw script
+        const hasClass = trimmed.includes('class Solution');
+        const hasFunc  = trimmed.includes(`def ${meta.funcName}`);
+        if (!hasClass && !hasFunc) return true;
+      }
+      return false;
+
+    case 'javascript':
+      if (
+        trimmed.includes("process.stdin") ||
+        trimmed.includes("require('readline')") ||
+        trimmed.includes('require("readline")') ||
+        trimmed.includes("require('fs')") ||
+        trimmed.includes('require("fs")')
+      ) return true;
+      // No class Solution and no matching function declaration → raw
+      if (
+        !trimmed.includes('class Solution') &&
+        !trimmed.includes(`function ${meta.funcName}`) &&
+        !trimmed.match(new RegExp(`\\b${meta.funcName}\\s*\\(`))
+      ) return true;
+      return false;
+
+    case 'java':
+      return trimmed.includes('public static void main');
+
+    case 'cpp':
+    case 'c':
+      return trimmed.includes('int main(');
+
+    default:
+      return false;
+  }
+}
+
 export function getWrappedCode(slug: string, language: string, code: string): string {
   const meta = problemsMetadata[slug];
+
+  // ── No metadata for this problem → best-effort passthrough ──────────────
   if (!meta) {
-    // Default fallback wrapper
+    // If it already looks like a complete program, run as-is
+    if (
+      (language === 'python'     && (code.includes('if __name__') || code.includes('input()'))) ||
+      (language === 'javascript' && (code.includes('process.stdin') || code.includes("require("))) ||
+      (language === 'java'       && code.includes('public static void main')) ||
+      (['cpp','c'].includes(language) && code.includes('int main('))
+    ) {
+      return code;
+    }
+    // Generic fallback wrapper for unknown slugs
     if (language === 'python') {
       return `import sys\n\n${code}\n\nif __name__ == '__main__':\n    solve()`;
     } else if (language === 'javascript') {
@@ -227,17 +290,18 @@ export function getWrappedCode(slug: string, language: string, code: string): st
     return code;
   }
 
-  if (language === 'python') {
-    return getPythonWrapper(code, meta);
-  } else if (language === 'javascript') {
-    return getJsWrapper(code, meta);
-  } else if (language === 'java') {
-    return getJavaWrapper(code, meta);
-  } else if (language === 'cpp') {
-    return getCppWrapper(code, meta);
-  } else if (language === 'c') {
-    return getCWrapper(code, meta);
+  // ── Free-form / raw code detection ──────────────────────────────────────
+  // If the user wrote a standalone program that already handles I/O, run it as-is.
+  if (isFreeFormCode(code, language, meta)) {
+    return code;
   }
+
+  // ── Structured (LeetCode-style) — wrap with harness ─────────────────────
+  if (language === 'python')     return getPythonWrapper(code, meta);
+  if (language === 'javascript') return getJsWrapper(code, meta);
+  if (language === 'java')       return getJavaWrapper(code, meta);
+  if (language === 'cpp')        return getCppWrapper(code, meta);
+  if (language === 'c')          return getCWrapper(code, meta);
 
   return code;
 }
@@ -283,6 +347,11 @@ function getPythonWrapper(code: string, meta: ProblemMetadata): string {
       parseBlock += `    ${argName} = int(lines[${lineIdx}].strip())\n`;
       argNames.push(argName);
       lineIdx++;
+    } else if (param === 'char-array') {
+      // Pass as a list of characters, matching LeetCode's contract
+      parseBlock += `    ${argName} = list(lines[${lineIdx}].strip())\n`;
+      argNames.push(argName);
+      lineIdx++;
     } else if (param === 'str') {
       parseBlock += `    ${argName} = lines[${lineIdx}].strip()\n`;
       argNames.push(argName);
@@ -314,6 +383,10 @@ function getPythonWrapper(code: string, meta: ProblemMetadata): string {
     returnFormatter = "print(' '.join(str(x) for x in ans))";
   } else if (meta.returnType === 'float') {
     returnFormatter = "print('{:.5f}'.format(ans))";
+  } else if (meta.returnType === 'inplace-str') {
+    // Function mutates arg0 in-place (like reverseString); print the mutated list joined as string
+    const firstArg = argNames[0] || 'arg0';
+    returnFormatter = `print(''.join(${firstArg}))`;
   }
 
   return `import sys\nimport json\n\n${code}\n\nif __name__ == '__main__':\n    lines = sys.stdin.read().splitlines()\n    lines = [l for l in lines if l.strip() != ""]\n    if not lines:\n        sys.exit(0)\n${parseBlock}    if 'Solution' in globals():\n        sol = Solution()\n        ans = sol.${fn}(${argNames.join(', ')})\n    else:\n        ans = ${fn}(${argNames.join(', ')})\n    ${returnFormatter}`;
@@ -751,6 +824,7 @@ function getPythonParams(params: string[]): string {
     const finalName = params.length > 1 ? `${name}${idx + 1}` : name;
     if (p === 'int') return `${finalName}: int`;
     if (p === 'str') return `${finalName}: str`;
+    if (p === 'char-array') return `${finalName}: list[str]`;
     if (p === 'space-str-array') return `${finalName}: list[str]`;
     return `${finalName}: list[int]`;
   }).join(', ');
@@ -761,6 +835,7 @@ function getPythonReturn(ret: string): string {
   if (ret === 'val') return 'int';
   if (ret === 'float') return 'float';
   if (ret === 'space-array') return 'list[int]';
+  if (ret === 'inplace-str') return 'None';
   return 'any';
 }
 

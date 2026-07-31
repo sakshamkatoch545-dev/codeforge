@@ -6,6 +6,7 @@ import Leaderboard from './pages/Leaderboard'
 import Profile from './pages/Profile'
 import Login from './pages/Login'
 import Home from './pages/Home'
+import SubmissionResult from './pages/SubmissionResult'
 import { api, UserInfo } from './api'
 import Navbar from './components/Navbar'
 import Footer from './components/Footer'
@@ -54,6 +55,7 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/problems" element={<Problems />} />
           <Route path="/problems/:slug" element={<ProblemDetail />} />
+          <Route path="/submissions/:id" element={<SubmissionResult />} />
           <Route path="/leaderboard" element={<Leaderboard />} />
           <Route path="/profile" element={<Profile />} />
         </Routes>
