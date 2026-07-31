@@ -8,7 +8,7 @@ class Settings(BaseSettings):
     
     SECRET_KEY: str = "generate_a_secure_random_key_here" # Change in prod
     ALGORITHM: str = "HS256"
-    ACCESS_TOKEN_EXPIRE_MINUTES: int = 1440 # 24 hours
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 43200 # 30 days
     
     POSTGRES_USER: str = "postgres"
     POSTGRES_PASSWORD: str = "postgres"
