@@ -28,7 +28,9 @@ class UserInDBBase(UserBase):
 
 # Additional properties to return via API
 class User(UserInDBBase):
-    pass
+    login_days: int = 1
+    coding_days: Optional[int] = 0
+    practice_count: Optional[int] = 0
 
 # Additional properties stored in DB
 class UserInDB(UserInDBBase):

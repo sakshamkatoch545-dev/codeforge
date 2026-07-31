@@ -35,12 +35,28 @@ def create_user(
 
 @router.get("/me", response_model=schemas.User)
 def read_user_me(
+    db: Session = Depends(deps.get_db),
     current_user: models.User = Depends(deps.get_current_active_user),
 ) -> Any:
     """
     Get current user.
     """
-    return current_user
+    from app.models.submission import Submission
+    from sqlalchemy import Date, cast, func
+    
+    # Calculate coding days
+    coding_days = db.query(func.count(func.distinct(cast(Submission.created_at, Date)))).filter(
+        Submission.user_id == current_user.id
+    ).scalar() or 0
+
+    # Calculate total submissions (practice count)
+    practice_count = db.query(Submission).filter(Submission.user_id == current_user.id).count()
+
+    # Create schema representation
+    user_schema = schemas.User.model_validate(current_user)
+    user_schema.coding_days = coding_days
+    user_schema.practice_count = practice_count
+    return user_schema
 
 @router.get("/me/solved", response_model=List[int])
 def read_user_solved(
@@ -91,12 +107,24 @@ def read_leaderboard(
                 elif p.difficulty == DifficultyEnum.HARD:
                     points += 30
 
+        # Total submissions (practice count)
+        practice_count = db.query(Submission).filter(Submission.user_id == u.id).count()
+
+        # Coding days (calendar days with submissions)
+        from sqlalchemy import Date, cast, func
+        coding_days = db.query(func.count(func.distinct(cast(Submission.created_at, Date)))).filter(
+            Submission.user_id == u.id
+        ).scalar() or 0
+
         leaderboard.append({
             "id": u.id,
             "username": u.username,
             "solved_count": solved_count,
             "points": points,
-            "total_submissions": len(accepted_subs)
+            "total_submissions": len(accepted_subs),
+            "login_days": u.login_days,
+            "coding_days": coding_days,
+            "practice_count": practice_count
         })
 
     leaderboard.sort(key=lambda x: (x["points"], x["solved_count"]), reverse=True)

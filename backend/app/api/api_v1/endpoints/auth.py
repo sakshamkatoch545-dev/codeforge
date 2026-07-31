@@ -24,6 +24,17 @@ def login_access_token(
         raise HTTPException(status_code=400, detail="Incorrect email or password")
     elif not crud.user.is_active(user):
         raise HTTPException(status_code=400, detail="Inactive user")
+    
+    # Update login days based on calendar date
+    from datetime import datetime, timezone
+    now = datetime.now(timezone.utc)
+    if not user.last_login or user.last_login.date() < now.date():
+        user.login_days += 1
+    user.last_login = now
+    db.add(user)
+    db.commit()
+    db.refresh(user)
+
     access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
     return {
         "access_token": security.create_access_token(

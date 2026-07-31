@@ -20,6 +20,7 @@ class LanguageEnum(str, enum.Enum):
     CPP = "cpp"
     JAVA = "java"
     JAVASCRIPT = "javascript"
+    C = "c"
 
 class Submission(Base):
     id = Column(Integer, primary_key=True, index=True)

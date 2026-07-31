@@ -6,10 +6,7 @@ RUN echo 'Acquire::https::Verify-Peer "false";' > /etc/apt/apt.conf.d/99mysettin
     && echo 'Acquire::https::Verify-Host "false";' >> /etc/apt/apt.conf.d/99mysettings \
     && echo 'Acquire::AllowInsecureRepositories "true";' >> /etc/apt/apt.conf.d/99mysettings \
     && echo 'Acquire::AllowDowngradeToInsecureRepositories "true";' >> /etc/apt/apt.conf.d/99mysettings \
-    && sed -i 's/deb.debian.org/mirrors.kernel.org/g' /etc/apt/sources.list || true \
-    && if [ -f /etc/apt/sources.list.d/debian.sources ]; then sed -i 's/deb.debian.org/mirrors.kernel.org/g' /etc/apt/sources.list.d/debian.sources; fi \
-    && sed -i 's/http:/https:/g' /etc/apt/sources.list || true \
-    && if [ -f /etc/apt/sources.list.d/debian.sources ]; then sed -i 's/http:/https:/g' /etc/apt/sources.list.d/debian.sources; fi \
+    && printf 'Types: deb\nURIs: https://mirrors.kernel.org/debian\nSuites: trixie trixie-updates\nComponents: main\nSigned-By: /usr/share/keyrings/debian-archive-keyring.pgp\n' > /etc/apt/sources.list.d/debian.sources \
     && apt-get update --allow-insecure-repositories \
     && apt-get install -y --allow-unauthenticated \
     libpq-dev \

@@ -135,6 +135,16 @@ def judge_submission_task(submission_id: int):
                 submission.error_message = judge_log.strip()
                 
             db.commit()
+    except Exception as e:
+        try:
+            db.rollback()
+            submission = crud.submission.get(db=db, id=submission_id)
+            if submission:
+                submission.status = "INTERNAL_ERROR"
+                submission.error_message = f"System Error: {str(e)}"
+                db.commit()
+        except Exception:
+            pass
     finally:
         db.close()
 
@@ -201,4 +211,22 @@ def read_submission(
         raise HTTPException(status_code=404, detail="Submission not found")
     if not crud.user.is_superuser(current_user) and (submission.user_id != current_user.id):
         raise HTTPException(status_code=400, detail="Not enough permissions")
+    return submission
+
+@router.delete("/{id}", response_model=schemas.Submission)
+def delete_submission(
+    *,
+    db: Session = Depends(deps.get_db),
+    id: int,
+    current_user: models.User = Depends(deps.get_current_active_user),
+) -> Any:
+    """
+    Delete submission by ID.
+    """
+    submission = crud.submission.get(db=db, id=id)
+    if not submission:
+        raise HTTPException(status_code=404, detail="Submission not found")
+    if not crud.user.is_superuser(current_user) and (submission.user_id != current_user.id):
+        raise HTTPException(status_code=400, detail="Not enough permissions")
+    submission = crud.submission.remove(db=db, id=id)
     return submission
