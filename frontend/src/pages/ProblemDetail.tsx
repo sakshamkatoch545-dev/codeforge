@@ -243,7 +243,7 @@ export default function ProblemDetail() {
 
       {/* Code Editor Panel */}
       <div className="relative z-10 w-1/2 flex flex-col bg-white/40 dark:bg-gray-900/40 backdrop-blur-md">
-        <div className="h-14 bg-white/60 dark:bg-gray-950/60 backdrop-blur-md border-b border-white/20 dark:border-white/10 flex items-center px-6 justify-start">
+        <div className="h-14 bg-white/60 dark:bg-gray-950/60 backdrop-blur-md border-b border-white/20 dark:border-white/10 flex items-center px-6 justify-end">
           <div className="space-x-3 flex items-center">
             <select
               value={language}
