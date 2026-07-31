@@ -61,6 +61,8 @@ export default function ProblemDetail() {
           ? `def solve():\n    #here goes the code\n    pass`
           : lang === 'javascript'
           ? `function solve() {\n    //here goes the code\n}`
+          : lang === 'c'
+          ? `#include <stdio.h>\n\nvoid solve() {\n    // here goes the code\n}\n\nint main() {\n    solve();\n    return 0;\n}`
           : lang === 'cpp'
           ? `#include <iostream>\nusing namespace std;\n\nvoid solve() {\n    // here goes the code\n}\n\nint main() {\n    solve();\n    return 0;\n}`
           : `import java.util.*;\n\npublic class Main {\n    public static void main(String[] args) {\n        // here goes the code\n    }\n}`
@@ -160,6 +162,7 @@ export default function ProblemDetail() {
     try {
       let langParam = 'python'
       if (language === 'javascript') langParam = 'javascript'
+      if (language === 'c') langParam = 'c'
       if (language === 'cpp') langParam = 'cpp'
       if (language === 'java') langParam = 'java'
       
@@ -252,6 +255,7 @@ export default function ProblemDetail() {
             >
               <option value="python">Python</option>
               <option value="javascript">JavaScript</option>
+              <option value="c">C</option>
               <option value="cpp">C++</option>
               <option value="java">Java</option>
             </select>

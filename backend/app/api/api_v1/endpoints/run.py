@@ -29,7 +29,7 @@ def run_code(
     """
     Execute code and return the standard output and error.
     """
-    if request.language not in ["python", "javascript", "cpp", "java"]:
+    if request.language not in ["python", "javascript", "c", "cpp", "java"]:
         raise HTTPException(status_code=400, detail="Unsupported language")
 
     output = ""
@@ -48,6 +48,16 @@ def run_code(
             cmd = ["node", file_path]
             with open(file_path, "w") as f:
                 f.write(request.code)
+        elif request.language == "c":
+            file_path = os.path.join(temp_dir, "main.c")
+            out_path = os.path.join(temp_dir, "a.exe")
+            with open(file_path, "w") as f:
+                f.write(request.code)
+            # Compile
+            compile_res = subprocess.run(["gcc", "-O2", "-o", out_path, file_path], capture_output=True, text=True)
+            if compile_res.returncode != 0:
+                return RunCodeResponse(output="", error=compile_res.stderr, status="COMPILATION_ERROR")
+            cmd = [out_path]
         elif request.language == "cpp":
             file_path = os.path.join(temp_dir, "main.cpp")
             out_path = os.path.join(temp_dir, "a.exe")

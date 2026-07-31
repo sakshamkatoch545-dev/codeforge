@@ -41,6 +41,18 @@ def judge_submission_task(submission_id: int):
                 cmd = ["node", file_path]
                 with open(file_path, "w") as f:
                     f.write(submission.code)
+            elif submission.language == "c":
+                file_path = os.path.join(temp_dir, "main.c")
+                out_path = os.path.join(temp_dir, "a.exe")
+                with open(file_path, "w") as f:
+                    f.write(submission.code)
+                compile_res = subprocess.run(["gcc", "-O2", "-o", out_path, file_path], capture_output=True, text=True)
+                if compile_res.returncode != 0:
+                    submission.status = "COMPILATION_ERROR"
+                    submission.error_message = compile_res.stderr
+                    db.commit()
+                    return
+                cmd = [out_path]
             elif submission.language == "cpp":
                 file_path = os.path.join(temp_dir, "main.cpp")
                 out_path = os.path.join(temp_dir, "a.exe")
