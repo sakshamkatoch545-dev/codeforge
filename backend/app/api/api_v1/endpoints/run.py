@@ -29,7 +29,7 @@ def run_code(
     """
     Execute code and return the standard output and error.
     """
-    if request.language not in ["python", "javascript"]:
+    if request.language not in ["python", "javascript", "cpp", "java"]:
         raise HTTPException(status_code=400, detail="Unsupported language")
 
     output = ""
@@ -37,15 +37,36 @@ def run_code(
     status = "SUCCESS"
 
     with tempfile.TemporaryDirectory() as temp_dir:
+        cmd = []
         if request.language == "python":
             file_path = os.path.join(temp_dir, "script.py")
             cmd = ["python", file_path]
+            with open(file_path, "w") as f:
+                f.write(request.code)
         elif request.language == "javascript":
             file_path = os.path.join(temp_dir, "script.js")
             cmd = ["node", file_path]
-            
-        with open(file_path, "w") as f:
-            f.write(request.code)
+            with open(file_path, "w") as f:
+                f.write(request.code)
+        elif request.language == "cpp":
+            file_path = os.path.join(temp_dir, "main.cpp")
+            out_path = os.path.join(temp_dir, "a.exe")
+            with open(file_path, "w") as f:
+                f.write(request.code)
+            # Compile
+            compile_res = subprocess.run(["g++", "-O2", "-o", out_path, file_path], capture_output=True, text=True)
+            if compile_res.returncode != 0:
+                return RunCodeResponse(output="", error=compile_res.stderr, status="COMPILATION_ERROR")
+            cmd = [out_path]
+        elif request.language == "java":
+            file_path = os.path.join(temp_dir, "Main.java")
+            with open(file_path, "w") as f:
+                f.write(request.code)
+            # Compile
+            compile_res = subprocess.run(["javac", file_path], capture_output=True, text=True)
+            if compile_res.returncode != 0:
+                return RunCodeResponse(output="", error=compile_res.stderr, status="COMPILATION_ERROR")
+            cmd = ["java", "-cp", temp_dir, "Main"]
             
         try:
             # We add a 5 second timeout to prevent infinite loops from hanging the backend

@@ -59,7 +59,11 @@ export default function ProblemDetail() {
       setCode(
         lang === 'python'
           ? `def solve():\n    #here goes the code\n    pass`
-          : `function solve() {\n    //here goes the code\n}`
+          : lang === 'javascript'
+          ? `function solve() {\n    //here goes the code\n}`
+          : lang === 'cpp'
+          ? `#include <iostream>\nusing namespace std;\n\nvoid solve() {\n    // here goes the code\n}\n\nint main() {\n    solve();\n    return 0;\n}`
+          : `import java.util.*;\n\npublic class Main {\n    public static void main(String[] args) {\n        // here goes the code\n    }\n}`
       )
     }
   }
@@ -93,6 +97,9 @@ export default function ProblemDetail() {
     } else if (language === 'javascript') {
       return `const fs = require('fs');\n\n${code}\n\nsolve();`
     }
+    
+    // For cpp and java, we expect the user to have written main() already in the starter code
+    return code;
     
     return code;
   }
@@ -236,17 +243,18 @@ export default function ProblemDetail() {
 
       {/* Code Editor Panel */}
       <div className="relative z-10 w-1/2 flex flex-col bg-white/40 dark:bg-gray-900/40 backdrop-blur-md">
-        <div className="h-14 bg-white/60 dark:bg-gray-950/60 backdrop-blur-md border-b border-white/20 dark:border-white/10 flex items-center px-6 justify-between">
-          <select
-            value={language}
-            onChange={(e) => setLanguage(e.target.value)}
-            className="bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white border-none rounded-lg py-1.5 px-3 text-sm outline-none font-medium cursor-pointer"
-          >
-            <option value="python">Python</option>
-            <option value="javascript">JavaScript</option>
-          </select>
-
+        <div className="h-14 bg-white/60 dark:bg-gray-950/60 backdrop-blur-md border-b border-white/20 dark:border-white/10 flex items-center px-6 justify-start">
           <div className="space-x-3 flex items-center">
+            <select
+              value={language}
+              onChange={(e) => setLanguage(e.target.value)}
+              className="bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white border-none rounded-lg py-1.5 px-3 text-sm outline-none font-medium cursor-pointer"
+            >
+              <option value="python">Python</option>
+              <option value="javascript">JavaScript</option>
+              <option value="cpp">C++</option>
+              <option value="java">Java</option>
+            </select>
             {running && (
               <span className="text-sm text-brand-600 animate-pulse font-medium">Running...</span>
             )}
