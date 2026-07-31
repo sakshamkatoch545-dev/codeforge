@@ -4,6 +4,80 @@ import Editor from '@monaco-editor/react'
 import { api, Problem, Submission, TestCase } from '../api'
 import { getStarterCode, problemsMetadata, getWrappedCode as getWrappedCodeFromConfig } from '../problemsConfig'
 
+const renderFormattedDescription = (text: string | undefined) => {
+  if (!text) return null;
+  
+  const lines = text.split('\n');
+  let inCodeBlock = false;
+  let codeBlockLines: string[] = [];
+  const elements: React.ReactNode[] = [];
+
+  lines.forEach((line, idx) => {
+    const trimmed = line.trim();
+
+    const formatLineText = (txt: string) => {
+      const parts = txt.split('`');
+      return parts.map((part, i) => {
+        if (i % 2 === 1) {
+          return (
+            <code key={i} className="px-2 py-0.5 mx-1 font-mono text-sm bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-indigo-600 dark:text-indigo-400 rounded-md font-bold">
+              {part}
+            </code>
+          );
+        }
+        return part;
+      });
+    };
+
+    if (trimmed.startsWith('Example ') || trimmed.startsWith('Constraints:')) {
+      elements.push(
+        <h3 key={idx} className="text-xl font-extrabold mt-6 mb-3 text-gray-900 dark:text-white border-l-4 border-indigo-500 pl-3">
+          {trimmed}
+        </h3>
+      );
+    } else if (trimmed.startsWith('Input:') || trimmed.startsWith('Output:') || trimmed.startsWith('Explanation:')) {
+      elements.push(
+        <div key={idx} className="font-mono text-[0.95rem] pl-4 my-1 border-l-2 border-indigo-300 dark:border-indigo-800 text-gray-800 dark:text-gray-200 leading-relaxed font-bold">
+          <span className="text-indigo-600 dark:text-indigo-400 font-extrabold">{trimmed.split(':')[0]}:</span>
+          {formatLineText(trimmed.substring(trimmed.indexOf(':') + 1))}
+        </div>
+      );
+    } else if (trimmed === '```' || trimmed.startsWith('```')) {
+      if (inCodeBlock) {
+        elements.push(
+          <pre key={`code-${idx}`} className="p-4 my-3 font-mono text-[0.9rem] bg-gray-100/50 dark:bg-black/40 border border-gray-200 dark:border-gray-800 text-gray-800 dark:text-gray-100 rounded-xl overflow-x-auto leading-relaxed font-bold shadow-inner">
+            <code>{codeBlockLines.join('\n')}</code>
+          </pre>
+        );
+        codeBlockLines = [];
+        inCodeBlock = false;
+      } else {
+        inCodeBlock = true;
+      }
+    } else if (inCodeBlock) {
+      codeBlockLines.push(line);
+    } else {
+      if (trimmed !== '') {
+        elements.push(
+          <p key={idx} className="font-semibold text-[1.05rem] leading-relaxed text-gray-800 dark:text-gray-200">
+            {formatLineText(line)}
+          </p>
+        );
+      }
+    }
+  });
+
+  if (inCodeBlock && codeBlockLines.length > 0) {
+    elements.push(
+      <pre key="code-leftover" className="p-4 my-3 font-mono text-[0.9rem] bg-gray-100/50 dark:bg-black/40 border border-gray-200 dark:border-gray-800 text-gray-800 dark:text-gray-100 rounded-xl overflow-x-auto leading-relaxed font-bold shadow-inner">
+        <code>{codeBlockLines.join('\n')}</code>
+      </pre>
+    );
+  }
+
+  return <div className="space-y-4">{elements}</div>;
+};
+
 export default function ProblemDetail() {
   const { slug } = useParams()
   const navigate = useNavigate()
@@ -185,9 +259,7 @@ export default function ProblemDetail() {
           </h1>
 
           <div className="prose dark:prose-invert max-w-none text-gray-700 dark:text-gray-300 space-y-4">
-            {problem?.description.split('\n').map((para, idx) => (
-              <p key={idx}>{para}</p>
-            ))}
+            {renderFormattedDescription(problem?.description)}
           </div>
         </div>
 

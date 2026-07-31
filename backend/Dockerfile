@@ -6,8 +6,8 @@ RUN echo 'Acquire::https::Verify-Peer "false";' > /etc/apt/apt.conf.d/99mysettin
     && echo 'Acquire::https::Verify-Host "false";' >> /etc/apt/apt.conf.d/99mysettings \
     && echo 'Acquire::AllowInsecureRepositories "true";' >> /etc/apt/apt.conf.d/99mysettings \
     && echo 'Acquire::AllowDowngradeToInsecureRepositories "true";' >> /etc/apt/apt.conf.d/99mysettings \
-    && sed -i 's/deb.debian.org/mirrors.ustc.edu.cn/g' /etc/apt/sources.list || true \
-    && if [ -f /etc/apt/sources.list.d/debian.sources ]; then sed -i 's/deb.debian.org/mirrors.ustc.edu.cn/g' /etc/apt/sources.list.d/debian.sources; fi \
+    && sed -i 's/deb.debian.org/mirrors.kernel.org/g' /etc/apt/sources.list || true \
+    && if [ -f /etc/apt/sources.list.d/debian.sources ]; then sed -i 's/deb.debian.org/mirrors.kernel.org/g' /etc/apt/sources.list.d/debian.sources; fi \
     && sed -i 's/http:/https:/g' /etc/apt/sources.list || true \
     && if [ -f /etc/apt/sources.list.d/debian.sources ]; then sed -i 's/http:/https:/g' /etc/apt/sources.list.d/debian.sources; fi \
     && apt-get update --allow-insecure-repositories \
