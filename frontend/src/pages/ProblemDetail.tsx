@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import Editor from '@monaco-editor/react'
 import { api, Problem, Submission, TestCase } from '../api'
-import BackgroundAnimation from '../components/BackgroundAnimation'
 
 export default function ProblemDetail() {
   const { slug } = useParams()
@@ -199,8 +198,7 @@ export default function ProblemDetail() {
   }
 
   return (
-    <div className="relative flex h-[calc(100vh-4rem)] bg-gray-50 dark:bg-gray-950 overflow-hidden transition-colors duration-500">
-      <BackgroundAnimation />
+    <div className="relative flex h-[calc(100vh-4rem)]">
 
       {/* Problem Description Panel */}
       <div className="relative z-10 w-1/2 p-8 overflow-y-auto border-r border-white/20 dark:border-white/10 glass-panel !shadow-none !rounded-none flex flex-col justify-between">

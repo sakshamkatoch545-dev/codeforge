@@ -10,6 +10,8 @@ import { api, UserInfo } from './api'
 import Navbar from './components/Navbar'
 import Footer from './components/Footer'
 
+import BackgroundAnimation from './components/BackgroundAnimation'
+
 function App() {
   const location = useLocation()
   const navigate = useNavigate()
@@ -40,7 +42,8 @@ function App() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col relative bg-gray-50 dark:bg-gray-950 transition-colors duration-500 overflow-hidden">
+      <BackgroundAnimation />
       <Navbar currentUser={currentUser} onLogout={handleLogout} />
       
       <main className="flex-1">

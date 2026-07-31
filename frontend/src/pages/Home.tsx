@@ -1,10 +1,8 @@
 import { Link } from 'react-router-dom';
-import BackgroundAnimation from '../components/BackgroundAnimation';
 
 const Home = () => {
   return (
-    <div className="relative min-h-[calc(100vh-4rem)] flex flex-col items-center justify-center overflow-hidden bg-gray-50 dark:bg-gray-950 transition-colors duration-500">
-      <BackgroundAnimation />
+    <div className="relative min-h-[calc(100vh-4rem)] flex flex-col items-center justify-center">
 
       <div className="relative z-10 max-w-7xl mx-auto px-6 py-20 lg:px-8 flex flex-col items-center text-center">
         

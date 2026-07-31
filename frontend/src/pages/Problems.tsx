@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { api, Problem } from '../api'
-import BackgroundAnimation from '../components/BackgroundAnimation'
 
 export default function Problems() {
   const [problems, setProblems] = useState<Problem[]>([])
@@ -39,8 +38,7 @@ export default function Problems() {
   }
 
   return (
-    <div className="relative min-h-[calc(100vh-4rem)] bg-gray-50 dark:bg-gray-950 transition-colors duration-500 overflow-hidden">
-      <BackgroundAnimation />
+    <div className="relative min-h-[calc(100vh-4rem)]">
 
       <div className="relative z-10 max-w-6xl mx-auto p-6 mt-8">
         <h1 className="text-5xl font-black tracking-tighter mb-10 text-gray-900 dark:text-white uppercase">Problems</h1>

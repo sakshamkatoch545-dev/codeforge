@@ -4,10 +4,10 @@ export const BackgroundAnimation: React.FC = () => {
   return (
     <>
       {/* Animated 3D Beehive Grid Background */}
-      <div className="absolute inset-0 bg-grid animate-grid-scroll z-0"></div>
+      <div className="fixed inset-0 bg-grid animate-grid-scroll z-0"></div>
       
       {/* Multi-color Floating Blobs (White, Cream, Purple, Red, Pink) */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
+      <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
         <div className="absolute top-0 -left-4 w-72 h-72 bg-[#fffdd0] rounded-full mix-blend-multiply filter blur-3xl opacity-50 animate-blob dark:opacity-30 dark:mix-blend-screen"></div>
         <div className="absolute top-0 -right-4 w-72 h-72 bg-white rounded-full mix-blend-multiply filter blur-3xl opacity-50 animate-blob animation-delay-2000 dark:opacity-30 dark:mix-blend-screen"></div>
         <div className="absolute -bottom-8 left-20 w-72 h-72 bg-[#fffdd0] rounded-full mix-blend-multiply filter blur-3xl opacity-50 animate-blob animation-delay-4000 dark:opacity-30 dark:mix-blend-screen"></div>
