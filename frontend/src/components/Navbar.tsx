@@ -9,13 +9,25 @@ interface NavbarProps {
 
 export const Navbar: React.FC<NavbarProps> = ({ currentUser, onLogout }) => {
   return (
-    <header className="h-20 glass-panel !rounded-none !border-x-0 !border-t-0 flex items-center px-8 justify-between sticky top-0 z-50">
-      <Link to="/" className="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-brand-600 to-purple-600 dark:from-brand-400 dark:to-purple-400 tracking-tight flex items-center gap-2 uppercase">
+    <div className="sticky top-6 z-50 px-6 animate-fade-in">
+      <header className="h-16 max-w-6xl mx-auto glass-panel !rounded-full flex items-center px-8 justify-between shadow-2xl shadow-brand-500/10 border border-white/50 dark:border-white/10 backdrop-saturate-200">
+      <Link to="/" className="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-brand-600 to-purple-600 dark:from-brand-400 dark:to-purple-400 tracking-tight flex items-center gap-3 uppercase group">
+        <div className="relative flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-600 to-purple-500 shadow-lg shadow-brand-500/40 group-hover:scale-110 transition-transform duration-300">
+          <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+          </svg>
+        </div>
         CodeForge
       </Link>
       <nav className="space-x-8 flex items-center">
-        <Link to="/problems" className="text-gray-700 dark:text-gray-200 hover:text-brand-600 font-bold text-lg transition-colors">Problems</Link>
-        <Link to="/leaderboard" className="text-gray-700 dark:text-gray-200 hover:text-brand-600 font-bold text-lg transition-colors">Leaderboard</Link>
+        <Link to="/problems" className="relative text-gray-700 dark:text-gray-200 hover:text-brand-600 font-bold text-lg transition-colors group">
+          Problems
+          <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-brand-500 transition-all duration-300 group-hover:w-full"></span>
+        </Link>
+        <Link to="/leaderboard" className="relative text-gray-700 dark:text-gray-200 hover:text-brand-600 font-bold text-lg transition-colors group">
+          Leaderboard
+          <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-brand-500 transition-all duration-300 group-hover:w-full"></span>
+        </Link>
         
         {currentUser ? (
           <div className="flex items-center gap-4">
@@ -39,6 +51,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentUser, onLogout }) => {
         )}
       </nav>
     </header>
+    </div>
   );
 };
 
