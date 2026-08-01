@@ -1,19 +1,25 @@
 import { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { api, LeaderboardUser } from '../api'
 
 export default function Leaderboard() {
+  const navigate = useNavigate()
   const [users, setUsers] = useState<LeaderboardUser[]>([])
   const [selectedUser, setSelectedUser] = useState<LeaderboardUser | null>(null)
   const [loading, setLoading] = useState(true)
-  const [error, setError] = useState('')
+  const [notLoggedIn, setNotLoggedIn] = useState(false)
 
   useEffect(() => {
     async function fetchLeaderboard() {
       try {
         const data = await api.getLeaderboard()
         setUsers(data)
-      } catch (err) {
-        setError('Failed to load global rankings.')
+      } catch (err: any) {
+        // If backend returns 401 or user is not authenticated, show login prompt
+        if (!localStorage.getItem('codeforge_token') || err?.response?.status === 401) {
+          setNotLoggedIn(true)
+        }
+        // Otherwise silently show empty leaderboard — no error text
       } finally {
         setLoading(false)
       }
@@ -29,10 +35,37 @@ export default function Leaderboard() {
     )
   }
 
-  if (error) {
+  if (notLoggedIn) {
     return (
-      <div className="max-w-5xl mx-auto p-6 mt-8 text-center text-red-500">
-        {error}
+      <div className="relative min-h-[calc(100vh-4rem)]">
+        <div className="relative z-10 max-w-5xl mx-auto p-6 mt-16 flex flex-col items-center gap-6">
+          <h1 className="text-4xl font-black uppercase tracking-tighter text-gray-900 dark:text-white flex items-center gap-3">
+            🏆 Global Leaderboard
+          </h1>
+          <div className="glass-table w-full max-w-md text-center p-10 flex flex-col items-center gap-5">
+            <div className="text-5xl">🔒</div>
+            <div>
+              <h2 className="text-xl font-black text-gray-900 dark:text-white">Login to View Rankings</h2>
+              <p className="text-gray-500 dark:text-gray-400 text-sm mt-2">
+                Sign in or create an account to see the global leaderboard and compete with other coders.
+              </p>
+            </div>
+            <div className="flex gap-3 w-full">
+              <button
+                onClick={() => navigate('/login')}
+                className="flex-1 py-3 px-4 bg-brand-600 hover:bg-brand-700 text-white rounded-xl text-sm font-black transition shadow-lg cursor-pointer"
+              >
+                Sign In
+              </button>
+              <button
+                onClick={() => navigate('/login')}
+                className="flex-1 py-3 px-4 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-800 dark:text-gray-200 border border-gray-200 dark:border-gray-700 rounded-xl text-sm font-bold transition cursor-pointer"
+              >
+                Register
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
     )
   }
