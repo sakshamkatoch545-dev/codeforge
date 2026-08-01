@@ -1,48 +1,62 @@
 import { useState, useEffect } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { api, Problem } from '../api'
+import { problemsMetadata } from '../problemsConfig'
 
 export default function Problems() {
+  const navigate = useNavigate()
   const [problems, setProblems] = useState<Problem[]>([])
   const [solvedIds, setSolvedIds] = useState<Set<number>>(new Set())
   const [loading, setLoading] = useState(true)
-  const [error, setError] = useState('')
+  const [showAuthModal, setShowAuthModal] = useState(false)
 
   useEffect(() => {
     async function loadData() {
       try {
         const data = await api.getProblems()
         setProblems(data)
-        
+      } catch (err) {
+        // Fallback: show static problems from config instead of an error
+        const fallbackProblems: Problem[] = Object.keys(problemsMetadata).map((slug, idx) => ({
+          id: idx + 1,
+          title: slug.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' '),
+          slug,
+          description: '',
+          difficulty: ['binary-search', 'two-sum', 'valid-parentheses', 'reverse-string', 'merge-two-sorted-lists'].includes(slug)
+            ? 'EASY'
+            : ['n-queens', 'trapping-rain-water'].includes(slug)
+            ? 'HARD'
+            : 'MEDIUM',
+          created_at: new Date().toISOString()
+        }))
+        setProblems(fallbackProblems)
+      } finally {
         if (localStorage.getItem('codeforge_token')) {
           try {
             const solved = await api.getSolvedProblems()
             setSolvedIds(new Set(solved))
           } catch (e) {
-            // ignore if not logged in
+            // ignore
           }
         }
-      } catch (err) {
-        setError('Could not load problems from the server.')
-      } finally {
         setLoading(false)
       }
     }
     loadData()
   }, [])
 
+  const handleProblemClick = (e: React.MouseEvent, slug: string) => {
+    const isLoggedIn = !!localStorage.getItem('codeforge_token')
+    if (!isLoggedIn) {
+      e.preventDefault()
+      setShowAuthModal(true)
+    }
+  }
+
   if (loading) {
     return (
       <div className="max-w-6xl mx-auto p-6 mt-8 text-center text-gray-500">
         Loading problems...
-      </div>
-    )
-  }
-
-  if (error) {
-    return (
-      <div className="max-w-6xl mx-auto p-6 mt-8 text-center text-red-500">
-        {error}
       </div>
     )
   }
@@ -93,7 +107,11 @@ export default function Problems() {
                     )}
                   </td>
                   <td className="px-6 py-4">
-                    <Link to={`/problems/${prob.slug}`} className="text-brand-600 dark:text-brand-400 font-bold hover:text-brand-500 dark:hover:text-brand-300 text-lg transition-colors">
+                    <Link
+                      to={`/problems/${prob.slug}`}
+                      onClick={(e) => handleProblemClick(e, prob.slug)}
+                      className="text-brand-600 dark:text-brand-400 font-bold hover:text-brand-500 dark:hover:text-brand-300 text-lg transition-colors"
+                    >
                       {index + 1}. {prob.title}
                     </Link>
                   </td>
@@ -112,6 +130,43 @@ export default function Problems() {
           </table>
         </div>
       </div>
+
+      {/* ── Auth Requirement Modal ── */}
+      {showAuthModal && (
+        <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-gray-900 border border-gray-800 max-w-sm w-full rounded-2xl p-7 shadow-2xl space-y-5 text-center">
+            <div className="w-14 h-14 rounded-full bg-brand-500/20 text-brand-400 border border-brand-500/30 flex items-center justify-center text-3xl mx-auto">
+              🔒
+            </div>
+            <div>
+              <h3 className="text-xl font-black text-white">Login Required</h3>
+              <p className="text-gray-400 text-xs mt-2 leading-relaxed">
+                You need an account to practice code and submit solutions on CodeForge.
+              </p>
+            </div>
+            <div className="flex flex-col gap-3">
+              <button
+                onClick={() => navigate('/login')}
+                className="w-full py-3 px-4 bg-brand-600 hover:bg-brand-500 text-white rounded-xl text-sm font-black transition shadow-lg cursor-pointer"
+              >
+                Sign In
+              </button>
+              <button
+                onClick={() => navigate('/login')}
+                className="w-full py-3 px-4 bg-gray-800 hover:bg-gray-700 text-gray-200 border border-gray-700 rounded-xl text-sm font-bold transition cursor-pointer"
+              >
+                Register (New Account)
+              </button>
+              <button
+                onClick={() => setShowAuthModal(false)}
+                className="text-xs text-gray-500 hover:text-gray-300 transition py-1 cursor-pointer"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

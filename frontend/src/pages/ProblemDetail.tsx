@@ -278,11 +278,13 @@ export default function ProblemDetail() {
     return getWrappedCodeFromConfig(problem.slug, language, code);
   }
 
+  // Auth Requirement Modal state
+  const [showAuthModal, setShowAuthModal] = useState(false)
+
   const handleRun = async () => {
     const token = localStorage.getItem('codeforge_token')
     if (!token) {
-      alert('You must be logged in to run code.')
-      navigate('/login')
+      setShowAuthModal(true)
       return
     }
 
@@ -320,8 +322,7 @@ export default function ProblemDetail() {
   const handleSubmit = async () => {
     const token = localStorage.getItem('codeforge_token')
     if (!token) {
-      alert('You must be logged in to submit code.')
-      navigate('/login')
+      setShowAuthModal(true)
       return
     }
 
@@ -384,6 +385,7 @@ export default function ProblemDetail() {
   }
 
   return (
+    <>
     <div className="flex flex-col lg:flex-row gap-6 mb-12 mt-20 mx-6 max-w-7xl lg:mx-auto">
 
       {/* Problem Description Panel */}
@@ -738,5 +740,43 @@ export default function ProblemDetail() {
         )}
       </div>
     </div>
+
+      {/* ── Auth Requirement Modal ── */}
+      {showAuthModal && (
+        <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-gray-900 border border-gray-800 max-w-sm w-full rounded-2xl p-7 shadow-2xl space-y-5 text-center">
+            <div className="w-14 h-14 rounded-full bg-brand-500/20 text-brand-400 border border-brand-500/30 flex items-center justify-center text-3xl mx-auto">
+              🔒
+            </div>
+            <div>
+              <h3 className="text-xl font-black text-white">Login Required</h3>
+              <p className="text-gray-400 text-xs mt-2 leading-relaxed">
+                You need an account to run code, execute tests, and submit solutions on CodeForge.
+              </p>
+            </div>
+            <div className="flex flex-col gap-3">
+              <button
+                onClick={() => navigate('/login')}
+                className="w-full py-3 px-4 bg-brand-600 hover:bg-brand-500 text-white rounded-xl text-sm font-black transition shadow-lg cursor-pointer"
+              >
+                Sign In
+              </button>
+              <button
+                onClick={() => navigate('/login')}
+                className="w-full py-3 px-4 bg-gray-800 hover:bg-gray-700 text-gray-200 border border-gray-700 rounded-xl text-sm font-bold transition cursor-pointer"
+              >
+                Register (New Account)
+              </button>
+              <button
+                onClick={() => setShowAuthModal(false)}
+                className="text-xs text-gray-500 hover:text-gray-300 transition py-1 cursor-pointer"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
   )
 }
