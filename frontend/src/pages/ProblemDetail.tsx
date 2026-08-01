@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import Editor from '@monaco-editor/react'
 import { api, Problem, Submission, TestCase } from '../api'
-import { getStarterCode, problemsMetadata, getWrappedCode as getWrappedCodeFromConfig } from '../problemsConfig'
+import { getStarterCode, getWrappedCode as getWrappedCodeFromConfig } from '../problemsConfig'
 
 const renderFormattedDescription = (text: string | undefined) => {
   if (!text) return null;

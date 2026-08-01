@@ -20,8 +20,8 @@ export interface Problem {
   slug: string
   description: string
   difficulty: 'EASY' | 'MEDIUM' | 'HARD'
-  time_limit: number
-  memory_limit: number
+  time_limit?: number
+  memory_limit?: number
   created_at: string
 }
 

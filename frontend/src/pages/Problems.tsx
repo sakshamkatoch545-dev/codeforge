@@ -45,7 +45,7 @@ export default function Problems() {
     loadData()
   }, [])
 
-  const handleProblemClick = (e: React.MouseEvent, slug: string) => {
+  const handleProblemClick = (e: React.MouseEvent, _slug: string) => {
     const isLoggedIn = !!localStorage.getItem('codeforge_token')
     if (!isLoggedIn) {
       e.preventDefault()

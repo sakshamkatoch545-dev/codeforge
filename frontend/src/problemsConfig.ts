@@ -2,7 +2,7 @@ export interface ProblemMetadata {
   slug: string;
   funcName: string;
   params: string[];
-  returnType: 'json' | 'space-array' | 'bool' | 'val' | 'float';
+  returnType: 'json' | 'space-array' | 'bool' | 'val' | 'float' | 'inplace-str';
 }
 
 export const problemsMetadata: Record<string, ProblemMetadata> = {
