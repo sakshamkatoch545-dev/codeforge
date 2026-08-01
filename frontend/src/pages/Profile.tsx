@@ -75,26 +75,26 @@ export default function Profile() {
   return (
     <div className="relative min-h-[calc(100vh-4rem)] bg-gradient-to-b from-gray-950 via-slate-950 to-gray-950 text-white pb-20 overflow-hidden">
       
-      {/* ── Vibrant Floating Colorful Ambient Glow Blobs in Background ── */}
+      {/* ── Vibrant Static Colorful Ambient Glow Blobs in Background ── */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none z-0 transform-gpu">
         {/* Electric Cyan Glow Blob */}
         <div 
-          className="absolute top-10 left-10 w-[500px] h-[500px] rounded-full opacity-80 animate-blob transform-gpu will-change-transform"
+          className="absolute top-10 left-10 w-[500px] h-[500px] rounded-full opacity-80 transform-gpu"
           style={{ background: 'radial-gradient(circle, rgba(6, 182, 212, 0.35) 0%, rgba(6, 182, 212, 0) 70%)' }}
         />
         {/* Neon Purple Glow Blob */}
         <div 
-          className="absolute top-1/3 -right-10 w-[550px] h-[550px] rounded-full opacity-80 animate-blob animation-delay-2000 transform-gpu will-change-transform"
+          className="absolute top-1/3 -right-10 w-[550px] h-[550px] rounded-full opacity-80 transform-gpu"
           style={{ background: 'radial-gradient(circle, rgba(168, 85, 247, 0.35) 0%, rgba(168, 85, 247, 0) 70%)' }}
         />
         {/* Hot Pink Glow Blob */}
         <div 
-          className="absolute bottom-10 left-1/3 w-[500px] h-[500px] rounded-full opacity-75 animate-blob animation-delay-4000 transform-gpu will-change-transform"
+          className="absolute bottom-10 left-1/3 w-[500px] h-[500px] rounded-full opacity-75 transform-gpu"
           style={{ background: 'radial-gradient(circle, rgba(236, 72, 153, 0.3) 0%, rgba(236, 72, 153, 0) 70%)' }}
         />
         {/* Emerald Glow Blob */}
         <div 
-          className="absolute top-1/2 left-[-100px] w-[450px] h-[450px] rounded-full opacity-70 animate-blob transform-gpu will-change-transform"
+          className="absolute top-1/2 left-[-100px] w-[450px] h-[450px] rounded-full opacity-70 transform-gpu"
           style={{ background: 'radial-gradient(circle, rgba(16, 185, 129, 0.3) 0%, rgba(16, 185, 129, 0) 70%)' }}
         />
       </div>
@@ -208,7 +208,7 @@ export default function Profile() {
         </div>
 
         {/* ── Ultra-Translucent Glass Table Container (No Flashing Overlay) ── */}
-        <div className="relative overflow-hidden bg-gray-950/15 border border-white/20 rounded-3xl p-7 shadow-[0_30px_70px_rgba(0,0,0,0.85)] backdrop-blur-md animate-float transform-gpu will-change-transform">
+        <div className="relative overflow-hidden bg-gray-950/15 border border-white/20 rounded-3xl p-7 shadow-[0_30px_70px_rgba(0,0,0,0.85)] backdrop-blur-md transform-gpu hover:shadow-[0_30px_70px_rgba(6,182,212,0.15)] transition-shadow duration-500">
           
           {/* Subtle Ambient Glow Accents directly behind translucent table */}
           <div 

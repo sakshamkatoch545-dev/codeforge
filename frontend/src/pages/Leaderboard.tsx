@@ -88,10 +88,16 @@ export default function Leaderboard() {
   return (
     <div className="relative min-h-[calc(100vh-4rem)] text-white pb-20 overflow-hidden">
       
-      {/* Background Glow Blobs */}
-      <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
-        <div className="absolute top-1/4 -left-20 w-96 h-96 bg-cyan-500/25 rounded-full filter blur-3xl opacity-80 animate-blob" />
-        <div className="absolute top-1/3 -right-20 w-96 h-96 bg-purple-500/25 rounded-full filter blur-3xl opacity-80 animate-blob animation-delay-2000" />
+      {/* Static Background Glow Blobs */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none z-0 transform-gpu">
+        <div 
+          className="absolute top-1/4 -left-20 w-[500px] h-[500px] rounded-full opacity-60 transform-gpu"
+          style={{ background: 'radial-gradient(circle, rgba(6, 182, 212, 0.25) 0%, transparent 70%)' }}
+        />
+        <div 
+          className="absolute top-1/3 -right-20 w-[550px] h-[550px] rounded-full opacity-60 transform-gpu"
+          style={{ background: 'radial-gradient(circle, rgba(168, 85, 247, 0.25) 0%, transparent 70%)' }}
+        />
       </div>
 
       <div className="relative z-10 max-w-5xl mx-auto p-6 mt-12 space-y-8 animate-fade-in">
@@ -106,12 +112,14 @@ export default function Leaderboard() {
           </div>
         </div>
 
-        {/* Floating Merged Ultra-Translucent Table Container */}
-        <div className="relative overflow-hidden bg-gray-950/15 border border-white/20 rounded-3xl shadow-[0_30px_70px_rgba(0,0,0,0.8)] backdrop-blur-md animate-float transform-gpu will-change-transform">
+        {/* Ultra-Translucent Static Table Container */}
+        <div className="relative overflow-hidden bg-gray-950/15 border border-white/20 rounded-3xl shadow-[0_30px_70px_rgba(0,0,0,0.8)] backdrop-blur-md transform-gpu hover:shadow-[0_30px_70px_rgba(6,182,212,0.15)] transition-shadow duration-500">
           
           {/* Ambient Glowing Orbs */}
-          <div className="absolute -top-24 -right-24 w-80 h-80 bg-cyan-500/25 rounded-full blur-3xl pointer-events-none opacity-60" />
-          <div className="absolute -bottom-24 -left-24 w-80 h-80 bg-purple-500/25 rounded-full blur-3xl pointer-events-none opacity-60" />
+          <div className="absolute -top-24 -right-24 w-80 h-80 rounded-full pointer-events-none opacity-50"
+               style={{ background: 'radial-gradient(circle, rgba(6, 182, 212, 0.25) 0%, transparent 70%)' }} />
+          <div className="absolute -bottom-24 -left-24 w-80 h-80 rounded-full pointer-events-none opacity-50"
+               style={{ background: 'radial-gradient(circle, rgba(168, 85, 247, 0.25) 0%, transparent 70%)' }} />
 
           <div className="relative z-10">
             <table className="w-full text-left border-collapse">
