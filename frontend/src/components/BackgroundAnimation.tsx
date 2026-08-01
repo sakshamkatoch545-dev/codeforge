@@ -4,7 +4,7 @@ export const BackgroundAnimation: React.FC = () => {
   return (
     <>
       {/* Animated 3D Beehive Grid Background */}
-      <div className="fixed inset-0 bg-grid animate-grid-scroll z-0"></div>
+      <div className="fixed inset-0 bg-grid animate-grid-scroll z-0 pointer-events-none"></div>
       
       {/* Multi-color Floating Blobs (White, Cream, Purple, Red, Pink) */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">

@@ -49,7 +49,7 @@ function App() {
       <BackgroundAnimation />
       <Navbar currentUser={currentUser} onLogout={handleLogout} />
       
-      <main className="flex-1 flex flex-col">
+      <main className="flex-1 flex flex-col relative z-10">
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />

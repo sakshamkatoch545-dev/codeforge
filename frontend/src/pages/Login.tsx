@@ -70,7 +70,7 @@ export default function Login() {
   }
 
   return (
-    <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center bg-gray-950 text-white px-4 py-12">
+    <div className="relative z-10 min-h-[calc(100vh-4rem)] flex items-center justify-center bg-gray-950 text-white px-4 py-12">
 
       {/* ── Main Auth Card ── */}
       <div className="max-w-md w-full bg-gray-900 p-8 rounded-2xl shadow-2xl border border-gray-800 flex flex-col gap-5">
