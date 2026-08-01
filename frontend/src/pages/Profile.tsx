@@ -73,178 +73,144 @@ export default function Profile() {
   const acceptedCount = submissions.filter(s => s.status === 'ACCEPTED').length
 
   return (
-    <div className="relative min-h-[calc(100vh-4rem)] bg-gradient-to-b from-gray-950 via-slate-950 to-gray-950 text-white pb-20 overflow-hidden">
+    <div className="relative min-h-[calc(100vh-4rem)] text-gray-900 dark:text-white pb-20 overflow-hidden">
       
-      {/* ── Vibrant Static Colorful Ambient Glow Blobs in Background ── */}
-      <div className="fixed inset-0 overflow-hidden pointer-events-none z-0 transform-gpu">
-        {/* Electric Cyan Glow Blob */}
-        <div 
-          className="absolute top-10 left-10 w-[500px] h-[500px] rounded-full opacity-80 transform-gpu"
-          style={{ background: 'radial-gradient(circle, rgba(6, 182, 212, 0.35) 0%, rgba(6, 182, 212, 0) 70%)' }}
-        />
-        {/* Neon Purple Glow Blob */}
-        <div 
-          className="absolute top-1/3 -right-10 w-[550px] h-[550px] rounded-full opacity-80 transform-gpu"
-          style={{ background: 'radial-gradient(circle, rgba(168, 85, 247, 0.35) 0%, rgba(168, 85, 247, 0) 70%)' }}
-        />
-        {/* Hot Pink Glow Blob */}
-        <div 
-          className="absolute bottom-10 left-1/3 w-[500px] h-[500px] rounded-full opacity-75 transform-gpu"
-          style={{ background: 'radial-gradient(circle, rgba(236, 72, 153, 0.3) 0%, rgba(236, 72, 153, 0) 70%)' }}
-        />
-        {/* Emerald Glow Blob */}
-        <div 
-          className="absolute top-1/2 left-[-100px] w-[450px] h-[450px] rounded-full opacity-70 transform-gpu"
-          style={{ background: 'radial-gradient(circle, rgba(16, 185, 129, 0.3) 0%, rgba(16, 185, 129, 0) 70%)' }}
-        />
-      </div>
-
       <div className="relative z-10 max-w-5xl mx-auto px-6 mt-10 space-y-10 animate-fade-in">
         
-        {/* ── Ultra Translucent Hero Glass Banner ── */}
-        <div className="relative overflow-hidden bg-gray-900/40 border border-white/15 rounded-3xl p-8 shadow-[0_25px_60px_rgba(0,0,0,0.8)] backdrop-blur-md flex flex-col md:flex-row justify-between items-start md:items-center gap-6 group transform-gpu">
+        {/* ── Ultra Translucent Hero Glass Banner (Matching Landing Page glass-panel) ── */}
+        <div className="relative overflow-hidden glass-panel p-8 shadow-[0_20px_50px_rgba(0,0,0,0.05)] dark:shadow-[0_25px_60px_rgba(0,0,0,0.8)] flex flex-col md:flex-row justify-between items-start md:items-center gap-6 group transform-gpu">
           
           <div className="flex items-center gap-6 relative z-10">
             {/* Glowing Avatar Ring */}
             <div className="relative flex items-center justify-center w-24 h-24 rounded-full bg-gradient-to-tr from-cyan-500 via-brand-600 to-purple-600 ring-4 ring-cyan-400/50 shadow-2xl shadow-cyan-500/50 text-white font-black text-4xl shrink-0 transform-gpu">
               {user?.username.charAt(0).toUpperCase()}
-              <span className="absolute bottom-0 right-0 w-6 h-6 rounded-full bg-emerald-400 ring-4 ring-gray-950 shadow-md" title="Online" />
+              <span className="absolute bottom-0 right-0 w-6 h-6 rounded-full bg-emerald-400 ring-4 ring-gray-950 dark:ring-gray-900 shadow-md" title="Online" />
             </div>
 
             <div>
               <div className="flex items-center gap-3 flex-wrap">
-                <h1 className="text-4xl font-black uppercase tracking-tight text-white drop-shadow-md">
+                <h1 className="text-4xl font-black uppercase tracking-tight text-gray-900 dark:text-white drop-shadow-md">
                   {user?.username}'s Dashboard
                 </h1>
-                <span className="px-3.5 py-1.5 bg-cyan-950/80 border border-cyan-400/50 text-cyan-300 text-xs font-black rounded-full uppercase tracking-wider shadow-lg shadow-cyan-500/20">
+                <span className="px-3.5 py-1.5 bg-cyan-100 dark:bg-cyan-950/80 border border-cyan-300 dark:border-cyan-400/50 text-cyan-800 dark:text-cyan-300 text-xs font-black rounded-full uppercase tracking-wider shadow-md">
                   ⚡ Active Coder
                 </span>
               </div>
-              <p className="text-gray-300 text-sm mt-2 font-medium flex items-center gap-2">
+              <p className="text-gray-600 dark:text-gray-300 text-sm mt-2 font-medium flex items-center gap-2">
                 <span>✉️ {user?.email}</span>
-                <span className="text-gray-600">•</span>
-                <span className="text-gray-400 text-xs">Joined {user && new Date(user.created_at).toLocaleDateString()}</span>
+                <span className="text-gray-400 dark:text-gray-600">•</span>
+                <span className="text-gray-500 dark:text-gray-400 text-xs">Joined {user && new Date(user.created_at).toLocaleDateString()}</span>
               </p>
             </div>
           </div>
 
-          {/* Overall Progress Dark Glass Card */}
-          <div className="w-full md:w-80 bg-gray-950/60 border border-white/15 p-5 rounded-2xl flex flex-col gap-2.5 shadow-xl backdrop-blur-md relative z-10 hover:border-cyan-400/50 transition-colors">
-            <div className="flex justify-between text-xs font-black text-gray-300 uppercase tracking-widest">
+          {/* Overall Progress Glass Card */}
+          <div className="w-full md:w-80 bg-gray-100/50 dark:bg-gray-950/60 border border-gray-200/50 dark:border-white/15 p-5 rounded-2xl flex flex-col gap-2.5 shadow-xl backdrop-blur-md relative z-10 hover:border-cyan-400/50 transition-colors">
+            <div className="flex justify-between text-xs font-black text-gray-700 dark:text-gray-300 uppercase tracking-widest">
               <span className="flex items-center gap-1.5">
                 <span className="w-2 h-2 rounded-full bg-cyan-400" />
                 Overall Progress
               </span>
-              <span className="text-cyan-300 font-black text-sm">{progressPercentage}%</span>
+              <span className="text-cyan-600 dark:text-cyan-300 font-black text-sm">{progressPercentage}%</span>
             </div>
-            <div className="w-full h-3.5 bg-gray-900/90 rounded-full overflow-hidden p-[2px] border border-gray-800 shadow-inner">
+            <div className="w-full h-3.5 bg-gray-200 dark:bg-gray-900/90 rounded-full overflow-hidden p-[2px] border border-gray-300 dark:border-gray-800 shadow-inner">
               <div
                 className="h-full bg-gradient-to-r from-cyan-400 via-brand-500 to-purple-500 rounded-full transition-all duration-1000 ease-out shadow-lg shadow-cyan-500/50"
                 style={{ width: `${progressPercentage}%` }}
               />
             </div>
-            <div className="flex justify-between text-[11px] font-bold text-gray-400 uppercase tracking-wider">
+            <div className="flex justify-between text-[11px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
               <span>{solvedCount} solved</span>
               <span>{totalProblems} total problems</span>
             </div>
           </div>
         </div>
 
-        {/* ── 4-Card Metric Grid with Vibrant Accents & Glass Depth ── */}
+        {/* ── 4-Card Metric Grid with Glass Parity ── */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
           
           {/* Card 1: Days Logged In */}
-          <div className="relative overflow-hidden bg-gray-900/40 border border-white/15 backdrop-blur-md rounded-3xl p-6 shadow-xl hover:border-cyan-400/60 hover:-translate-y-1.5 transition-all duration-200 ease-out group transform-gpu will-change-transform">
+          <div className="relative overflow-hidden glass-card p-6 shadow-lg hover:shadow-xl hover:-translate-y-1.5 transition-all duration-300 ease-out group transform-gpu will-change-transform">
             <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-cyan-400 to-blue-500" />
             <div className="flex items-center justify-between mb-4">
-              <span className="text-xs text-gray-400 font-extrabold uppercase tracking-wider">Days Logged In</span>
+              <span className="text-xs text-gray-500 dark:text-gray-400 font-extrabold uppercase tracking-wider">Days Logged In</span>
               <span className="text-2xl group-hover:scale-115 transition-transform duration-200">📅</span>
             </div>
-            <div className="text-3xl font-black text-white group-hover:text-cyan-300 transition-colors">
-              {user?.login_days} <span className="text-sm font-bold text-gray-400">{user?.login_days === 1 ? 'Day' : 'Days'}</span>
+            <div className="text-3xl font-black text-gray-900 dark:text-white group-hover:text-cyan-600 dark:group-hover:text-cyan-300 transition-colors">
+              {user?.login_days} <span className="text-sm font-bold text-gray-500 dark:text-gray-400">{user?.login_days === 1 ? 'Day' : 'Days'}</span>
             </div>
-            <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider mt-3">Platform activity record</p>
+            <p className="text-[10px] text-gray-500 dark:text-gray-400 font-bold uppercase tracking-wider mt-3">Platform activity record</p>
           </div>
 
           {/* Card 2: Days Coded */}
-          <div className="relative overflow-hidden bg-gray-900/40 border border-white/15 backdrop-blur-md rounded-3xl p-6 shadow-xl hover:border-purple-400/60 hover:-translate-y-1.5 transition-all duration-200 ease-out group transform-gpu will-change-transform">
+          <div className="relative overflow-hidden glass-card p-6 shadow-lg hover:shadow-xl hover:-translate-y-1.5 transition-all duration-300 ease-out group transform-gpu will-change-transform">
             <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-purple-400 to-pink-500" />
             <div className="flex items-center justify-between mb-4">
-              <span className="text-xs text-gray-400 font-extrabold uppercase tracking-wider">Days Coded</span>
+              <span className="text-xs text-gray-500 dark:text-gray-400 font-extrabold uppercase tracking-wider">Days Coded</span>
               <span className="text-2xl group-hover:scale-115 transition-transform duration-200">💻</span>
             </div>
-            <div className="text-3xl font-black text-white group-hover:text-purple-300 transition-colors">
-              {user?.coding_days} <span className="text-sm font-bold text-gray-400">{user?.coding_days === 1 ? 'Day' : 'Days'}</span>
+            <div className="text-3xl font-black text-gray-900 dark:text-white group-hover:text-purple-600 dark:group-hover:text-purple-300 transition-colors">
+              {user?.coding_days} <span className="text-sm font-bold text-gray-500 dark:text-gray-400">{user?.coding_days === 1 ? 'Day' : 'Days'}</span>
             </div>
-            <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider mt-3">Active problem solving</p>
+            <p className="text-[10px] text-gray-500 dark:text-gray-400 font-bold uppercase tracking-wider mt-3">Active problem solving</p>
           </div>
 
           {/* Card 3: Practice Count */}
-          <div className="relative overflow-hidden bg-gray-900/40 border border-white/15 backdrop-blur-md rounded-3xl p-6 shadow-xl hover:border-amber-400/60 hover:-translate-y-1.5 transition-all duration-200 ease-out group transform-gpu will-change-transform">
+          <div className="relative overflow-hidden glass-card p-6 shadow-lg hover:shadow-xl hover:-translate-y-1.5 transition-all duration-300 ease-out group transform-gpu will-change-transform">
             <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-amber-400 to-orange-500" />
             <div className="flex items-center justify-between mb-4">
-              <span className="text-xs text-gray-400 font-extrabold uppercase tracking-wider">Practice Count</span>
+              <span className="text-xs text-gray-500 dark:text-gray-400 font-extrabold uppercase tracking-wider">Practice Count</span>
               <span className="text-2xl group-hover:scale-115 transition-transform duration-200">🚀</span>
             </div>
-            <div className="text-3xl font-black text-white group-hover:text-amber-300 transition-colors">
-              {user?.practice_count} <span className="text-sm font-bold text-gray-400">submissions</span>
+            <div className="text-3xl font-black text-gray-900 dark:text-white group-hover:text-amber-600 dark:group-hover:text-amber-300 transition-colors">
+              {user?.practice_count} <span className="text-sm font-bold text-gray-500 dark:text-gray-400">submissions</span>
             </div>
-            <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider mt-3">Total code runs</p>
+            <p className="text-[10px] text-gray-500 dark:text-gray-400 font-bold uppercase tracking-wider mt-3">Total code runs</p>
           </div>
 
           {/* Card 4: Submissions Accepted */}
-          <div className="relative overflow-hidden bg-gray-900/40 border border-white/15 backdrop-blur-md rounded-3xl p-6 shadow-xl hover:border-emerald-400/60 hover:-translate-y-1.5 transition-all duration-200 ease-out group transform-gpu will-change-transform">
+          <div className="relative overflow-hidden glass-card p-6 shadow-lg hover:shadow-xl hover:-translate-y-1.5 transition-all duration-300 ease-out group transform-gpu will-change-transform">
             <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-emerald-400 to-teal-500" />
             <div className="flex items-center justify-between mb-4">
-              <span className="text-xs text-gray-400 font-extrabold uppercase tracking-wider">Accepted Codes</span>
+              <span className="text-xs text-gray-500 dark:text-gray-400 font-extrabold uppercase tracking-wider">Accepted Codes</span>
               <span className="text-2xl group-hover:scale-115 transition-transform duration-200">🏆</span>
             </div>
-            <div className="text-3xl font-black text-emerald-400 group-hover:text-emerald-300 transition-colors">
-              {acceptedCount} <span className="text-sm font-bold text-emerald-500/80">passed</span>
+            <div className="text-3xl font-black text-emerald-600 dark:text-emerald-400 group-hover:text-emerald-500 dark:group-hover:text-emerald-300 transition-colors">
+              {acceptedCount} <span className="text-sm font-bold text-emerald-700/80 dark:text-emerald-400/80">passed</span>
             </div>
-            <p className="text-[10px] text-emerald-400/80 font-bold uppercase tracking-wider mt-3">Successful solutions</p>
+            <p className="text-[10px] text-emerald-700/80 dark:text-emerald-400/80 font-bold uppercase tracking-wider mt-3">Successful solutions</p>
           </div>
 
         </div>
 
-        {/* ── Ultra-Translucent Glass Table Container (No Flashing Overlay) ── */}
-        <div className="relative overflow-hidden bg-gray-950/15 border border-white/20 rounded-3xl p-7 shadow-[0_30px_70px_rgba(0,0,0,0.85)] backdrop-blur-md transform-gpu hover:shadow-[0_30px_70px_rgba(6,182,212,0.15)] transition-shadow duration-500">
+        {/* ── Table Container (Matching Landing Page glass-panel) ── */}
+        <div className="glass-panel p-7 shadow-[0_20px_50px_rgba(0,0,0,0.05)] dark:shadow-[0_30px_70px_rgba(0,0,0,0.6)] relative overflow-hidden transform-gpu">
           
-          {/* Subtle Ambient Glow Accents directly behind translucent table */}
-          <div 
-            className="absolute -top-24 -right-24 w-80 h-80 rounded-full pointer-events-none opacity-60"
-            style={{ background: 'radial-gradient(circle, rgba(6, 182, 212, 0.25) 0%, transparent 70%)' }}
-          />
-          <div 
-            className="absolute -bottom-24 -left-24 w-80 h-80 rounded-full pointer-events-none opacity-60"
-            style={{ background: 'radial-gradient(circle, rgba(168, 85, 247, 0.25) 0%, transparent 70%)' }}
-          />
-
           <div className="relative z-10 space-y-6">
             <div className="flex items-center justify-between">
-              <h3 className="text-2xl font-black text-white flex items-center gap-3">
+              <h3 className="text-2xl font-black text-gray-900 dark:text-white flex items-center gap-3">
                 <span className="flex items-center justify-center w-10 h-10 rounded-2xl bg-gradient-to-tr from-cyan-500 via-brand-600 to-purple-600 text-white text-base shadow-xl shadow-cyan-500/40">
                   🕒
                 </span>
-                <span className="bg-gradient-to-r from-white via-cyan-100 to-white bg-clip-text text-transparent drop-shadow-md">
+                <span className="bg-gradient-to-r from-gray-900 dark:from-white via-cyan-600 dark:via-cyan-100 to-gray-900 dark:to-white bg-clip-text text-transparent drop-shadow-md">
                   Recent Submissions
                 </span>
               </h3>
-              <span className="text-xs font-black text-cyan-300 uppercase tracking-widest bg-cyan-950/80 px-4 py-2 rounded-2xl border border-cyan-400/50 shadow-md">
+              <span className="text-xs font-black text-cyan-800 dark:text-cyan-300 uppercase tracking-widest bg-cyan-100 dark:bg-cyan-950/80 px-4 py-2 rounded-2xl border border-cyan-300 dark:border-cyan-400/50 shadow-md">
                 ⚡ {submissions.length} Records Total
               </span>
             </div>
 
             {submissions.length === 0 ? (
-              <div className="text-center py-14 border border-dashed border-white/20 rounded-3xl bg-gray-950/20 space-y-3 backdrop-blur-md">
+              <div className="text-center py-14 border border-dashed border-gray-200 dark:border-white/20 rounded-3xl bg-gray-50/20 dark:bg-gray-950/20 space-y-3 backdrop-blur-md">
                 <span className="text-4xl block">📥</span>
-                <p className="text-base text-gray-300 font-bold">No submissions recorded yet.</p>
-                <p className="text-xs text-gray-400">Solve problems in the workspace to build your activity history!</p>
+                <p className="text-base text-gray-900 dark:text-gray-300 font-bold">No submissions recorded yet.</p>
+                <p className="text-xs text-gray-500 dark:text-gray-400">Solve problems in the workspace to build your activity history!</p>
               </div>
             ) : (
-              <div className="overflow-x-auto rounded-2xl border border-white/20 bg-gray-950/15 backdrop-blur-md shadow-2xl">
+              <div className="glass-table overflow-x-auto">
                 <table className="w-full text-left border-collapse">
-                  <thead className="bg-gray-950/30 text-xs font-black text-cyan-200 uppercase tracking-widest border-b border-white/20 backdrop-blur-md">
+                  <thead className="text-xs font-black text-gray-600 dark:text-cyan-200 uppercase tracking-widest border-b border-white/20 dark:border-white/10">
                     <tr>
                       <th className="px-6 py-4">Submission ID</th>
                       <th className="px-6 py-4">Language</th>
@@ -254,46 +220,46 @@ export default function Profile() {
                       <th className="px-6 py-4 text-right">Action</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-white/10 text-sm text-gray-200">
+                  <tbody className="divide-y divide-white/10 text-sm text-gray-700 dark:text-gray-200">
                     {submissions.map((sub) => (
                       <tr
                         key={sub.id}
-                        className="group bg-transparent hover:bg-cyan-500/10 hover:translate-x-1 transition-all duration-200 ease-out cursor-pointer transform-gpu"
+                        className="group transition-all duration-300 ease-out cursor-pointer"
                       >
-                        <td className="px-6 py-4 font-mono font-bold text-white flex items-center gap-3">
+                        <td className="px-6 py-4 font-mono font-bold text-gray-900 dark:text-white flex items-center gap-3">
                           <span className={`w-2 h-2 rounded-full ${
                             sub.status === 'ACCEPTED'
                               ? 'bg-emerald-400 shadow-[0_0_15px_rgba(16,185,129,0.8)]'
                               : 'bg-red-500 shadow-[0_0_15px_rgba(239,68,68,0.8)]'
                           }`} />
-                          <Link to={`/submissions/${sub.id}`} className="group-hover:text-cyan-300 transition-colors flex items-center gap-1">
+                          <Link to={`/submissions/${sub.id}`} className="group-hover:text-brand-600 dark:group-hover:text-cyan-300 transition-colors flex items-center gap-1">
                             <span>#{sub.id}</span>
                           </Link>
                         </td>
-                        <td className="px-6 py-4 capitalize font-bold text-gray-300 group-hover:text-white transition-colors">
-                          <span className="px-3 py-1.5 rounded-xl bg-gray-900/80 border border-brand-400/50 text-brand-300 text-xs font-mono shadow-md">
+                        <td className="px-6 py-4 capitalize font-bold text-gray-600 dark:text-gray-300 group-hover:text-gray-900 dark:group-hover:text-white transition-colors">
+                          <span className="px-3 py-1.5 rounded-xl bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-brand-400/40 text-brand-600 dark:text-brand-300 text-xs font-mono shadow-md">
                             {sub.language}
                           </span>
                         </td>
                         <td className="px-6 py-4">
                           <span
-                            className={`px-3.5 py-1.5 text-xs font-black rounded-xl border shadow-xl transition-all group-hover:scale-105 inline-block ${
+                            className={`px-3.5 py-1.5 text-xs font-black rounded-xl border shadow-md transition-all group-hover:scale-105 inline-block ${
                               sub.status === 'ACCEPTED'
-                                ? 'bg-emerald-950/80 text-emerald-300 border-emerald-400/60 shadow-[0_0_15px_rgba(16,185,129,0.4)]'
+                                ? 'bg-emerald-50 dark:bg-emerald-950/80 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-400/60 shadow-[0_0_15px_rgba(16,185,129,0.2)]'
                                 : sub.status === 'WRONG_ANSWER'
-                                ? 'bg-red-950/80 text-red-300 border-red-400/60 shadow-[0_0_15px_rgba(239,68,68,0.4)]'
-                                : 'bg-yellow-950/80 text-yellow-300 border-yellow-400/60 shadow-[0_0_15px_rgba(245,158,11,0.4)]'
+                                ? 'bg-red-50 dark:bg-red-950/80 text-red-700 dark:text-red-300 border-red-200 dark:border-red-400/60 shadow-[0_0_15px_rgba(239,68,68,0.2)]'
+                                : 'bg-yellow-50 dark:bg-yellow-950/80 text-yellow-700 dark:text-yellow-300 border-yellow-200 dark:border-yellow-400/60 shadow-[0_0_15px_rgba(245,158,11,0.2)]'
                             }`}
                           >
                             {sub.status.replace('_', ' ')}
                           </span>
                         </td>
-                        <td className="px-6 py-4 font-mono font-semibold text-gray-200">
+                        <td className="px-6 py-4 font-mono font-semibold text-gray-700 dark:text-gray-200">
                           {sub.execution_time !== null ? `${sub.execution_time}ms` : 'N/A'}
                         </td>
-                        <td className="px-6 py-4 text-gray-300 text-xs font-medium">
+                        <td className="px-6 py-4 text-gray-600 dark:text-gray-300 text-xs font-medium">
                           {new Date(sub.created_at).toLocaleDateString()}{' '}
-                          <span className="text-gray-400 font-normal">
+                          <span className="text-gray-400 dark:text-gray-500 font-normal">
                             {new Date(sub.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                           </span>
                         </td>
@@ -303,7 +269,7 @@ export default function Profile() {
                               e.stopPropagation();
                               handleDeleteSubmission(sub.id);
                             }}
-                            className="px-3.5 py-1.5 bg-red-500/15 hover:bg-red-500/30 text-red-300 border border-red-500/50 rounded-xl text-xs font-black transition-all hover:scale-105 hover:shadow-[0_0_20px_rgba(239,68,68,0.6)] active:scale-95 cursor-pointer"
+                            className="px-3.5 py-1.5 bg-red-500/15 hover:bg-red-500/30 text-red-500 dark:text-red-300 border border-red-200 dark:border-red-500/50 rounded-xl text-xs font-black transition-all hover:scale-105 hover:shadow-[0_0_20px_rgba(239,68,68,0.3)] active:scale-95 cursor-pointer"
                             title="Delete this submission"
                           >
                             🗑️ Delete

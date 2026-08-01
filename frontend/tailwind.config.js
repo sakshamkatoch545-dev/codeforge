@@ -35,8 +35,8 @@ export default {
       },
       keyframes: {
         'grid-scroll': {
-          '0%': { transform: 'perspective(1000px) rotateX(60deg) translateY(0)' },
-          '100%': { transform: 'perspective(1000px) rotateX(60deg) translateY(98px)' }
+          '0%': { transform: 'perspective(1000px) rotateX(60deg) translateY(0) scale(2)' },
+          '100%': { transform: 'perspective(1000px) rotateX(60deg) translateY(49px) scale(2)' }
         },
         'float': {
           '0%, 100%': { transform: 'translateY(0)' },

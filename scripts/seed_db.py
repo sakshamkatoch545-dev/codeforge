@@ -299,17 +299,9 @@ PROBLEMS_DATA = [
 
 def seed_users(db):
     print("Seeding users...")
-    saksham_user = db.query(User).filter(User.username == "saksham").first()
-    if not saksham_user:
-        saksham_user = User(
-            email="sakshamkatoch545@gmail.com",
-            username="saksham",
-            hashed_password=get_password_hash("saksham@123"),
-            is_active=True,
-            is_superuser=True  # Making superuser since it's his platform
-        )
-        db.add(saksham_user)
-        db.commit()
+    # No hardcoded users - users should register their own accounts via the API
+    # This function is kept for future extensibility (e.g., demo users, test users)
+    pass
 
 def seed_problems(db):
     print("Refreshing problems table with distinct questions...")

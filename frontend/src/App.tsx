@@ -9,8 +9,6 @@ import Home from './pages/Home'
 import SubmissionResult from './pages/SubmissionResult'
 import { api, UserInfo } from './api'
 import Navbar from './components/Navbar'
-import Footer from './components/Footer'
-
 import BackgroundAnimation from './components/BackgroundAnimation'
 
 function App() {
@@ -42,8 +40,6 @@ function App() {
     navigate('/login')
   }
 
-  const isProblemDetailPage = location.pathname.startsWith('/problems/') && location.pathname !== '/problems'
-
   return (
     <div className="min-h-screen flex flex-col relative bg-gray-50 dark:bg-gray-950 transition-colors duration-500">
       <BackgroundAnimation />
@@ -60,8 +56,6 @@ function App() {
           <Route path="/profile" element={<Profile />} />
         </Routes>
       </main>
-      
-      {!isProblemDetailPage && <Footer />}
     </div>
   )
 }

@@ -301,25 +301,6 @@ export default function Login() {
             />
           </div>
 
-          {/* Quick-fill hint — Sign In only */}
-          {isLogin && (
-            <div className="bg-brand-950/40 border border-brand-500/30 rounded-xl px-4 py-3 flex items-center justify-between gap-3">
-              <div>
-                <p className="text-[10px] font-black text-brand-300 uppercase tracking-wider mb-0.5">Your Account</p>
-                <p className="text-xs text-gray-300 font-semibold">
-                  <span className="text-white font-black">saksham</span> / <span className="text-brand-300 font-black">saksham123</span>
-                </p>
-              </div>
-              <button
-                type="button"
-                onClick={() => { setUsername('saksham'); setPassword('saksham123') }}
-                className="shrink-0 px-3 py-1.5 bg-brand-600 hover:bg-brand-500 text-white text-[10px] font-black rounded-lg transition cursor-pointer"
-              >
-                Auto-fill ↗
-              </button>
-            </div>
-          )}
-
           {/* Submit */}
           <button
             type="submit"
