@@ -1,235 +1,243 @@
-import { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { api, LeaderboardUser } from '../api'
 
 export default function Leaderboard() {
-  const navigate = useNavigate()
   const [users, setUsers] = useState<LeaderboardUser[]>([])
-  const [selectedUser, setSelectedUser] = useState<LeaderboardUser | null>(null)
   const [loading, setLoading] = useState(true)
-  const [notLoggedIn, setNotLoggedIn] = useState(false)
+  const [error, setError] = useState('')
+  const [selectedUser, setSelectedUser] = useState<LeaderboardUser | null>(null)
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(true)
 
   useEffect(() => {
-    async function fetchLeaderboard() {
+    const token = localStorage.getItem('codeforge_token')
+    if (!token) {
+      setIsAuthenticated(false)
+      setLoading(false)
+      return
+    }
+
+    async function loadLeaderboard() {
       try {
         const data = await api.getLeaderboard()
         setUsers(data)
-      } catch (err: any) {
-        // If backend returns 401 or user is not authenticated, show login prompt
-        if (!localStorage.getItem('codeforge_token') || err?.response?.status === 401) {
-          setNotLoggedIn(true)
-        }
-        // Otherwise silently show empty leaderboard — no error text
+      } catch (err) {
+        setError('Failed to load global rankings.')
       } finally {
         setLoading(false)
       }
     }
-    fetchLeaderboard()
+    loadLeaderboard()
   }, [])
 
   if (loading) {
     return (
-      <div className="max-w-5xl mx-auto p-6 mt-8 text-center text-gray-500">
-        Loading leaderboard...
+      <div className="flex items-center justify-center min-h-[calc(100vh-4rem)] bg-transparent text-white">
+        <div className="flex flex-col items-center gap-4 bg-gray-950/60 border border-brand-500/40 p-8 rounded-3xl backdrop-blur-2xl shadow-2xl animate-pulse">
+          <span className="animate-spin h-10 w-10 border-4 border-cyan-400 border-t-transparent rounded-full" />
+          <p className="text-cyan-300 font-black tracking-wider uppercase text-sm">Loading Global Rankings…</p>
+        </div>
       </div>
     )
   }
 
-  if (notLoggedIn) {
+  if (!isAuthenticated) {
     return (
-      <div className="relative min-h-[calc(100vh-4rem)]">
-        <div className="relative z-10 max-w-5xl mx-auto p-6 mt-16 flex flex-col items-center gap-6">
-          <h1 className="text-4xl font-black uppercase tracking-tighter text-gray-900 dark:text-white flex items-center gap-3">
-            🏆 Global Leaderboard
-          </h1>
-          <div className="glass-table w-full max-w-md text-center p-10 flex flex-col items-center gap-5">
-            <div className="text-5xl">🔒</div>
-            <div>
-              <h2 className="text-xl font-black text-gray-900 dark:text-white">Login to View Rankings</h2>
-              <p className="text-gray-500 dark:text-gray-400 text-sm mt-2">
-                Sign in or create an account to see the global leaderboard and compete with other coders.
-              </p>
-            </div>
-            <div className="flex gap-3 w-full">
-              <button
-                onClick={() => navigate('/login')}
-                className="flex-1 py-3 px-4 bg-brand-600 hover:bg-brand-700 text-white rounded-xl text-sm font-black transition shadow-lg cursor-pointer"
-              >
-                Sign In
-              </button>
-              <button
-                onClick={() => navigate('/login')}
-                className="flex-1 py-3 px-4 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-800 dark:text-gray-200 border border-gray-200 dark:border-gray-700 rounded-xl text-sm font-bold transition cursor-pointer"
-              >
-                Register
-              </button>
-            </div>
+      <div className="flex items-center justify-center min-h-[calc(100vh-4rem)] p-6 bg-transparent text-white">
+        <div className="bg-gray-950/80 border border-white/20 p-8 rounded-3xl max-w-md w-full text-center space-y-6 shadow-2xl backdrop-blur-2xl animate-modal-in relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-48 h-48 bg-brand-500/20 rounded-full blur-3xl pointer-events-none" />
+          <div className="w-16 h-16 rounded-full bg-brand-500/20 text-brand-300 border border-brand-400/30 flex items-center justify-center text-3xl mx-auto shadow-inner">
+            🔒
           </div>
+          <div>
+            <h2 className="text-2xl font-black text-white">Login Required</h2>
+            <p className="text-gray-300 text-sm mt-2">
+              Please sign in or register an account to view global rankings, scores, and compete with other coders.
+            </p>
+          </div>
+          <div className="flex gap-4">
+            <Link
+              to="/login"
+              className="flex-1 py-3 px-4 bg-gradient-to-r from-brand-600 to-indigo-600 hover:from-brand-500 hover:to-indigo-500 text-white font-black rounded-xl text-sm transition-all shadow-lg hover:scale-105 active:scale-95"
+            >
+              Sign In
+            </Link>
+            <Link
+              to="/login?tab=register"
+              className="flex-1 py-3 px-4 bg-gray-900 hover:bg-gray-800 text-gray-200 border border-gray-700 font-black rounded-xl text-sm transition-all shadow-lg hover:scale-105 active:scale-95"
+            >
+              Register
+            </Link>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="flex items-center justify-center min-h-[calc(100vh-4rem)] p-6 bg-transparent text-white">
+        <div className="bg-red-950/80 border border-red-500/50 p-8 rounded-3xl text-red-300 font-bold shadow-2xl text-center space-y-3 max-w-md backdrop-blur-2xl">
+          <span className="text-4xl block">⚠️</span>
+          <p>{error}</p>
         </div>
       </div>
     )
   }
 
   return (
-    <div className="relative min-h-[calc(100vh-4rem)]">
+    <div className="relative min-h-[calc(100vh-4rem)] text-white pb-20 overflow-hidden">
+      
+      {/* Background Glow Blobs */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
+        <div className="absolute top-1/4 -left-20 w-96 h-96 bg-cyan-500/25 rounded-full filter blur-3xl opacity-80 animate-blob" />
+        <div className="absolute top-1/3 -right-20 w-96 h-96 bg-purple-500/25 rounded-full filter blur-3xl opacity-80 animate-blob animation-delay-2000" />
+      </div>
 
-      <div className="relative z-10 max-w-5xl mx-auto p-6 mt-16">
-        <div className="flex items-center justify-between mb-8">
+      <div className="relative z-10 max-w-5xl mx-auto p-6 mt-12 space-y-8 animate-fade-in">
+        <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-4xl font-black uppercase tracking-tighter text-gray-900 dark:text-white flex items-center gap-3">
+            <h1 className="text-4xl font-black uppercase tracking-tight text-white flex items-center gap-3 drop-shadow-md">
               🏆 Global Leaderboard
             </h1>
-            <p className="text-gray-500 dark:text-gray-400 mt-1">
-              Top programmers ranked by solved problems and score points.
+            <p className="text-gray-300 text-sm mt-1.5 font-medium">
+              Top programmers ranked by solved problems, score points, and accepted solutions.
             </p>
           </div>
         </div>
 
-        <div className="glass-table animate-float">
-          <table className="w-full text-left border-collapse">
-            <thead>
-              <tr>
-              <th className="px-6 py-4">Rank</th>
-              <th className="px-6 py-4">User</th>
-              <th className="px-6 py-4 text-center">Problems Solved</th>
-              <th className="px-6 py-4 text-center">Score Points</th>
-              <th className="px-6 py-4 text-right">Accepted Submissions</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-100 dark:divide-gray-700/50 text-sm">
-            {users.map((user) => (
-              <tr
-                key={user.id}
-                onClick={() => setSelectedUser(user)}
-                className="hover:bg-gray-50/80 dark:hover:bg-gray-700/40 transition-all duration-200 cursor-pointer active:scale-[0.995]"
-                title="Click to view detailed coding statistics"
-              >
-                <td className="px-6 py-4 font-bold">
-                  {user.rank === 1 ? (
-                    <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-yellow-100 text-yellow-700 font-extrabold text-base shadow-sm animate-bounce-subtle">
-                      🥇 1
-                    </span>
-                  ) : user.rank === 2 ? (
-                    <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-gray-200 text-gray-700 font-extrabold text-base shadow-sm">
-                      🥈 2
-                    </span>
-                  ) : user.rank === 3 ? (
-                    <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-amber-100 text-amber-800 font-extrabold text-base shadow-sm">
-                      🥉 3
-                    </span>
-                  ) : (
-                    <span className="text-gray-500 dark:text-gray-400 pl-2">#{user.rank}</span>
-                  )}
-                </td>
-                <td className="px-6 py-4 font-semibold text-gray-900 dark:text-white flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-full bg-brand-600 text-white flex items-center justify-center font-bold text-xs">
-                    {user.username.charAt(0).toUpperCase()}
-                  </div>
-                  <span>{user.username}</span>
-                </td>
-                <td className="px-6 py-4 text-center font-semibold text-brand-600 dark:text-brand-400">
-                  {user.solved_count}
-                </td>
-                <td className="px-6 py-4 text-center">
-                  <span className="px-3 py-1 bg-green-50 text-green-700 dark:bg-green-900/30 dark:text-green-300 font-bold rounded-full text-xs">
-                    {user.points} pts
-                  </span>
-                </td>
-                <td className="px-6 py-4 text-right text-gray-500 dark:text-gray-400 font-medium">
-                  {user.total_submissions}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+        {/* Floating Merged Table Container with Flash Sweep */}
+        <div className="relative overflow-hidden bg-gray-950/40 border border-white/20 rounded-3xl shadow-[0_30px_70px_rgba(0,0,0,0.8)] backdrop-blur-2xl animate-float animate-neon-glow">
+          
+          {/* Sweeping Flash Light Overlay */}
+          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent animate-flash-sweep pointer-events-none z-0" />
 
-      {/* Glassmorphism Detailed Profile Modal */}
-      {selectedUser && (
-        <div 
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm transition-opacity"
-          onClick={() => setSelectedUser(null)}
-        >
+          {/* Ambient Glowing Orbs */}
+          <div className="absolute -top-24 -right-24 w-80 h-80 bg-cyan-500/25 rounded-full blur-3xl pointer-events-none animate-pulse" />
+          <div className="absolute -bottom-24 -left-24 w-80 h-80 bg-purple-500/25 rounded-full blur-3xl pointer-events-none animate-pulse animation-delay-2000" />
+
+          <div className="relative z-10">
+            <table className="w-full text-left border-collapse">
+              <thead className="bg-gradient-to-r from-cyan-950/60 via-brand-950/50 to-purple-950/60 text-xs font-black text-cyan-200 uppercase tracking-widest border-b border-white/15 backdrop-blur-2xl">
+                <tr>
+                  <th className="px-6 py-4">Rank</th>
+                  <th className="px-6 py-4">User</th>
+                  <th className="px-6 py-4 text-center">Problems Solved</th>
+                  <th className="px-6 py-4 text-center">Score Points</th>
+                  <th className="px-6 py-4 text-right">Accepted Submissions</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-white/10 text-sm text-gray-200">
+                {users.map((user) => (
+                  <tr
+                    key={user.id}
+                    onClick={() => setSelectedUser(user)}
+                    className="group bg-gray-950/30 hover:bg-gradient-to-r hover:from-cyan-500/20 hover:via-purple-500/20 hover:to-brand-500/20 hover:scale-[1.005] hover:shadow-[0_0_25px_rgba(6,182,212,0.35)] transition-all duration-300 cursor-pointer"
+                    title="Click to view detailed coding statistics"
+                  >
+                    <td className="px-6 py-4 font-bold">
+                      {user.rank === 1 ? (
+                        <span className="inline-flex items-center justify-center px-3 py-1 rounded-xl bg-yellow-500/20 text-yellow-300 border border-yellow-400/40 font-black text-sm shadow-[0_0_15px_rgba(234,179,8,0.4)] animate-bounce-subtle">
+                          🥇 #1
+                        </span>
+                      ) : user.rank === 2 ? (
+                        <span className="inline-flex items-center justify-center px-3 py-1 rounded-xl bg-gray-300/20 text-gray-200 border border-gray-300/40 font-black text-sm shadow-sm">
+                          🥈 #2
+                        </span>
+                      ) : user.rank === 3 ? (
+                        <span className="inline-flex items-center justify-center px-3 py-1 rounded-xl bg-amber-600/20 text-amber-300 border border-amber-500/40 font-black text-sm shadow-sm">
+                          🥉 #3
+                        </span>
+                      ) : (
+                        <span className="text-gray-400 font-bold pl-2">#{user.rank}</span>
+                      )}
+                    </td>
+                    <td className="px-6 py-4 font-semibold text-white flex items-center gap-3">
+                      <div className="w-9 h-9 rounded-full bg-gradient-to-tr from-cyan-500 to-purple-600 text-white flex items-center justify-center font-black text-sm shadow-md ring-2 ring-cyan-400/40">
+                        {user.username.charAt(0).toUpperCase()}
+                      </div>
+                      <span className="group-hover:text-cyan-300 transition-colors font-bold text-base">{user.username}</span>
+                    </td>
+                    <td className="px-6 py-4 text-center font-black text-cyan-300 text-base">
+                      {user.solved_count}
+                    </td>
+                    <td className="px-6 py-4 text-center">
+                      <span className="px-3.5 py-1.5 bg-emerald-950/80 text-emerald-300 border border-emerald-400/50 font-black rounded-xl text-xs shadow-[0_0_15px_rgba(16,185,129,0.3)] inline-block group-hover:scale-110 transition-transform">
+                        {user.points} pts
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 text-right text-gray-300 font-bold font-mono">
+                      {user.total_submissions}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        {/* Detailed Profile Modal */}
+        {selectedUser && (
           <div 
-            className="bg-white/95 dark:bg-gray-800/95 border border-white/20 dark:border-gray-700/50 rounded-3xl p-8 max-w-md w-full shadow-2xl relative overflow-hidden backdrop-blur-xl animate-modal-in"
-            onClick={(e) => e.stopPropagation()}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-md transition-opacity"
+            onClick={() => setSelectedUser(null)}
           >
-            {/* Glowing background highlights */}
-            <div className="absolute -top-10 -right-10 w-32 h-32 bg-brand-500/20 rounded-full blur-2xl pointer-events-none"></div>
-            <div className="absolute -bottom-10 -left-10 w-32 h-32 bg-indigo-500/20 rounded-full blur-2xl pointer-events-none"></div>
-
-            {/* Close button */}
-            <button
-              onClick={() => setSelectedUser(null)}
-              className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700/50"
+            <div 
+              className="bg-gray-950/90 border border-white/20 rounded-3xl p-8 max-w-md w-full shadow-2xl relative overflow-hidden backdrop-blur-2xl animate-modal-in text-white"
+              onClick={(e) => e.stopPropagation()}
             >
-              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
+              <div className="absolute top-0 right-0 w-32 h-32 bg-cyan-500/20 rounded-full blur-2xl pointer-events-none" />
+              <div className="absolute bottom-0 left-0 w-32 h-32 bg-purple-500/20 rounded-full blur-2xl pointer-events-none" />
 
-            {/* Header info */}
-            <div className="flex flex-col items-center mb-6">
-              <div className="w-20 h-20 rounded-full bg-gradient-to-tr from-brand-600 to-indigo-500 text-white flex items-center justify-center font-black text-3xl shadow-lg mb-4 animate-bounce-subtle">
-                {selectedUser.username.charAt(0).toUpperCase()}
-              </div>
-              <h3 className="text-2xl font-black text-gray-900 dark:text-white">
-                {selectedUser.username}
-              </h3>
-              <span className="text-sm font-semibold text-brand-600 dark:text-brand-400 mt-1 flex items-center gap-1.5">
-                {selectedUser.rank === 1 ? '🥇' : selectedUser.rank === 2 ? '🥈' : selectedUser.rank === 3 ? '🥉' : '🏆'} Rank #{selectedUser.rank}
-              </span>
-            </div>
-
-            {/* Grid of stats */}
-            <div className="grid grid-cols-2 gap-4 mb-6">
-              <div className="bg-gray-50/50 dark:bg-gray-900/40 p-4 rounded-2xl border border-gray-100 dark:border-gray-800 flex flex-col items-center text-center">
-                <span className="text-2xl mb-1" role="img" aria-label="calendar">📅</span>
-                <span className="text-xs text-gray-400 dark:text-gray-500 font-medium">Days Logged In</span>
-                <span className="text-base font-black text-gray-900 dark:text-white mt-1">
-                  {selectedUser.login_days} {selectedUser.login_days === 1 ? 'Day' : 'Days'}
-                </span>
+              <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center gap-4">
+                  <div className="w-14 h-14 rounded-full bg-gradient-to-tr from-cyan-500 to-purple-600 text-white flex items-center justify-center font-black text-2xl shadow-xl ring-4 ring-cyan-400/40">
+                    {selectedUser.username.charAt(0).toUpperCase()}
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-black">{selectedUser.username}</h3>
+                    <span className="text-xs text-cyan-300 font-bold uppercase tracking-wider">Rank #{selectedUser.rank} Coder</span>
+                  </div>
+                </div>
+                <button 
+                  onClick={() => setSelectedUser(null)}
+                  className="text-gray-400 hover:text-white text-xl font-bold bg-gray-900/80 hover:bg-gray-800 w-8 h-8 rounded-full flex items-center justify-center transition-colors"
+                >
+                  ✕
+                </button>
               </div>
 
-              <div className="bg-gray-50/50 dark:bg-gray-900/40 p-4 rounded-2xl border border-gray-100 dark:border-gray-800 flex flex-col items-center text-center">
-                <span className="text-2xl mb-1" role="img" aria-label="code">💻</span>
-                <span className="text-xs text-gray-400 dark:text-gray-500 font-medium">Days Coded</span>
-                <span className="text-base font-black text-gray-900 dark:text-white mt-1">
-                  {selectedUser.coding_days} {selectedUser.coding_days === 1 ? 'Day' : 'Days'}
-                </span>
+              <div className="grid grid-cols-2 gap-4 my-6">
+                <div className="bg-gray-900/80 border border-gray-800 p-4 rounded-2xl text-center">
+                  <span className="text-xs text-gray-400 font-bold uppercase tracking-wider block mb-1">Problems Solved</span>
+                  <span className="text-2xl font-black text-cyan-400">{selectedUser.solved_count}</span>
+                </div>
+                <div className="bg-gray-900/80 border border-gray-800 p-4 rounded-2xl text-center">
+                  <span className="text-xs text-gray-400 font-bold uppercase tracking-wider block mb-1">Score Points</span>
+                  <span className="text-2xl font-black text-emerald-400">{selectedUser.points} pts</span>
+                </div>
+                <div className="bg-gray-900/80 border border-gray-800 p-4 rounded-2xl text-center">
+                  <span className="text-xs text-gray-400 font-bold uppercase tracking-wider block mb-1">Days Logged In</span>
+                  <span className="text-2xl font-black text-purple-400">{selectedUser.login_days} Days</span>
+                </div>
+                <div className="bg-gray-900/80 border border-gray-800 p-4 rounded-2xl text-center">
+                  <span className="text-xs text-gray-400 font-bold uppercase tracking-wider block mb-1">Days Coded</span>
+                  <span className="text-2xl font-black text-amber-400">{selectedUser.coding_days} Days</span>
+                </div>
               </div>
 
-              <div className="bg-gray-50/50 dark:bg-gray-900/40 p-4 rounded-2xl border border-gray-100 dark:border-gray-800 flex flex-col items-center text-center">
-                <span className="text-2xl mb-1" role="img" aria-label="rocket">🚀</span>
-                <span className="text-xs text-gray-400 dark:text-gray-500 font-medium">Practice Submissions</span>
-                <span className="text-base font-black text-gray-900 dark:text-white mt-1">
-                  {selectedUser.practice_count}
-                </span>
-              </div>
-
-              <div className="bg-gray-50/50 dark:bg-gray-900/40 p-4 rounded-2xl border border-gray-100 dark:border-gray-800 flex flex-col items-center text-center">
-                <span className="text-2xl mb-1" role="img" aria-label="check">✅</span>
-                <span className="text-xs text-gray-400 dark:text-gray-500 font-medium">Accepted Submissions</span>
-                <span className="text-base font-black text-gray-900 dark:text-white mt-1">
-                  {selectedUser.total_submissions}
-                </span>
-              </div>
-            </div>
-
-            {/* Overall Score summary */}
-            <div className="bg-gradient-to-r from-brand-500/10 to-indigo-500/10 p-5 rounded-2xl border border-brand-500/20 text-center">
-              <div className="text-xs text-brand-600 dark:text-brand-400 font-bold uppercase tracking-wider">
-                Overall Performance
-              </div>
-              <div className="text-xl font-black text-gray-900 dark:text-white mt-1">
-                {selectedUser.solved_count} solved • {selectedUser.points} pts
+              <div className="text-center pt-2">
+                <button
+                  onClick={() => setSelectedUser(null)}
+                  className="w-full py-3 bg-gradient-to-r from-cyan-500 to-purple-600 hover:from-cyan-400 hover:to-purple-500 text-white font-black rounded-xl text-sm transition-all shadow-lg hover:scale-[1.02] active:scale-98"
+                >
+                  Close Stats
+                </button>
               </div>
             </div>
           </div>
-        </div>
-      )}
-
+        )}
+      </div>
     </div>
-  </div>
   )
 }
