@@ -120,6 +120,31 @@ export default function Login() {
           </div>
         )}
 
+        {/* Quick Login Hint – only shown in Sign In mode */}
+        {isLogin && (
+          <div className="bg-brand-950/40 border border-brand-500/30 rounded-xl px-4 py-3 flex items-center justify-between gap-3">
+            <div>
+              <p className="text-[10px] font-black text-brand-300 uppercase tracking-wider mb-0.5">Your Account</p>
+              <p className="text-xs text-gray-300 font-semibold">
+                Username: <span className="text-white font-black">saksham</span> &nbsp;|&nbsp;
+                Email: <span className="text-white font-black">sakshamkatoch545@gmail.com</span>
+              </p>
+              <p className="text-[10px] text-gray-500 mt-0.5 font-medium">Password was reset to: <span className="text-brand-300 font-black">saksham123</span></p>
+            </div>
+            <button
+              type="button"
+              onClick={() => {
+                (document.querySelector('input[autocomplete="username"]') as HTMLInputElement)!.value = 'saksham'
+                setUsername('saksham')
+                setPassword('saksham123')
+              }}
+              className="shrink-0 px-3 py-1.5 bg-brand-600 hover:bg-brand-500 text-white text-[10px] font-black rounded-lg transition cursor-pointer"
+            >
+              Auto-fill ↗
+            </button>
+          </div>
+        )}
+
         {/* Social Login Buttons */}
         <div className="grid grid-cols-2 gap-3 pt-1">
           <button
