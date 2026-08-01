@@ -142,7 +142,7 @@ export default function Leaderboard() {
                   >
                     <td className="px-6 py-4 font-bold">
                       {user.rank === 1 ? (
-                        <span className="inline-flex items-center justify-center px-3 py-1 rounded-xl bg-yellow-500/20 text-yellow-300 border border-yellow-400/40 font-black text-sm shadow-[0_0_15px_rgba(234,179,8,0.4)] animate-bounce-subtle">
+                        <span className="inline-flex items-center justify-center px-3 py-1 rounded-xl bg-yellow-500/20 text-yellow-300 border border-yellow-400/40 font-black text-sm shadow-[0_0_15px_rgba(234,179,8,0.4)]">
                           🥇 #1
                         </span>
                       ) : user.rank === 2 ? (

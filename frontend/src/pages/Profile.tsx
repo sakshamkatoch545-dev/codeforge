@@ -106,9 +106,9 @@ export default function Profile() {
           
           <div className="flex items-center gap-6 relative z-10">
             {/* Glowing Avatar Ring */}
-            <div className="relative flex items-center justify-center w-24 h-24 rounded-full bg-gradient-to-tr from-cyan-500 via-brand-600 to-purple-600 ring-4 ring-cyan-400/50 shadow-2xl shadow-cyan-500/50 text-white font-black text-4xl shrink-0 animate-bounce-subtle transform-gpu">
+            <div className="relative flex items-center justify-center w-24 h-24 rounded-full bg-gradient-to-tr from-cyan-500 via-brand-600 to-purple-600 ring-4 ring-cyan-400/50 shadow-2xl shadow-cyan-500/50 text-white font-black text-4xl shrink-0 transform-gpu">
               {user?.username.charAt(0).toUpperCase()}
-              <span className="absolute bottom-0 right-0 w-6 h-6 rounded-full bg-emerald-400 ring-4 ring-gray-950 shadow-md animate-pulse" title="Online" />
+              <span className="absolute bottom-0 right-0 w-6 h-6 rounded-full bg-emerald-400 ring-4 ring-gray-950 shadow-md" title="Online" />
             </div>
 
             <div>
@@ -132,7 +132,7 @@ export default function Profile() {
           <div className="w-full md:w-80 bg-gray-950/60 border border-white/15 p-5 rounded-2xl flex flex-col gap-2.5 shadow-xl backdrop-blur-md relative z-10 hover:border-cyan-400/50 transition-colors">
             <div className="flex justify-between text-xs font-black text-gray-300 uppercase tracking-widest">
               <span className="flex items-center gap-1.5">
-                <span className="w-2 h-2 rounded-full bg-cyan-400 animate-ping" />
+                <span className="w-2 h-2 rounded-full bg-cyan-400" />
                 Overall Progress
               </span>
               <span className="text-cyan-300 font-black text-sm">{progressPercentage}%</span>
@@ -223,7 +223,7 @@ export default function Profile() {
           <div className="relative z-10 space-y-6">
             <div className="flex items-center justify-between">
               <h3 className="text-2xl font-black text-white flex items-center gap-3">
-                <span className="flex items-center justify-center w-10 h-10 rounded-2xl bg-gradient-to-tr from-cyan-500 via-brand-600 to-purple-600 text-white text-base shadow-xl shadow-cyan-500/40 animate-pulse">
+                <span className="flex items-center justify-center w-10 h-10 rounded-2xl bg-gradient-to-tr from-cyan-500 via-brand-600 to-purple-600 text-white text-base shadow-xl shadow-cyan-500/40">
                   🕒
                 </span>
                 <span className="bg-gradient-to-r from-white via-cyan-100 to-white bg-clip-text text-transparent drop-shadow-md">
@@ -261,10 +261,10 @@ export default function Profile() {
                         className="group bg-transparent hover:bg-cyan-500/10 hover:translate-x-1 transition-all duration-200 ease-out cursor-pointer transform-gpu"
                       >
                         <td className="px-6 py-4 font-mono font-bold text-white flex items-center gap-3">
-                          <span className={`w-3 h-3 rounded-full ${
+                          <span className={`w-2 h-2 rounded-full ${
                             sub.status === 'ACCEPTED'
-                              ? 'bg-emerald-400 animate-ping shadow-[0_0_15px_rgba(16,185,129,0.8)]'
-                              : 'bg-red-500 animate-pulse shadow-[0_0_15px_rgba(239,68,68,0.8)]'
+                              ? 'bg-emerald-400 shadow-[0_0_15px_rgba(16,185,129,0.8)]'
+                              : 'bg-red-500 shadow-[0_0_15px_rgba(239,68,68,0.8)]'
                           }`} />
                           <Link to={`/submissions/${sub.id}`} className="group-hover:text-cyan-300 transition-colors flex items-center gap-1">
                             <span>#{sub.id}</span>
