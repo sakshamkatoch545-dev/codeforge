@@ -92,7 +92,7 @@ export default function Profile() {
           className="absolute bottom-10 left-1/3 w-[500px] h-[500px] rounded-full opacity-75 animate-blob animation-delay-4000 transform-gpu will-change-transform"
           style={{ background: 'radial-gradient(circle, rgba(236, 72, 153, 0.3) 0%, rgba(236, 72, 153, 0) 70%)' }}
         />
-        {/* Emerald Emerald Glow Blob */}
+        {/* Emerald Glow Blob */}
         <div 
           className="absolute top-1/2 left-[-100px] w-[450px] h-[450px] rounded-full opacity-70 animate-blob transform-gpu will-change-transform"
           style={{ background: 'radial-gradient(circle, rgba(16, 185, 129, 0.3) 0%, rgba(16, 185, 129, 0) 70%)' }}
@@ -102,11 +102,8 @@ export default function Profile() {
       <div className="relative z-10 max-w-5xl mx-auto px-6 mt-10 space-y-10 animate-fade-in">
         
         {/* ── Ultra Translucent Hero Glass Banner ── */}
-        <div className="relative overflow-hidden bg-gray-900/50 border border-white/15 rounded-3xl p-8 shadow-[0_25px_60px_rgba(0,0,0,0.8)] backdrop-blur-lg flex flex-col md:flex-row justify-between items-start md:items-center gap-6 group transform-gpu">
+        <div className="relative overflow-hidden bg-gray-900/40 border border-white/15 rounded-3xl p-8 shadow-[0_25px_60px_rgba(0,0,0,0.8)] backdrop-blur-md flex flex-col md:flex-row justify-between items-start md:items-center gap-6 group transform-gpu">
           
-          {/* Internal Sweeping Flash Light Overlay */}
-          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent animate-flash-sweep pointer-events-none" />
-
           <div className="flex items-center gap-6 relative z-10">
             {/* Glowing Avatar Ring */}
             <div className="relative flex items-center justify-center w-24 h-24 rounded-full bg-gradient-to-tr from-cyan-500 via-brand-600 to-purple-600 ring-4 ring-cyan-400/50 shadow-2xl shadow-cyan-500/50 text-white font-black text-4xl shrink-0 animate-bounce-subtle transform-gpu">
@@ -132,7 +129,7 @@ export default function Profile() {
           </div>
 
           {/* Overall Progress Dark Glass Card */}
-          <div className="w-full md:w-80 bg-gray-950/70 border border-white/15 p-5 rounded-2xl flex flex-col gap-2.5 shadow-xl backdrop-blur-md relative z-10 hover:border-cyan-400/50 transition-colors">
+          <div className="w-full md:w-80 bg-gray-950/60 border border-white/15 p-5 rounded-2xl flex flex-col gap-2.5 shadow-xl backdrop-blur-md relative z-10 hover:border-cyan-400/50 transition-colors">
             <div className="flex justify-between text-xs font-black text-gray-300 uppercase tracking-widest">
               <span className="flex items-center gap-1.5">
                 <span className="w-2 h-2 rounded-full bg-cyan-400 animate-ping" />
@@ -157,7 +154,7 @@ export default function Profile() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
           
           {/* Card 1: Days Logged In */}
-          <div className="relative overflow-hidden bg-gray-900/50 border border-white/15 backdrop-blur-lg rounded-3xl p-6 shadow-xl hover:border-cyan-400/60 hover:-translate-y-1.5 transition-all duration-200 ease-out group transform-gpu will-change-transform">
+          <div className="relative overflow-hidden bg-gray-900/40 border border-white/15 backdrop-blur-md rounded-3xl p-6 shadow-xl hover:border-cyan-400/60 hover:-translate-y-1.5 transition-all duration-200 ease-out group transform-gpu will-change-transform">
             <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-cyan-400 to-blue-500" />
             <div className="flex items-center justify-between mb-4">
               <span className="text-xs text-gray-400 font-extrabold uppercase tracking-wider">Days Logged In</span>
@@ -170,7 +167,7 @@ export default function Profile() {
           </div>
 
           {/* Card 2: Days Coded */}
-          <div className="relative overflow-hidden bg-gray-900/50 border border-white/15 backdrop-blur-lg rounded-3xl p-6 shadow-xl hover:border-purple-400/60 hover:-translate-y-1.5 transition-all duration-200 ease-out group transform-gpu will-change-transform">
+          <div className="relative overflow-hidden bg-gray-900/40 border border-white/15 backdrop-blur-md rounded-3xl p-6 shadow-xl hover:border-purple-400/60 hover:-translate-y-1.5 transition-all duration-200 ease-out group transform-gpu will-change-transform">
             <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-purple-400 to-pink-500" />
             <div className="flex items-center justify-between mb-4">
               <span className="text-xs text-gray-400 font-extrabold uppercase tracking-wider">Days Coded</span>
@@ -183,7 +180,7 @@ export default function Profile() {
           </div>
 
           {/* Card 3: Practice Count */}
-          <div className="relative overflow-hidden bg-gray-900/50 border border-white/15 backdrop-blur-lg rounded-3xl p-6 shadow-xl hover:border-amber-400/60 hover:-translate-y-1.5 transition-all duration-200 ease-out group transform-gpu will-change-transform">
+          <div className="relative overflow-hidden bg-gray-900/40 border border-white/15 backdrop-blur-md rounded-3xl p-6 shadow-xl hover:border-amber-400/60 hover:-translate-y-1.5 transition-all duration-200 ease-out group transform-gpu will-change-transform">
             <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-amber-400 to-orange-500" />
             <div className="flex items-center justify-between mb-4">
               <span className="text-xs text-gray-400 font-extrabold uppercase tracking-wider">Practice Count</span>
@@ -196,7 +193,7 @@ export default function Profile() {
           </div>
 
           {/* Card 4: Submissions Accepted */}
-          <div className="relative overflow-hidden bg-gray-900/50 border border-white/15 backdrop-blur-lg rounded-3xl p-6 shadow-xl hover:border-emerald-400/60 hover:-translate-y-1.5 transition-all duration-200 ease-out group transform-gpu will-change-transform">
+          <div className="relative overflow-hidden bg-gray-900/40 border border-white/15 backdrop-blur-md rounded-3xl p-6 shadow-xl hover:border-emerald-400/60 hover:-translate-y-1.5 transition-all duration-200 ease-out group transform-gpu will-change-transform">
             <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-emerald-400 to-teal-500" />
             <div className="flex items-center justify-between mb-4">
               <span className="text-xs text-gray-400 font-extrabold uppercase tracking-wider">Accepted Codes</span>
@@ -210,20 +207,17 @@ export default function Profile() {
 
         </div>
 
-        {/* ── Ultra Translucent Floating Table Container Merged with Background ── */}
-        <div className="relative overflow-hidden bg-gray-950/25 border border-white/20 rounded-3xl p-7 shadow-[0_30px_70px_rgba(0,0,0,0.85)] backdrop-blur-lg animate-float transform-gpu will-change-transform">
+        {/* ── Ultra-Translucent Glass Table Container (No Flashing Overlay) ── */}
+        <div className="relative overflow-hidden bg-gray-950/15 border border-white/20 rounded-3xl p-7 shadow-[0_30px_70px_rgba(0,0,0,0.85)] backdrop-blur-md animate-float transform-gpu will-change-transform">
           
-          {/* Sweeping Flash Light Overlay Across Translucent Table */}
-          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent animate-flash-sweep pointer-events-none z-0" />
-
-          {/* Vibrant Glow Accents directly behind translucent table */}
+          {/* Subtle Ambient Glow Accents directly behind translucent table */}
           <div 
-            className="absolute -top-24 -right-24 w-80 h-80 rounded-full pointer-events-none opacity-70"
-            style={{ background: 'radial-gradient(circle, rgba(6, 182, 212, 0.3) 0%, transparent 70%)' }}
+            className="absolute -top-24 -right-24 w-80 h-80 rounded-full pointer-events-none opacity-60"
+            style={{ background: 'radial-gradient(circle, rgba(6, 182, 212, 0.25) 0%, transparent 70%)' }}
           />
           <div 
-            className="absolute -bottom-24 -left-24 w-80 h-80 rounded-full pointer-events-none opacity-70"
-            style={{ background: 'radial-gradient(circle, rgba(168, 85, 247, 0.3) 0%, transparent 70%)' }}
+            className="absolute -bottom-24 -left-24 w-80 h-80 rounded-full pointer-events-none opacity-60"
+            style={{ background: 'radial-gradient(circle, rgba(168, 85, 247, 0.25) 0%, transparent 70%)' }}
           />
 
           <div className="relative z-10 space-y-6">
@@ -236,21 +230,21 @@ export default function Profile() {
                   Recent Submissions
                 </span>
               </h3>
-              <span className="text-xs font-black text-cyan-300 uppercase tracking-widest bg-cyan-950/80 px-4 py-2 rounded-2xl border border-cyan-400/50 shadow-[0_0_15px_rgba(6,182,212,0.4)]">
+              <span className="text-xs font-black text-cyan-300 uppercase tracking-widest bg-cyan-950/80 px-4 py-2 rounded-2xl border border-cyan-400/50 shadow-md">
                 ⚡ {submissions.length} Records Total
               </span>
             </div>
 
             {submissions.length === 0 ? (
-              <div className="text-center py-14 border border-dashed border-white/20 rounded-3xl bg-gray-950/30 space-y-3 backdrop-blur-lg">
+              <div className="text-center py-14 border border-dashed border-white/20 rounded-3xl bg-gray-950/20 space-y-3 backdrop-blur-md">
                 <span className="text-4xl block">📥</span>
                 <p className="text-base text-gray-300 font-bold">No submissions recorded yet.</p>
                 <p className="text-xs text-gray-400">Solve problems in the workspace to build your activity history!</p>
               </div>
             ) : (
-              <div className="overflow-x-auto rounded-2xl border border-white/20 bg-gray-950/25 backdrop-blur-lg shadow-2xl">
+              <div className="overflow-x-auto rounded-2xl border border-white/20 bg-gray-950/15 backdrop-blur-md shadow-2xl">
                 <table className="w-full text-left border-collapse">
-                  <thead className="bg-gradient-to-r from-cyan-950/50 via-purple-950/40 to-indigo-950/50 text-xs font-black text-cyan-200 uppercase tracking-widest border-b border-white/20 backdrop-blur-md">
+                  <thead className="bg-gray-950/30 text-xs font-black text-cyan-200 uppercase tracking-widest border-b border-white/20 backdrop-blur-md">
                     <tr>
                       <th className="px-6 py-4">Submission ID</th>
                       <th className="px-6 py-4">Language</th>
@@ -264,7 +258,7 @@ export default function Profile() {
                     {submissions.map((sub) => (
                       <tr
                         key={sub.id}
-                        className="group bg-gray-950/20 hover:bg-gradient-to-r hover:from-cyan-500/25 hover:via-purple-500/25 hover:to-pink-500/25 hover:translate-x-1 transition-all duration-200 ease-out cursor-pointer transform-gpu"
+                        className="group bg-transparent hover:bg-cyan-500/10 hover:translate-x-1 transition-all duration-200 ease-out cursor-pointer transform-gpu"
                       >
                         <td className="px-6 py-4 font-mono font-bold text-white flex items-center gap-3">
                           <span className={`w-3 h-3 rounded-full ${

@@ -33,7 +33,7 @@ export default function Leaderboard() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[calc(100vh-4rem)] bg-transparent text-white">
-        <div className="flex flex-col items-center gap-4 bg-gray-950/60 border border-brand-500/40 p-8 rounded-3xl backdrop-blur-2xl shadow-2xl animate-pulse">
+        <div className="flex flex-col items-center gap-4 bg-gray-950/60 border border-brand-500/40 p-8 rounded-3xl backdrop-blur-md shadow-2xl animate-pulse">
           <span className="animate-spin h-10 w-10 border-4 border-cyan-400 border-t-transparent rounded-full" />
           <p className="text-cyan-300 font-black tracking-wider uppercase text-sm">Loading Global Rankings…</p>
         </div>
@@ -44,7 +44,7 @@ export default function Leaderboard() {
   if (!isAuthenticated) {
     return (
       <div className="flex items-center justify-center min-h-[calc(100vh-4rem)] p-6 bg-transparent text-white">
-        <div className="bg-gray-950/80 border border-white/20 p-8 rounded-3xl max-w-md w-full text-center space-y-6 shadow-2xl backdrop-blur-2xl animate-modal-in relative overflow-hidden">
+        <div className="bg-gray-950/80 border border-white/20 p-8 rounded-3xl max-w-md w-full text-center space-y-6 shadow-2xl backdrop-blur-md animate-modal-in relative overflow-hidden">
           <div className="absolute top-0 right-0 w-48 h-48 bg-brand-500/20 rounded-full blur-3xl pointer-events-none" />
           <div className="w-16 h-16 rounded-full bg-brand-500/20 text-brand-300 border border-brand-400/30 flex items-center justify-center text-3xl mx-auto shadow-inner">
             🔒
@@ -77,7 +77,7 @@ export default function Leaderboard() {
   if (error) {
     return (
       <div className="flex items-center justify-center min-h-[calc(100vh-4rem)] p-6 bg-transparent text-white">
-        <div className="bg-red-950/80 border border-red-500/50 p-8 rounded-3xl text-red-300 font-bold shadow-2xl text-center space-y-3 max-w-md backdrop-blur-2xl">
+        <div className="bg-red-950/80 border border-red-500/50 p-8 rounded-3xl text-red-300 font-bold shadow-2xl text-center space-y-3 max-w-md backdrop-blur-md">
           <span className="text-4xl block">⚠️</span>
           <p>{error}</p>
         </div>
@@ -106,19 +106,16 @@ export default function Leaderboard() {
           </div>
         </div>
 
-        {/* Floating Merged Table Container with Flash Sweep */}
-        <div className="relative overflow-hidden bg-gray-950/40 border border-white/20 rounded-3xl shadow-[0_30px_70px_rgba(0,0,0,0.8)] backdrop-blur-2xl animate-float animate-neon-glow">
+        {/* Floating Merged Ultra-Translucent Table Container */}
+        <div className="relative overflow-hidden bg-gray-950/15 border border-white/20 rounded-3xl shadow-[0_30px_70px_rgba(0,0,0,0.8)] backdrop-blur-md animate-float transform-gpu will-change-transform">
           
-          {/* Sweeping Flash Light Overlay */}
-          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent animate-flash-sweep pointer-events-none z-0" />
-
           {/* Ambient Glowing Orbs */}
-          <div className="absolute -top-24 -right-24 w-80 h-80 bg-cyan-500/25 rounded-full blur-3xl pointer-events-none animate-pulse" />
-          <div className="absolute -bottom-24 -left-24 w-80 h-80 bg-purple-500/25 rounded-full blur-3xl pointer-events-none animate-pulse animation-delay-2000" />
+          <div className="absolute -top-24 -right-24 w-80 h-80 bg-cyan-500/25 rounded-full blur-3xl pointer-events-none opacity-60" />
+          <div className="absolute -bottom-24 -left-24 w-80 h-80 bg-purple-500/25 rounded-full blur-3xl pointer-events-none opacity-60" />
 
           <div className="relative z-10">
             <table className="w-full text-left border-collapse">
-              <thead className="bg-gradient-to-r from-cyan-950/60 via-brand-950/50 to-purple-950/60 text-xs font-black text-cyan-200 uppercase tracking-widest border-b border-white/15 backdrop-blur-2xl">
+              <thead className="bg-gray-950/30 text-xs font-black text-cyan-200 uppercase tracking-widest border-b border-white/15 backdrop-blur-md">
                 <tr>
                   <th className="px-6 py-4">Rank</th>
                   <th className="px-6 py-4">User</th>
@@ -132,7 +129,7 @@ export default function Leaderboard() {
                   <tr
                     key={user.id}
                     onClick={() => setSelectedUser(user)}
-                    className="group bg-gray-950/30 hover:bg-gradient-to-r hover:from-cyan-500/20 hover:via-purple-500/20 hover:to-brand-500/20 hover:scale-[1.005] hover:shadow-[0_0_25px_rgba(6,182,212,0.35)] transition-all duration-300 cursor-pointer"
+                    className="group bg-transparent hover:bg-cyan-500/10 hover:translate-x-1 transition-all duration-200 ease-out cursor-pointer transform-gpu"
                     title="Click to view detailed coding statistics"
                   >
                     <td className="px-6 py-4 font-bold">
@@ -162,7 +159,7 @@ export default function Leaderboard() {
                       {user.solved_count}
                     </td>
                     <td className="px-6 py-4 text-center">
-                      <span className="px-3.5 py-1.5 bg-emerald-950/80 text-emerald-300 border border-emerald-400/50 font-black rounded-xl text-xs shadow-[0_0_15px_rgba(16,185,129,0.3)] inline-block group-hover:scale-110 transition-transform">
+                      <span className="px-3.5 py-1.5 bg-emerald-950/80 text-emerald-300 border border-emerald-400/50 font-black rounded-xl text-xs shadow-[0_0_15px_rgba(16,185,129,0.3)] inline-block group-hover:scale-105 transition-transform">
                         {user.points} pts
                       </span>
                     </td>
@@ -183,7 +180,7 @@ export default function Leaderboard() {
             onClick={() => setSelectedUser(null)}
           >
             <div 
-              className="bg-gray-950/90 border border-white/20 rounded-3xl p-8 max-w-md w-full shadow-2xl relative overflow-hidden backdrop-blur-2xl animate-modal-in text-white"
+              className="bg-gray-950/90 border border-white/20 rounded-3xl p-8 max-w-md w-full shadow-2xl relative overflow-hidden backdrop-blur-md animate-modal-in text-white"
               onClick={(e) => e.stopPropagation()}
             >
               <div className="absolute top-0 right-0 w-32 h-32 bg-cyan-500/20 rounded-full blur-2xl pointer-events-none" />
