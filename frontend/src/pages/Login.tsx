@@ -1,6 +1,54 @@
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { api } from '../api'
+
+// ─── Celebration Confetti Particle Component (same as post-submission page) ───────────────
+function ConfettiCanvas() {
+  const canvasRef = useRef<HTMLCanvasElement>(null)
+  useEffect(() => {
+    const canvas = canvasRef.current
+    if (!canvas) return
+    const ctx = canvas.getContext('2d')
+    if (!ctx) return
+    canvas.width = window.innerWidth
+    canvas.height = window.innerHeight
+
+    const colors = ['#34d399', '#60a5fa', '#a78bfa', '#f472b6', '#facc15', '#fb923c']
+    const particles = Array.from({ length: 140 }, () => ({
+      x: Math.random() * canvas.width,
+      y: -10 - Math.random() * 200,
+      r: 4 + Math.random() * 6,
+      color: colors[Math.floor(Math.random() * colors.length)],
+      vx: (Math.random() - 0.5) * 3,
+      vy: 2 + Math.random() * 4,
+      rot: Math.random() * 360,
+      rotV: (Math.random() - 0.5) * 6,
+      opacity: 1,
+    }))
+
+    let animId: number
+    const draw = () => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height)
+      for (const p of particles) {
+        ctx.save()
+        ctx.translate(p.x, p.y)
+        ctx.rotate((p.rot * Math.PI) / 180)
+        ctx.globalAlpha = p.opacity
+        ctx.fillStyle = p.color
+        ctx.fillRect(-p.r / 2, -p.r / 2, p.r, p.r * 2)
+        ctx.restore()
+        p.x += p.vx
+        p.y += p.vy
+        p.rot += p.rotV
+        if (p.y > canvas.height) p.opacity -= 0.02
+      }
+      if (particles.some(p => p.opacity > 0)) animId = requestAnimationFrame(draw)
+    }
+    draw()
+    return () => cancelAnimationFrame(animId)
+  }, [])
+  return <canvas ref={canvasRef} className="fixed inset-0 pointer-events-none z-50" />
+}
 
 export default function Login() {
   const [isLogin, setIsLogin] = useState(true)
@@ -9,6 +57,7 @@ export default function Login() {
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+  const [successAnimation, setSuccessAnimation] = useState(false)
   const navigate = useNavigate()
 
   // Social Auth Modal State
@@ -19,6 +68,15 @@ export default function Login() {
   const [socialEmail, setSocialEmail] = useState('')
   const [socialUsername, setSocialUsername] = useState('')
 
+  const triggerSuccessAndNavigate = (token: string) => {
+    localStorage.setItem('codeforge_token', token)
+    setSuccessAnimation(true)
+    setSocialModal({ open: false, provider: 'Google' })
+    setTimeout(() => {
+      navigate('/problems')
+    }, 1200)
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
@@ -26,17 +84,14 @@ export default function Login() {
     try {
       if (isLogin) {
         const token = await api.login(username, password)
-        localStorage.setItem('codeforge_token', token)
-        navigate('/problems')
+        triggerSuccessAndNavigate(token)
       } else {
         await api.register(email, username, password)
         const token = await api.login(username, password)
-        localStorage.setItem('codeforge_token', token)
-        navigate('/problems')
+        triggerSuccessAndNavigate(token)
       }
     } catch (err: any) {
       setError(err.response?.data?.detail || 'An error occurred. Please try again.')
-    } finally {
       setLoading(false)
     }
   }
@@ -59,29 +114,66 @@ export default function Login() {
         socialEmail,
         socialUsername || undefined
       )
-      localStorage.setItem('codeforge_token', token)
-      setSocialModal({ open: false, provider: 'Google' })
-      navigate('/problems')
+      triggerSuccessAndNavigate(token)
     } catch (err: any) {
       setError(err.response?.data?.detail || 'Social authentication failed.')
-    } finally {
       setLoading(false)
     }
   }
 
   return (
     <div className="relative z-10 min-h-[calc(100vh-4rem)] flex items-center justify-center bg-transparent text-white px-4 py-12">
+      
+      {/* ── Festive Confetti Celebration Canvas (same as post-submission) ── */}
+      {successAnimation && <ConfettiCanvas />}
+
+      {/* ── Post-Submission Style Loading Overlay ── */}
+      {loading && !successAnimation && (
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
+          <div className="bg-gray-900 border border-brand-500/30 max-w-sm w-full rounded-3xl p-8 shadow-2xl shadow-brand-500/20 text-center space-y-5 animate-modal-in">
+            <div className="relative flex items-center justify-center w-20 h-20 rounded-full bg-gradient-to-tr from-brand-600 to-purple-600 ring-4 ring-brand-500/40 mx-auto shadow-xl">
+              <span className="animate-spin h-10 w-10 border-4 border-white border-t-transparent rounded-full" />
+            </div>
+            <div>
+              <h3 className="text-xl font-black text-white uppercase tracking-wider">Authenticating…</h3>
+              <p className="text-gray-400 text-xs mt-2 font-semibold leading-relaxed">
+                Verifying your CodeForge credentials & preparing your workspace environment.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── Post-Submission Style Success Overlay ── */}
+      {successAnimation && (
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
+          <div className="bg-gradient-to-br from-emerald-950/90 via-gray-900 to-indigo-950/90 border border-emerald-500/40 max-w-sm w-full rounded-3xl p-8 shadow-2xl shadow-emerald-500/30 text-center space-y-5 animate-modal-in">
+            <div className="w-20 h-20 rounded-full ring-4 ring-emerald-500/50 bg-emerald-950 flex items-center justify-center mx-auto shadow-2xl">
+              <span className="text-4xl font-black text-emerald-400">✓</span>
+            </div>
+            <div>
+              <span className="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest bg-emerald-950/80 text-emerald-300 border border-emerald-500/30">
+                ACCEPTED
+              </span>
+              <h3 className="text-2xl font-black text-white uppercase tracking-tight mt-3">Welcome to CodeForge!</h3>
+              <p className="text-emerald-300 text-xs mt-1.5 font-bold">
+                Authentication successful. Entering workspace…
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* ── Main Auth Card ── */}
-      <div className="max-w-md w-full bg-gray-900 p-8 rounded-2xl shadow-2xl border border-gray-800 flex flex-col gap-5">
+      <div className="max-w-md w-full bg-gray-900/90 backdrop-blur-xl p-8 rounded-3xl shadow-2xl border border-gray-800 flex flex-col gap-5">
 
         {/* Sign In / Register Tab Switcher */}
-        <div className="flex bg-gray-950 p-1 rounded-xl border border-gray-800">
+        <div className="flex bg-gray-950 p-1 rounded-2xl border border-gray-800">
           <button
             type="button"
             onClick={() => { setIsLogin(true); setError('') }}
-            className={`flex-1 py-2.5 text-sm font-extrabold rounded-lg transition-all ${
-              isLogin ? 'bg-brand-600 text-white shadow-md' : 'text-gray-400 hover:text-white'
+            className={`flex-1 py-2.5 text-sm font-extrabold rounded-xl transition-all ${
+              isLogin ? 'bg-brand-600 text-white shadow-md shadow-brand-500/30' : 'text-gray-400 hover:text-white'
             }`}
           >
             Sign In
@@ -89,8 +181,8 @@ export default function Login() {
           <button
             type="button"
             onClick={() => { setIsLogin(false); setError('') }}
-            className={`flex-1 py-2.5 text-sm font-extrabold rounded-lg transition-all ${
-              !isLogin ? 'bg-brand-600 text-white shadow-md' : 'text-gray-400 hover:text-white'
+            className={`flex-1 py-2.5 text-sm font-extrabold rounded-xl transition-all ${
+              !isLogin ? 'bg-brand-600 text-white shadow-md shadow-brand-500/30' : 'text-gray-400 hover:text-white'
             }`}
           >
             Register
@@ -232,7 +324,7 @@ export default function Login() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full flex justify-center py-3.5 px-4 text-sm font-black rounded-xl text-white bg-brand-600 hover:bg-brand-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-500 transition shadow-lg shadow-brand-500/20 disabled:opacity-50 cursor-pointer"
+            className="w-full flex justify-center py-3.5 px-4 text-sm font-black rounded-xl text-white bg-gradient-to-r from-brand-600 to-purple-600 hover:from-brand-500 hover:to-purple-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-500 transition shadow-lg shadow-brand-500/30 disabled:opacity-50 cursor-pointer"
           >
             {loading ? 'Processing...' : isLogin ? 'Sign In' : 'Create Account'}
           </button>
@@ -243,7 +335,7 @@ export default function Login() {
       {/* ── Google / GitHub OAuth Modal ── */}
       {socialModal.open && (
         <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
-          <div className="bg-gray-900 border border-gray-800 max-w-md w-full rounded-2xl p-6 shadow-2xl flex flex-col gap-5">
+          <div className="bg-gray-900 border border-gray-800 max-w-md w-full rounded-3xl p-6 shadow-2xl flex flex-col gap-5 animate-modal-in">
             <div className="flex items-center justify-between border-b border-gray-800 pb-3">
               <h3 className="text-lg font-black text-white flex items-center gap-2">
                 <span>{socialModal.provider === 'Google' ? '🔍' : '🐙'}</span>
@@ -310,7 +402,7 @@ export default function Login() {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="flex-1 py-3 px-4 bg-brand-600 hover:bg-brand-500 text-white rounded-xl text-xs font-black transition shadow-lg shadow-brand-500/20 disabled:opacity-50 cursor-pointer"
+                  className="flex-1 py-3 px-4 bg-gradient-to-r from-brand-600 to-purple-600 hover:from-brand-500 hover:to-purple-500 text-white rounded-xl text-xs font-black transition shadow-lg shadow-brand-500/30 disabled:opacity-50 cursor-pointer"
                 >
                   {loading ? 'Signing in...' : `Sign in with ${socialModal.provider}`}
                 </button>
