@@ -7,6 +7,7 @@ from app import crud, models, schemas
 from app.api import deps
 from app.core import security
 from app.core.config import settings
+from app.schemas.user import OAuthLoginRequest
 
 router = APIRouter()
 
@@ -47,7 +48,7 @@ def login_access_token(
 def oauth_login(
     *,
     db: Session = Depends(deps.get_db),
-    oauth_in: schemas.OAuthLoginRequest,
+    oauth_in: OAuthLoginRequest,
 ) -> Any:
     """
     Authenticate or Register user via OAuth provider (Google or GitHub).
@@ -60,10 +61,11 @@ def oauth_login(
             import random
             uname = f"{uname}_{random.randint(100, 999)}"
         
+        import secrets
         user_in = schemas.UserCreate(
             email=oauth_in.email,
             username=uname,
-            password=security.generate_password_reset_token(),
+            password=secrets.token_hex(32),
         )
         user = crud.user.create(db, obj_in=user_in)
 
