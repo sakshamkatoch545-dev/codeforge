@@ -169,71 +169,107 @@ export default function Profile() {
           </div>
         </div>
 
-        {/* Recent Submissions Panel */}
-        <div className="bg-gray-900 border border-gray-800 rounded-2xl p-6 shadow-xl">
-          <h3 className="text-xl font-black text-white mb-6 flex items-center gap-2">
-            🕒 Recent Submissions
-          </h3>
-          {submissions.length === 0 ? (
-            <p className="text-sm text-gray-400 italic">No submissions yet.</p>
-          ) : (
-            <div className="overflow-x-auto rounded-xl border border-gray-800">
-              <table className="w-full text-left">
-                <thead className="bg-gray-950 text-xs font-black text-gray-400 uppercase tracking-widest border-b border-gray-800">
-                  <tr>
-                    <th className="px-6 py-4">Submission ID</th>
-                    <th className="px-6 py-4">Language</th>
-                    <th className="px-6 py-4">Status</th>
-                    <th className="px-6 py-4">Runtime</th>
-                    <th className="px-6 py-4">Date</th>
-                    <th className="px-6 py-4 text-right">Action</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-800/80 text-sm text-gray-300">
-                  {submissions.map((sub) => (
-                    <tr key={sub.id} className="hover:bg-gray-800/50 transition-colors">
-                      <td className="px-6 py-4 font-mono font-bold text-white">
-                        <Link to={`/submissions/${sub.id}`} className="hover:text-brand-400 transition-colors">
-                          #{sub.id}
-                        </Link>
-                      </td>
-                      <td className="px-6 py-4 capitalize font-bold text-gray-300">{sub.language}</td>
-                      <td className="px-6 py-4">
-                        <span
-                          className={`px-3 py-1 text-xs font-extrabold rounded-lg border ${
-                            sub.status === 'ACCEPTED'
-                              ? 'bg-emerald-950/40 text-emerald-300 border-emerald-500/40'
-                              : sub.status === 'WRONG_ANSWER'
-                              ? 'bg-red-950/40 text-red-300 border-red-500/40'
-                              : 'bg-yellow-950/40 text-yellow-300 border-yellow-500/40'
-                          }`}
-                        >
-                          {sub.status.replace('_', ' ')}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 font-mono font-semibold">
-                        {sub.execution_time !== null ? `${sub.execution_time}ms` : 'N/A'}
-                      </td>
-                      <td className="px-6 py-4 text-gray-400 text-xs font-medium">
-                        {new Date(sub.created_at).toLocaleDateString()}{' '}
-                        {new Date(sub.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                      </td>
-                      <td className="px-6 py-4 text-right">
-                        <button
-                          onClick={() => handleDeleteSubmission(sub.id)}
-                          className="px-3 py-1 bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/30 rounded-lg text-xs font-bold transition-all cursor-pointer"
-                          title="Delete this submission"
-                        >
-                          🗑️ Delete
-                        </button>
-                      </td>
+        {/* ── Recent Submissions Panel with Animated Background Effects ── */}
+        <div className="relative overflow-hidden bg-gray-900/90 border border-gray-800 rounded-3xl p-6 shadow-2xl backdrop-blur-xl transition-all duration-300">
+          
+          {/* Animated Glowing Orbs in Table Background */}
+          <div className="absolute -top-24 -right-24 w-72 h-72 bg-brand-500/15 rounded-full blur-3xl pointer-events-none animate-pulse" />
+          <div className="absolute -bottom-24 -left-24 w-72 h-72 bg-purple-500/15 rounded-full blur-3xl pointer-events-none animate-pulse animation-delay-2000" />
+
+          <div className="relative z-10">
+            <h3 className="text-xl font-black text-white mb-6 flex items-center justify-between">
+              <span className="flex items-center gap-2.5">
+                <span className="flex items-center justify-center w-8 h-8 rounded-xl bg-brand-500/20 text-brand-400 border border-brand-500/30 text-sm shadow-inner">
+                  🕒
+                </span>
+                Recent Submissions
+              </span>
+              <span className="text-xs font-bold text-gray-400 uppercase tracking-widest bg-gray-950/80 px-3 py-1.5 rounded-xl border border-gray-800 shadow-sm">
+                {submissions.length} Recorded
+              </span>
+            </h3>
+
+            {submissions.length === 0 ? (
+              <div className="text-center py-12 border border-dashed border-gray-800 rounded-2xl bg-gray-950/40">
+                <span className="text-3xl block mb-2">📥</span>
+                <p className="text-sm text-gray-400 font-semibold">No submissions recorded yet.</p>
+                <p className="text-xs text-gray-500 mt-1">Start solving problems to build your coding record!</p>
+              </div>
+            ) : (
+              <div className="overflow-x-auto rounded-2xl border border-gray-800/80 bg-gray-950/60 backdrop-blur-md shadow-2xl">
+                <table className="w-full text-left border-collapse">
+                  <thead className="bg-gray-950/90 text-xs font-black text-gray-400 uppercase tracking-widest border-b border-gray-800">
+                    <tr>
+                      <th className="px-6 py-4">Submission ID</th>
+                      <th className="px-6 py-4">Language</th>
+                      <th className="px-6 py-4">Status</th>
+                      <th className="px-6 py-4">Runtime</th>
+                      <th className="px-6 py-4">Date</th>
+                      <th className="px-6 py-4 text-right">Action</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
+                  </thead>
+                  <tbody className="divide-y divide-gray-800/60 text-sm text-gray-300">
+                    {submissions.map((sub) => (
+                      <tr
+                        key={sub.id}
+                        className="group hover:bg-brand-500/10 hover:scale-[1.002] transition-all duration-200 cursor-pointer"
+                      >
+                        <td className="px-6 py-4 font-mono font-bold text-white flex items-center gap-2.5">
+                          <span className={`w-2 h-2 rounded-full ${
+                            sub.status === 'ACCEPTED' ? 'bg-emerald-400 animate-pulse shadow-sm shadow-emerald-500/50' : 'bg-red-400'
+                          }`} />
+                          <Link to={`/submissions/${sub.id}`} className="group-hover:text-brand-400 transition-colors">
+                            #{sub.id}
+                          </Link>
+                        </td>
+                        <td className="px-6 py-4 capitalize font-bold text-gray-300 group-hover:text-white transition-colors">
+                          <span className="px-2.5 py-1 rounded-md bg-gray-900 border border-gray-800 text-xs font-mono">
+                            {sub.language}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4">
+                          <span
+                            className={`px-3 py-1 text-xs font-black rounded-lg border shadow-sm transition-transform group-hover:scale-105 inline-block ${
+                              sub.status === 'ACCEPTED'
+                                ? 'bg-emerald-950/60 text-emerald-300 border-emerald-500/40 shadow-emerald-500/10'
+                                : sub.status === 'WRONG_ANSWER'
+                                ? 'bg-red-950/60 text-red-300 border-red-500/40 shadow-red-500/10'
+                                : 'bg-yellow-950/60 text-yellow-300 border-yellow-500/40 shadow-yellow-500/10'
+                            }`}
+                          >
+                            {sub.status.replace('_', ' ')}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 font-mono font-semibold text-gray-300">
+                          {sub.execution_time !== null ? `${sub.execution_time}ms` : 'N/A'}
+                        </td>
+                        <td className="px-6 py-4 text-gray-400 text-xs font-medium">
+                          {new Date(sub.created_at).toLocaleDateString()}{' '}
+                          <span className="text-gray-500 font-normal">
+                            {new Date(sub.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 text-right">
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleDeleteSubmission(sub.id);
+                            }}
+                            className="px-3 py-1.5 bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/30 rounded-xl text-xs font-bold transition-all hover:scale-105 active:scale-95 cursor-pointer shadow-sm"
+                            title="Delete this submission"
+                          >
+                            🗑️ Delete
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
         </div>
+
       </div>
     </div>
   )
