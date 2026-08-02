@@ -17,7 +17,17 @@ DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://postgres:postgres@localho
 
 engine = create_engine(DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-docker_client = docker.from_env()
+docker_client = None
+
+def get_docker_client():
+    global docker_client
+    if docker_client is None:
+        try:
+            import docker
+            docker_client = docker.from_env()
+        except Exception as e:
+            logger.warning(f"Could not connect to Docker daemon: {e}")
+    return docker_client
 
 def judge_submission(submission_id: int):
     # This is a placeholder for the actual judge logic.

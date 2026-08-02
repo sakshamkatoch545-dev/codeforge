@@ -5,6 +5,7 @@ import ProblemDetail from './pages/ProblemDetail'
 import Leaderboard from './pages/Leaderboard'
 import Profile from './pages/Profile'
 import Login from './pages/Login'
+import Register from './pages/Register'
 import Home from './pages/Home'
 import SubmissionResult from './pages/SubmissionResult'
 import { api, UserInfo } from './api'
@@ -49,6 +50,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
           <Route path="/problems" element={<Problems />} />
           <Route path="/problems/:slug" element={<ProblemDetail />} />
           <Route path="/submissions/:id" element={<SubmissionResult />} />

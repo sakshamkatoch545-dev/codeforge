@@ -32,7 +32,7 @@ with tab1:
         col3.metric("Total Submissions", submission_count)
         
         st.subheader("Recent Submissions")
-        submissions = pd.read_sql("SELECT id, user_id, problem_id, language, status, execution_time_ms, created_at FROM submission ORDER BY created_at DESC LIMIT 10", engine)
+        submissions = pd.read_sql("SELECT id, user_id, problem_id, language, status, execution_time, created_at FROM submission ORDER BY created_at DESC LIMIT 10", engine)
         st.dataframe(submissions, use_container_width=True)
     except Exception as e:
         st.error(f"Error loading overview data: {e}")

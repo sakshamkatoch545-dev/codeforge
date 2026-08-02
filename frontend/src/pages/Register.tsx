@@ -50,7 +50,7 @@ function ConfettiCanvas() {
   return <canvas ref={canvasRef} className="fixed inset-0 pointer-events-none z-50" />
 }
 
-export default function Login() {
+export default function Register() {
   const [email, setEmail] = useState('')
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
@@ -225,10 +225,10 @@ export default function Login() {
         {/* Title */}
         <div className="text-center">
           <h2 className="text-2xl font-black text-white">
-            Sign in to CodeForge
+            Create your CodeForge Account
           </h2>
           <p className="mt-1.5 text-xs text-gray-400 font-medium">
-            Enter your credentials or use Google to access your workspace.
+            Join CodeForge today to track your progress & compete.
           </p>
         </div>
 
@@ -266,67 +266,11 @@ export default function Login() {
           )}
         </div>
 
-        {/* Divider */}
-        <div className="relative flex items-center">
-          <div className="flex-grow border-t border-gray-800" />
-          <span className="flex-shrink mx-3 text-[10px] uppercase font-black tracking-widest text-gray-500">
-            Or continue with email
-          </span>
-          <div className="flex-grow border-t border-gray-800" />
-        </div>
-
-        {/* Email / Username / Password Form */}
-        <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
-
-          {/* Username / Username or Email */}
-          <div>
-            <label className="block text-xs font-bold text-gray-300 uppercase tracking-wider mb-1">
-              Username or Email
-            </label>
-            <input
-              id="login-username"
-              type="text"
-              required
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              autoComplete="username"
-              className="appearance-none rounded-xl block w-full px-4 py-3 border border-gray-700 bg-gray-950 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent text-sm font-medium"
-              placeholder="Enter username or email"
-            />
-          </div>
-
-          {/* Password */}
-          <div>
-            <label className="block text-xs font-bold text-gray-300 uppercase tracking-wider mb-1">
-              Password
-            </label>
-            <input
-              id="login-password"
-              type="password"
-              required
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              autoComplete="current-password"
-              className="appearance-none rounded-xl block w-full px-4 py-3 border border-gray-700 bg-gray-950 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent text-sm font-medium"
-              placeholder="Enter your password"
-            />
-          </div>
-
-          {/* Submit */}
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full flex justify-center py-3.5 px-4 text-sm font-black rounded-xl text-white bg-gradient-to-r from-brand-600 to-purple-600 hover:from-brand-500 hover:to-purple-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-500 transition shadow-lg shadow-brand-500/30 disabled:opacity-50 cursor-pointer"
-          >
-            {loading ? 'Processing...' : 'Sign In'}
-          </button>
-        </form>
-
         <div className="text-center mt-2">
           <p className="text-sm text-gray-400">
-            Don't have an account?{' '}
-            <Link to="/register" className="text-brand-500 hover:text-brand-400 font-bold">
-              Join Now
+            Already have an account?{' '}
+            <Link to="/login" className="text-brand-500 hover:text-brand-400 font-bold">
+              Sign In
             </Link>
           </p>
         </div>

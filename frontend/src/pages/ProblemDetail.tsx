@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import Editor from '@monaco-editor/react'
 import { api, Problem, Submission, TestCase } from '../api'
-import { getStarterCode, getWrappedCode as getWrappedCodeFromConfig } from '../problemsConfig'
+import { getStarterCode, getWrappedCode as getWrappedCodeFromConfig, getUnwrappedCode } from '../problemsConfig'
 
 const renderFormattedDescription = (text: string | undefined) => {
   if (!text) return null;
@@ -271,7 +271,7 @@ export default function ProblemDetail() {
   useEffect(() => {
     if (!problem) return
     updateStarterCode(problem.slug, language)
-  }, [language])
+  }, [language, problem])
 
   const getWrappedCode = () => {
     if (!problem) return code;
@@ -312,8 +312,9 @@ export default function ProblemDetail() {
         expected: expectedOutput,
         match: res.status === 'SUCCESS' && res.output.trim() === expectedOutput
       })
-    } catch (err: any) {
-      setError(err.response?.data?.detail || 'Failed to run code.')
+    } catch (err) {
+      const error = err as { response?: { data?: { detail?: string } } }
+      setError(error.response?.data?.detail || 'Failed to run code.')
     } finally {
       setRunning(false)
     }
@@ -362,8 +363,9 @@ export default function ProblemDetail() {
           setError('Failed to poll submission status.')
         }
       }, 1000)
-    } catch (err: any) {
-      setError(err.response?.data?.detail || 'Failed to submit solution.')
+    } catch (err) {
+      const error = err as { response?: { data?: { detail?: string } } }
+      setError(error.response?.data?.detail || 'Failed to submit solution.')
       setSubmitting(false)
     }
   }
@@ -598,7 +600,8 @@ export default function ProblemDetail() {
               const tcStats = parseJudgeLog(submission.error_message);
               const runtime = submission.execution_time || 0;
               const beats = runtime < 50 ? 98.4 : runtime < 100 ? 91.2 : runtime < 250 ? 84.6 : 67.3;
-              const linesOfCode = submission.code.split('\n').filter(l => l.trim() !== '').length;
+              const unwrappedCode = getUnwrappedCode(submission.code, submission.language);
+              const linesOfCode = unwrappedCode.split('\n').filter(l => l.trim() !== '').length;
               const isAccepted = submission.status === 'ACCEPTED';
 
               return (

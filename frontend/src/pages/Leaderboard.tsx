@@ -210,7 +210,7 @@ export default function Leaderboard() {
           <div className="relative z-10 space-y-6">
             <div className="glass-table overflow-x-auto">
               <table className="w-full text-left border-collapse">
-                <thead className="text-xs font-black text-gray-600 dark:text-cyan-200 uppercase tracking-widest border-b border-white/20 dark:border-white/10">
+                <thead className="text-xs font-black text-gray-800 dark:text-white uppercase tracking-widest border-b border-white/20 dark:border-white/10">
                   <tr>
                     <th className="px-6 py-4">Rank</th>
                     <th className="px-6 py-4">User</th>
@@ -229,36 +229,36 @@ export default function Leaderboard() {
                     >
                       <td className="px-6 py-4 font-bold">
                         {user.rank === 1 ? (
-                          <span className="inline-flex items-center justify-center px-3 py-1 rounded-xl bg-yellow-100/60 dark:bg-yellow-500/20 text-yellow-700 dark:text-yellow-300 border border-yellow-300/50 dark:border-yellow-400/40 font-black text-sm shadow-[0_0_15px_rgba(234,179,8,0.2)]">
+                          <span className="inline-flex items-center justify-center px-3.5 py-1 rounded-full bg-yellow-500/10 dark:bg-yellow-500/20 text-yellow-600 dark:text-yellow-400 border border-yellow-500/10 font-black text-xs shadow-sm">
                             🥇 #1
                           </span>
                         ) : user.rank === 2 ? (
-                          <span className="inline-flex items-center justify-center px-3 py-1 rounded-xl bg-slate-100/60 dark:bg-gray-300/20 text-slate-700 dark:text-gray-200 border border-slate-200 dark:border-gray-300/40 font-black text-sm">
+                          <span className="inline-flex items-center justify-center px-3.5 py-1 rounded-full bg-slate-500/10 dark:bg-gray-300/20 text-slate-600 dark:text-gray-200 border border-slate-300/20 font-black text-xs shadow-sm">
                             🥈 #2
                           </span>
                         ) : user.rank === 3 ? (
-                          <span className="inline-flex items-center justify-center px-3 py-1 rounded-xl bg-amber-50/60 dark:bg-amber-600/20 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-500/40 font-black text-sm">
+                          <span className="inline-flex items-center justify-center px-3.5 py-1 rounded-full bg-amber-600/10 dark:bg-amber-600/20 text-amber-600 dark:text-amber-300 border border-amber-500/10 font-black text-xs shadow-sm">
                             🥉 #3
                           </span>
                         ) : (
-                          <span className="text-gray-500 dark:text-gray-400 font-bold pl-2">#{user.rank}</span>
+                          <span className="text-gray-500 dark:text-gray-400 font-extrabold pl-2">#{user.rank}</span>
                         )}
                       </td>
                       <td className="px-6 py-4 font-semibold text-gray-900 dark:text-white flex items-center gap-3">
                         <div className="w-9 h-9 rounded-full bg-gradient-to-tr from-cyan-500 to-purple-600 text-white flex items-center justify-center font-black text-sm shadow-md ring-2 ring-cyan-400/40">
                           {user.username.charAt(0).toUpperCase()}
                         </div>
-                        <span className="group-hover:text-brand-600 dark:group-hover:text-cyan-300 transition-colors font-bold text-base">{user.username}</span>
+                        <span className="group-hover:text-brand-500 dark:group-hover:text-cyan-300 transition-colors font-extrabold text-base text-gray-950 dark:text-white">{user.username}</span>
                       </td>
                       <td className="px-6 py-4 text-center font-black text-brand-600 dark:text-cyan-300 text-base">
                         {user.solved_count}
                       </td>
                       <td className="px-6 py-4 text-center">
-                        <span className="px-3.5 py-1.5 bg-emerald-50/60 dark:bg-emerald-950/80 text-emerald-700 dark:text-emerald-300 border border-emerald-200/50 dark:border-emerald-400/50 font-black rounded-xl text-xs shadow-sm dark:shadow-[0_0_15px_rgba(16,185,129,0.3)] inline-block group-hover:scale-105 transition-transform">
+                        <span className="px-3.5 py-1 rounded-full bg-emerald-500/10 dark:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border border-emerald-500/10 font-extrabold text-xs transition-transform inline-block group-hover:scale-105 shadow-sm">
                           {user.points} pts
                         </span>
                       </td>
-                      <td className="px-6 py-4 text-right text-gray-600 dark:text-gray-300 font-bold font-mono">
+                      <td className="px-6 py-4 text-right text-gray-950 dark:text-white font-extrabold font-mono">
                         {user.total_submissions}
                       </td>
                     </tr>

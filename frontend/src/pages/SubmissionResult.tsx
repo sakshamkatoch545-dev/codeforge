@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'
 import { api, Submission, Problem } from '../api'
+import { getUnwrappedCode } from '../problemsConfig'
 
 // ─── Complexity / analysis helpers (duplicated from ProblemDetail for self-containment) ──────────
 
@@ -89,14 +90,14 @@ const parseJudgeLog = (log: string | null) => {
   return { passed, failed, total: passed + failed }
 }
 
-const STATUS_CONFIG: Record<string, { icon: string; label: string; colorClass: string; ringClass: string; gradFrom: string; gradTo: string; particleColor: string }> = {
-  ACCEPTED:            { icon: '✓', label: 'Accepted',              colorClass: 'text-emerald-400', ringClass: 'ring-emerald-500/40', gradFrom: 'from-emerald-900/30', gradTo: 'to-emerald-800/10', particleColor: '#34d399' },
-  WRONG_ANSWER:        { icon: '✗', label: 'Wrong Answer',          colorClass: 'text-red-400',     ringClass: 'ring-red-500/40',     gradFrom: 'from-red-900/30',     gradTo: 'to-red-800/10',     particleColor: '#f87171' },
-  TIME_LIMIT_EXCEEDED: { icon: '⏱', label: 'Time Limit Exceeded',  colorClass: 'text-yellow-400',  ringClass: 'ring-yellow-500/40', gradFrom: 'from-yellow-900/30', gradTo: 'to-yellow-800/10', particleColor: '#facc15' },
-  RUNTIME_ERROR:       { icon: '!', label: 'Runtime Error',         colorClass: 'text-orange-400',  ringClass: 'ring-orange-500/40', gradFrom: 'from-orange-900/30', gradTo: 'to-orange-800/10', particleColor: '#fb923c' },
-  COMPILATION_ERROR:   { icon: '✗', label: 'Compilation Error',     colorClass: 'text-pink-400',    ringClass: 'ring-pink-500/40',   gradFrom: 'from-pink-900/30',   gradTo: 'to-pink-800/10',   particleColor: '#f472b6' },
-  MEMORY_LIMIT_EXCEEDED:{ icon:'🗄', label:'Memory Limit Exceeded', colorClass: 'text-purple-400',  ringClass: 'ring-purple-500/40', gradFrom: 'from-purple-900/30', gradTo: 'to-purple-800/10', particleColor: '#c084fc' },
-  INTERNAL_ERROR:      { icon: '?', label: 'Internal Error',        colorClass: 'text-gray-400',    ringClass: 'ring-gray-500/40',   gradFrom: 'from-gray-900/30',   gradTo: 'to-gray-800/10',   particleColor: '#9ca3af' },
+const STATUS_CONFIG: Record<string, { icon: string; label: string; colorClass: string; borderColorClass: string; ringClass: string; gradFrom: string; gradTo: string; particleColor: string }> = {
+  ACCEPTED:            { icon: '✓', label: 'Accepted',              colorClass: 'text-emerald-600 dark:text-emerald-400', borderColorClass: 'border-emerald-500/20 dark:border-emerald-500/40', ringClass: 'ring-emerald-500/40', gradFrom: 'from-emerald-500/5 dark:from-[#0b1c14]', gradTo: 'to-white/95 dark:to-[#090d16]', particleColor: '#10b981' },
+  WRONG_ANSWER:        { icon: 'X', label: 'Wrong Answer',          colorClass: 'text-red-600 dark:text-red-400',     borderColorClass: 'border-red-500/20 dark:border-red-500/40',     ringClass: 'ring-red-500/40',     gradFrom: 'from-red-500/5 dark:from-[#1c0c11]',     gradTo: 'to-white/95 dark:to-[#090d16]',     particleColor: '#ef4444' },
+  TIME_LIMIT_EXCEEDED: { icon: '⏱', label: 'Time Limit Exceeded',  colorClass: 'text-yellow-600 dark:text-yellow-400',  borderColorClass: 'border-yellow-500/20 dark:border-yellow-500/40',  ringClass: 'ring-yellow-500/40', gradFrom: 'from-yellow-500/5 dark:from-[#1c160b]', gradTo: 'to-white/95 dark:to-[#090d16]', particleColor: '#eab308' },
+  RUNTIME_ERROR:       { icon: '!', label: 'Runtime Error',         colorClass: 'text-orange-600 dark:text-orange-400',  borderColorClass: 'border-orange-500/20 dark:border-orange-500/40',  ringClass: 'ring-orange-500/40', gradFrom: 'from-orange-500/5 dark:from-[#1c120b]', gradTo: 'to-white/95 dark:to-[#090d16]', particleColor: '#f97316' },
+  COMPILATION_ERROR:   { icon: 'X', label: 'Compilation Error',     colorClass: 'text-pink-600 dark:text-pink-400',    borderColorClass: 'border-pink-500/20 dark:border-pink-500/40',     ringClass: 'ring-pink-500/40',   gradFrom: 'from-pink-500/5 dark:from-[#1c0c17]',   gradTo: 'to-white/95 dark:to-[#090d16]',   particleColor: '#ec4899' },
+  MEMORY_LIMIT_EXCEEDED:{ icon:'🗄', label:'Memory Limit Exceeded', colorClass: 'text-purple-600 dark:text-purple-400',  borderColorClass: 'border-purple-500/20 dark:border-purple-500/40',  ringClass: 'ring-purple-500/40', gradFrom: 'from-purple-500/5 dark:from-[#160b1c]', gradTo: 'to-white/95 dark:to-[#090d16]', particleColor: '#a855f7' },
+  INTERNAL_ERROR:      { icon: '?', label: 'Internal Error',        colorClass: 'text-gray-600 dark:text-gray-400',    borderColorClass: 'border-gray-500/20 dark:border-gray-500/40',    ringClass: 'ring-gray-500/40',   gradFrom: 'from-gray-500/5 dark:from-[#111317]',   gradTo: 'to-white/95 dark:to-[#090d16]',   particleColor: '#6b7280' },
 }
 
 // ─── Confetti particle component ───────────────────────────────────────────────────────────────
@@ -204,7 +205,8 @@ export default function SubmissionResult() {
   const tcStats = parseJudgeLog(submission.error_message)
   const runtime = submission.execution_time ?? 0
   const beats = runtime < 50 ? 98.4 : runtime < 100 ? 91.2 : runtime < 250 ? 84.6 : 67.3
-  const linesOfCode = submission.code.split('\n').filter(l => l.trim() !== '').length
+  const unwrappedCode = getUnwrappedCode(submission.code, submission.language)
+  const linesOfCode = unwrappedCode.split('\n').filter(l => l.trim() !== '').length
   const passRate = tcStats.total > 0
     ? isAccepted ? 100 : Math.round((tcStats.passed / tcStats.total) * 100)
     : isAccepted ? 100 : 0
@@ -215,97 +217,117 @@ export default function SubmissionResult() {
       try {
         await api.deleteSubmission(submission.id);
         navigate(`/problems/${problem.slug}`);
-      } catch (err: any) {
-        alert(err.response?.data?.detail || 'Failed to delete submission.');
+      } catch (err) {
+        const error = err as { response?: { data?: { detail?: string } } }
+        alert(error.response?.data?.detail || 'Failed to delete submission.');
       }
     }
   };
 
   return (
-    <div className="min-h-screen bg-gray-950 text-white">
+    <div className="relative min-h-[calc(100vh-4rem)] text-white pb-20 overflow-hidden">
       {isAccepted && <ConfettiCanvas />}
 
-      {/* ── Hero band ────────────────────────────────────────────────────── */}
-      <div className={`w-full bg-gradient-to-br ${cfg.gradFrom} ${cfg.gradTo} border-b border-white/5`}>
-        <div className={`max-w-5xl mx-auto px-6 py-12 transition-all duration-700 ${visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}>
-          
-          {/* Breadcrumb */}
-          <div className="flex items-center gap-2 text-xs text-gray-500 mb-8 font-bold uppercase tracking-wider">
-            <Link to="/problems" className="hover:text-gray-300 transition-colors">Problems</Link>
-            <span>/</span>
-            <Link to={`/problems/${problem.slug}`} className="hover:text-gray-300 transition-colors">{problem.title}</Link>
-            <span>/</span>
-            <span className="text-gray-400">Submission #{submission.id}</span>
-          </div>
+      <div className={`max-w-5xl mx-auto px-6 mt-10 space-y-8 transition-all duration-700 ${visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}>
+        
+        {/* Breadcrumb (placed above the hero card) */}
+        <div className="flex items-center gap-2 text-xs text-slate-700 dark:text-slate-300 font-extrabold uppercase tracking-widest">
+          <Link to="/problems" className="hover:text-brand-600 dark:hover:text-cyan-300 transition-colors">Problems</Link>
+          <span className="text-slate-400">/</span>
+          <Link to={`/problems/${problem.slug}`} className="hover:text-brand-600 dark:hover:text-cyan-300 transition-colors">{problem.title}</Link>
+          <span className="text-slate-400">/</span>
+          <span className="text-slate-900 dark:text-white font-black">Submission #{submission.id}</span>
+        </div>
 
-          <div className="flex flex-col md:flex-row md:items-center gap-8">
-            {/* Status circle */}
-            <div className={`flex-shrink-0 w-28 h-28 rounded-full ring-4 ${cfg.ringClass} bg-gray-900 flex items-center justify-center shadow-2xl`}>
-              <span className={`text-4xl font-black ${cfg.colorClass}`}>{cfg.icon}</span>
+        {/* ── Hero Frosted Glass Panel (Vivid status cues) ── */}
+        <div 
+          className={`relative overflow-hidden p-8 rounded-[24px] flex flex-col md:flex-row justify-between items-start md:items-center gap-6 group transform-gpu bg-white/80 dark:bg-slate-900/80 border border-white/50 dark:border-white/10 backdrop-blur-xl shadow-xl`}
+          style={{ 
+            boxShadow: `0 20px 45px rgba(0, 0, 0, 0.06), 0 0 35px ${cfg.particleColor}15`
+          }}
+        >
+          <div className="flex items-center gap-6 relative z-10 w-full md:w-auto">
+            {/* Status circle with glow */}
+            <div 
+              className={`flex-shrink-0 w-20 h-20 rounded-full border-[3px] bg-white dark:bg-gray-950 flex items-center justify-center shadow-lg`}
+              style={{ 
+                borderColor: cfg.particleColor, 
+                boxShadow: `0 0 25px ${cfg.particleColor}35` 
+              }}
+            >
+              <span 
+                className={`text-4xl font-black ${cfg.colorClass}`}
+                style={{ textShadow: `0 0 10px ${cfg.particleColor}60` }}
+              >
+                {cfg.icon}
+              </span>
             </div>
 
-            <div className="flex-1">
-              <p className="text-sm font-bold uppercase tracking-widest text-gray-500 mb-1">Result</p>
-              <h1 className={`text-5xl font-black ${cfg.colorClass} leading-tight`}>{cfg.label}</h1>
-              <p className="text-gray-400 mt-2 font-semibold text-sm">
+            <div>
+              <p className="text-[10px] font-black uppercase tracking-widest text-slate-500 dark:text-slate-400 mb-1">Result</p>
+              <h1 
+                className={`text-5xl font-black ${cfg.colorClass} leading-tight tracking-tight uppercase`}
+                style={{ textShadow: `0 0 20px ${cfg.particleColor}45` }}
+              >
+                {cfg.label}
+              </h1>
+              <p className="text-slate-800 dark:text-slate-200 mt-2 font-black text-sm flex items-center gap-1.5">
                 {problem.title} &nbsp;·&nbsp;
                 <span className={`
-                  px-2 py-0.5 rounded-full text-xs font-bold
-                  ${problem.difficulty === 'EASY' ? 'bg-emerald-900/40 text-emerald-300' :
-                    problem.difficulty === 'MEDIUM' ? 'bg-yellow-900/40 text-yellow-300' :
-                    'bg-red-900/40 text-red-300'}
+                  px-2.5 py-0.5 rounded text-[11px] font-black uppercase tracking-wider shadow-md
+                  ${problem.difficulty === 'EASY' ? 'bg-emerald-500 text-emerald-950 shadow-emerald-500/20' :
+                    problem.difficulty === 'MEDIUM' ? 'bg-yellow-500 text-yellow-950 shadow-yellow-500/20' :
+                    'bg-red-500 text-red-950 shadow-red-500/20'}
                 `}>{problem.difficulty}</span>
               </p>
             </div>
+          </div>
 
-            {/* Quick stats */}
-            <div className="flex gap-6 md:gap-8 flex-wrap">
-              {[
-                { label: 'Runtime', value: runtime > 0 ? `${runtime}ms` : 'N/A' },
-                { label: 'Language', value: submission.language.toUpperCase() },
-                { label: 'Lines', value: `${linesOfCode}` },
-              ].map(s => (
-                <div key={s.label} className="flex flex-col items-center md:items-end">
-                  <span className="text-[10px] font-bold uppercase tracking-widest text-gray-500">{s.label}</span>
-                  <span className="text-2xl font-black text-white mt-0.5">{s.value}</span>
-                </div>
-              ))}
-            </div>
+          {/* Quick stats (Right aligned inside the glass panel with glowing colors) */}
+          <div className="flex gap-8 md:gap-12 flex-wrap items-center md:justify-end w-full md:w-auto relative z-10">
+            {[
+              { label: 'Runtime', value: runtime > 0 ? `${runtime}ms` : 'N/A', color: 'text-slate-900 dark:text-white', glow: undefined },
+              { label: 'Language', value: submission.language.toUpperCase(), color: 'text-cyan-600 dark:text-cyan-400', glow: 'rgba(34,211,238,0.2)' },
+              { label: 'Lines', value: `${linesOfCode}`, color: 'text-purple-600 dark:text-purple-400', glow: 'rgba(192,132,252,0.2)' },
+            ].map(s => (
+              <div key={s.label} className="flex flex-col items-center md:items-end text-center md:text-right">
+                <span className="text-[10px] font-black uppercase tracking-widest text-slate-500 dark:text-slate-400">{s.label}</span>
+                <span 
+                  className={`text-4xl font-black mt-1 ${s.color}`}
+                  style={{ textShadow: s.glow ? `0 0 15px ${s.glow}` : undefined }}
+                >
+                  {s.value}
+                </span>
+              </div>
+            ))}
           </div>
         </div>
-      </div>
 
-      {/* ── Body ─────────────────────────────────────────────────────────── */}
-      <div className={`max-w-5xl mx-auto px-6 py-10 space-y-6 transition-all duration-700 delay-150 ${visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
-
-        {/* ── Test case progress ── */}
+        {/* ── Test case progress (Glass Panel) ── */}
         {tcStats.total > 0 && (
-          <div className="bg-gray-900 border border-gray-800 rounded-2xl p-6">
+          <div className="bg-white/80 dark:bg-slate-900/80 p-7 rounded-[24px] border border-white/50 dark:border-white/10 shadow-xl backdrop-blur-xl relative overflow-hidden">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-xs font-black uppercase tracking-widest text-gray-500">Test Cases</h2>
-              <span className="text-sm font-black text-gray-300">
-                <span className={isAccepted ? 'text-emerald-400' : 'text-red-400'}>
-                  {isAccepted ? tcStats.total : tcStats.passed}
-                </span>
-                &nbsp;/ {tcStats.total} passed
+              <h2 className="text-sm font-black uppercase tracking-wider text-slate-800 dark:text-slate-200">Test Cases</h2>
+              <span className="text-sm font-black text-slate-600 dark:text-slate-300 tracking-wide">
+                <span className="text-slate-900 dark:text-white text-base font-black">{isAccepted ? tcStats.total : tcStats.passed}/{tcStats.total}</span> passed
               </span>
             </div>
-            <div className="w-full h-3 rounded-full bg-gray-800 overflow-hidden">
+            <div className="w-full h-[8px] rounded-full bg-gray-200/50 dark:bg-slate-950/50 overflow-hidden border border-gray-300/40 dark:border-white/5 shadow-inner">
               <div
                 className={`h-full rounded-full transition-all duration-1000 ${isAccepted
-                  ? 'bg-gradient-to-r from-emerald-500 to-green-400'
-                  : 'bg-gradient-to-r from-red-600 to-red-400'}`}
+                  ? 'bg-emerald-500 shadow-[0_0_12px_rgba(16,185,129,0.6)]'
+                  : 'bg-red-500 shadow-[0_0_12px_rgba(239,68,68,0.6)]'}`}
                 style={{ width: `${passRate}%` }}
               />
             </div>
-            <div className="flex gap-5 mt-3">
-              <span className="flex items-center gap-1.5 text-xs text-emerald-400 font-bold">
-                <span className="h-2 w-2 rounded-full bg-emerald-500 inline-block" />
+            <div className="flex gap-6 mt-4">
+              <span className="flex items-center gap-1.5 text-sm text-emerald-600 dark:text-emerald-400 font-black">
+                <span className="h-3 w-3 rounded-full bg-emerald-500 inline-block shadow-[0_0_8px_rgba(16,185,129,0.6)]" />
                 {isAccepted ? tcStats.total : tcStats.passed} Passed
               </span>
               {!isAccepted && tcStats.failed > 0 && (
-                <span className="flex items-center gap-1.5 text-xs text-red-400 font-bold">
-                  <span className="h-2 w-2 rounded-full bg-red-500 inline-block" />
+                <span className="flex items-center gap-1.5 text-sm text-red-650 dark:text-red-400 font-black">
+                  <span className="h-3 w-3 rounded-full bg-red-500 inline-block shadow-[0_0_8px_rgba(239,68,68,0.6)]" />
                   {tcStats.failed} Failed
                 </span>
               )}
@@ -318,81 +340,110 @@ export default function SubmissionResult() {
 
           {/* LEFT: Analysis */}
           <div className="space-y-4">
-            <h2 className="text-[10px] font-black uppercase tracking-widest text-brand-400 flex items-center gap-2">
-              <span className="h-1 w-6 bg-brand-500 rounded-full inline-block" />
+            <h2 className="text-sm font-black uppercase tracking-wider text-slate-800 dark:text-slate-200 flex items-center gap-2">
+              <span className="h-[3px] w-6 bg-slate-500 dark:bg-slate-400 inline-block" />
               Full Analysis
             </h2>
 
-            {/* Complexity */}
-            <div className="grid grid-cols-2 gap-3">
-              {[
-                { label: 'Time Complexity', value: complexity.time, sub: 'per operation' },
-                { label: 'Space Complexity', value: complexity.space, sub: 'auxiliary memory' },
-              ].map(c => (
-                <div key={c.label} className="bg-gray-900 border border-gray-800 rounded-xl p-4 flex flex-col gap-1">
-                  <span className="text-[9px] font-bold uppercase tracking-wider text-gray-500">{c.label}</span>
-                  <span className="text-2xl font-black text-white font-mono">{c.value}</span>
-                  <span className="text-[10px] text-gray-600">{c.sub}</span>
+            {/* Complexity and approach grid (Matching Dashboard metric cards) */}
+            <div className="grid grid-cols-2 gap-4">
+              {/* Time Complexity */}
+              <div className="relative overflow-hidden bg-white/80 dark:bg-slate-900/80 p-5 rounded-[24px] flex flex-col justify-between h-28 border border-white/50 dark:border-white/10 shadow-lg backdrop-blur-xl">
+                <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-cyan-400 to-blue-500" />
+                <div>
+                  <span className="text-[10px] font-black uppercase tracking-wider text-slate-500 dark:text-slate-400">Time Complexity</span>
+                  <span 
+                    className="block text-3xl font-black text-slate-950 dark:text-white font-mono mt-1"
+                  >
+                    {complexity.time}
+                  </span>
                 </div>
-              ))}
-            </div>
-
-            {/* Approach + Ranking */}
-            <div className="grid grid-cols-2 gap-3">
-              <div className="bg-gray-900 border border-gray-800 rounded-xl p-4 flex flex-col gap-1">
-                <span className="text-[9px] font-bold uppercase tracking-wider text-gray-500">Optimal Approach</span>
-                <span className="text-sm font-black text-brand-300 leading-tight mt-1">{complexity.approach}</span>
+                <span className="text-[10px] text-slate-500 dark:text-slate-400 font-bold uppercase tracking-wider leading-none">per operation</span>
               </div>
-              <div className="bg-gray-900 border border-gray-800 rounded-xl p-4 flex flex-col gap-1">
-                <span className="text-[9px] font-bold uppercase tracking-wider text-gray-500">
-                  {isAccepted ? 'Execution Ranking' : 'Runtime Recorded'}
-                </span>
-                {isAccepted
-                  ? <span className="text-lg font-black text-emerald-400 mt-1">Beats {beats}%</span>
-                  : <span className="text-lg font-black text-gray-400 mt-1">{runtime > 0 ? `${runtime}ms` : 'N/A'}</span>
-                }
-                <span className="text-[10px] text-gray-600">{isAccepted ? 'of all submissions' : 'before judge stopped'}</span>
+
+              {/* Space Complexity */}
+              <div className="relative overflow-hidden bg-white/80 dark:bg-slate-900/80 p-5 rounded-[24px] flex flex-col justify-between h-28 border border-white/50 dark:border-white/10 shadow-lg backdrop-blur-xl">
+                <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-purple-400 to-pink-500" />
+                <div>
+                  <span className="text-[10px] font-black uppercase tracking-wider text-slate-500 dark:text-slate-400">Space Complexity</span>
+                  <span 
+                    className="block text-3xl font-black text-slate-950 dark:text-white font-mono mt-1"
+                  >
+                    {complexity.space}
+                  </span>
+                </div>
+                <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider leading-none">auxiliary memory</span>
+              </div>
+
+              {/* Optimal Approach */}
+              <div className="relative overflow-hidden bg-white/80 dark:bg-slate-900/80 p-5 rounded-[24px] flex flex-col justify-between h-28 border border-white/50 dark:border-white/10 shadow-lg backdrop-blur-xl">
+                <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-amber-400 to-orange-500" />
+                <div>
+                  <span className="text-[10px] font-black uppercase tracking-wider text-slate-500 dark:text-slate-400">Optimal Approach</span>
+                  <span 
+                    className="block text-xl font-black text-cyan-600 dark:text-cyan-400 leading-snug mt-2"
+                  >
+                    {complexity.approach}
+                  </span>
+                </div>
+              </div>
+
+              {/* Runtime Recorded */}
+              <div className="relative overflow-hidden bg-white/80 dark:bg-slate-900/80 p-5 rounded-[24px] flex flex-col justify-between h-28 border border-white/50 dark:border-white/10 shadow-lg backdrop-blur-xl">
+                <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-emerald-400 to-teal-500" />
+                <div>
+                  <span className="text-[10px] font-black uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                    {isAccepted ? 'Execution Ranking' : 'Runtime Recorded'}
+                  </span>
+                  {isAccepted ? (
+                    <span 
+                      className="block text-2xl font-black text-emerald-600 dark:text-emerald-400 mt-2"
+                    >
+                      Beats {beats}%
+                    </span>
+                  ) : (
+                    <span 
+                      className="block text-3xl font-black text-slate-950 dark:text-white mt-1 font-mono"
+                    >
+                      {runtime > 0 ? `${runtime}ms` : 'N/A'}
+                    </span>
+                  )}
+                </div>
               </div>
             </div>
 
             {/* Key Insight */}
-            <div className="bg-indigo-950/40 border border-indigo-800/30 rounded-xl p-4">
-              <p className="text-[10px] font-black uppercase tracking-wider text-indigo-400 mb-2">💡 Key Insight</p>
-              <p className="text-sm text-indigo-200 leading-relaxed font-medium">{complexity.keyInsight}</p>
+            <div className="bg-indigo-50/60 dark:bg-indigo-950/30 border border-indigo-200/50 dark:border-indigo-500/25 rounded-2xl p-5 shadow-lg backdrop-blur-md">
+              <p className="text-xs font-black uppercase tracking-wider text-indigo-600 dark:text-indigo-300 mb-2">💡 Key Insight</p>
+              <p className="text-sm text-indigo-950 dark:text-indigo-100 leading-relaxed font-black">{complexity.keyInsight}</p>
             </div>
 
             {/* Pro Tip */}
-            <div className="bg-brand-950/20 border border-brand-800/20 rounded-xl p-4">
-              <p className="text-[10px] font-black uppercase tracking-wider text-brand-400 mb-2">🚀 Pro Tip</p>
-              <p className="text-sm text-brand-200 leading-relaxed font-medium">{complexity.tips}</p>
+            <div className="bg-brand-50/60 dark:bg-brand-950/20 border border-brand-200/50 dark:border-brand-500/25 rounded-2xl p-5 shadow-lg backdrop-blur-md">
+              <p className="text-xs font-black uppercase tracking-wider text-brand-600 dark:text-cyan-300 mb-2">🚀 Pro Tip</p>
+              <p className="text-sm text-brand-950 dark:text-cyan-100 leading-relaxed font-black">{complexity.tips}</p>
             </div>
           </div>
 
           {/* RIGHT: Judge Log + Code */}
           <div className="space-y-4">
-            <h2 className="text-[10px] font-black uppercase tracking-widest text-gray-500 flex items-center gap-2">
-              <span className="h-1 w-6 bg-gray-700 rounded-full inline-block" />
+            <h2 className="text-sm font-black uppercase tracking-wider text-slate-800 dark:text-slate-200 flex items-center gap-2">
+              <span className="h-[3px] w-6 bg-slate-500 dark:bg-slate-400 inline-block" />
               {isAccepted ? 'Judge Log' : 'Error Details'}
             </h2>
 
             {submission.error_message ? (
-              <pre className={`p-4 rounded-xl text-xs font-mono whitespace-pre-wrap leading-relaxed border overflow-y-auto max-h-80 ${
-                isAccepted
-                  ? 'bg-emerald-950/20 text-emerald-300 border-emerald-900/30'
-                  : submission.status === 'COMPILATION_ERROR'
-                  ? 'bg-pink-950/20 text-pink-300 border-pink-900/30'
-                  : 'bg-red-950/20 text-red-300 border-red-900/30'
-              }`}>
+              <pre className={`p-6 rounded-[24px] text-xs font-mono font-bold whitespace-pre-wrap leading-relaxed border overflow-y-auto max-h-80 min-h-[14rem] shadow-xl bg-slate-950/95 border-red-500/30 text-red-200 dark:bg-slate-950 dark:text-red-300`}>
                 {submission.error_message}
               </pre>
             ) : (
-              <div className="bg-gray-900 border border-gray-800 rounded-xl p-4 text-sm text-gray-500 italic">No judge output available.</div>
+              <div className="bg-white/80 dark:bg-slate-900/80 p-6 rounded-[24px] border border-white/50 dark:border-white/10 text-sm text-slate-400 italic backdrop-blur-xl">No judge output available.</div>
             )}
 
-            {/* Submission metadata */}
-            <div className="bg-gray-900 border border-gray-800 rounded-xl p-4">
-              <p className="text-[10px] font-black uppercase tracking-wider text-gray-500 mb-3">Submission Details</p>
-              <div className="grid grid-cols-2 gap-y-3 text-sm">
+            {/* Submission metadata (Glass Panel) */}
+            <div className="bg-white/80 dark:bg-slate-900/80 p-5 rounded-[24px] border border-white/50 dark:border-white/10 shadow-lg backdrop-blur-xl relative overflow-hidden">
+              <p className="text-xs font-black uppercase tracking-wider text-slate-800 dark:text-slate-200 mb-4">Submission Details</p>
+              <div className="grid grid-cols-2 gap-y-4 text-sm">
                 {[
                   { k: 'Submission ID', v: `#${submission.id}` },
                   { k: 'Language', v: submission.language.toUpperCase() },
@@ -400,8 +451,8 @@ export default function SubmissionResult() {
                   { k: 'Submitted At', v: new Date(submission.created_at).toLocaleString() },
                 ].map(({ k, v }) => (
                   <div key={k}>
-                    <span className="block text-[10px] text-gray-600 font-bold uppercase tracking-wide">{k}</span>
-                    <span className="text-gray-200 font-bold">{v}</span>
+                    <span className="block text-[10px] text-slate-500 dark:text-slate-400 font-extrabold uppercase tracking-wide">{k}</span>
+                    <span className="text-slate-950 dark:text-white font-extrabold mt-0.5 block text-base">{v}</span>
                   </div>
                 ))}
               </div>
@@ -409,23 +460,25 @@ export default function SubmissionResult() {
           </div>
         </div>
 
-        {/* ── Your Code ── */}
-        <div>
-          <h2 className="text-[10px] font-black uppercase tracking-widest text-gray-500 mb-3 flex items-center gap-2">
-            <span className="h-1 w-6 bg-gray-700 rounded-full inline-block" />
-            Your Code
-          </h2>
-          <pre className="bg-gray-900 border border-gray-800 rounded-2xl p-6 text-xs font-mono text-gray-300 whitespace-pre-wrap leading-relaxed overflow-x-auto max-h-96">
-            {submission.code}
-          </pre>
-        </div>
+        {/* ── Your Code (Glass Panel) ── */}
+        {unwrappedCode.trim() && (
+          <div className="bg-white/80 dark:bg-slate-900/80 p-6 rounded-[24px] border border-white/50 dark:border-white/10 shadow-lg backdrop-blur-xl relative overflow-hidden">
+            <h2 className="text-xs font-extrabold uppercase tracking-widest text-slate-800 dark:text-slate-200 mb-4 flex items-center gap-2">
+              <span className="h-[3px] w-6 bg-slate-500 dark:bg-slate-400 inline-block" />
+              Your Code
+            </h2>
+            <pre className="bg-[#060813]/90 border border-slate-900 rounded-xl p-5 text-xs font-mono font-bold text-slate-200 whitespace-pre-wrap leading-relaxed overflow-x-auto max-h-96 shadow-inner">
+              {unwrappedCode}
+            </pre>
+          </div>
+        )}
 
         {/* ── Action Buttons ── */}
-        <div className="flex flex-wrap items-center justify-between gap-4 pt-4 border-t border-gray-800">
+        <div className="flex flex-wrap items-center justify-between gap-4 pt-4 border-t border-gray-300 dark:border-white/10">
           <div className="flex flex-wrap gap-4">
             <Link
               to={`/problems/${problem.slug}`}
-              className="px-6 py-3 rounded-xl font-black text-sm glass-button text-gray-200 border border-gray-700 hover:border-gray-500 transition-all"
+              className="px-6 py-3 rounded-xl font-black text-sm bg-white hover:bg-gray-100 text-slate-800 border border-gray-300/80 shadow-md transition-all cursor-pointer dark:bg-slate-950 dark:text-white dark:border-white/10 dark:hover:bg-slate-900"
             >
               ← Back to Problem
             </Link>
@@ -440,21 +493,21 @@ export default function SubmissionResult() {
             {!isAccepted && (
               <Link
                 to={`/problems/${problem.slug}`}
-                className="px-6 py-3 rounded-xl font-black text-sm bg-red-600/80 hover:bg-red-500 text-white transition-all"
+                className="px-6 py-3 rounded-xl font-black text-sm bg-red-650 hover:bg-red-500 text-white transition-all shadow-md"
               >
                 Try Again
               </Link>
             )}
             <Link
               to="/leaderboard"
-              className="px-6 py-3 rounded-xl font-black text-sm glass-button text-gray-300 border border-gray-700 hover:border-gray-500 transition-all"
+              className="px-6 py-3 rounded-xl font-black text-sm bg-white hover:bg-gray-100 text-slate-800 border border-gray-300/80 shadow-md transition-all cursor-pointer dark:bg-slate-950 dark:text-white dark:border-white/10 dark:hover:bg-slate-900"
             >
               Leaderboard
             </Link>
           </div>
           <button
             onClick={handleDelete}
-            className="px-6 py-3 rounded-xl font-black text-sm bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/30 transition-all cursor-pointer"
+            className="px-6 py-3 rounded-xl font-black text-sm bg-red-500/10 hover:bg-red-500/20 text-red-600 dark:text-red-400 border border-red-200 dark:border-red-500/30 transition-all cursor-pointer"
           >
             🗑️ Delete Submission
           </button>

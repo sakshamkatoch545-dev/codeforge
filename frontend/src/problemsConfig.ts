@@ -311,7 +311,7 @@ export function getWrappedCode(slug: string, language: string, code: string): st
 function getPythonWrapper(code: string, meta: ProblemMetadata): string {
   const fn = meta.funcName;
   let parseBlock = "";
-  let argNames: string[] = [];
+  const argNames: string[] = [];
   let lineIdx = 0;
 
   meta.params.forEach((param, idx) => {
@@ -395,7 +395,7 @@ function getPythonWrapper(code: string, meta: ProblemMetadata): string {
 function getJsWrapper(code: string, meta: ProblemMetadata): string {
   const fn = meta.funcName;
   let parseBlock = "";
-  let argNames: string[] = [];
+  const argNames: string[] = [];
   let lineIdx = 0;
 
   meta.params.forEach((param, idx) => {
@@ -473,7 +473,7 @@ function getJavaWrapper(code: string, meta: ProblemMetadata): string {
   const cleanCode = code.replace(/public\s+class\s+Solution/g, "class Solution");
   const fn = meta.funcName;
   let parseBlock = "";
-  let argNames: string[] = [];
+  const argNames: string[] = [];
   let lineIdx = 0;
 
   meta.params.forEach((param, idx) => {
@@ -605,7 +605,7 @@ function getJavaWrapper(code: string, meta: ProblemMetadata): string {
 function getCppWrapper(code: string, meta: ProblemMetadata): string {
   const fn = meta.funcName;
   let parseBlock = "";
-  let argNames: string[] = [];
+  const argNames: string[] = [];
   let lineIdx = 0;
 
   meta.params.forEach((param, idx) => {
@@ -734,7 +734,7 @@ string formatJson(const vector<T>& vec) {
 function getCWrapper(code: string, meta: ProblemMetadata): string {
   const fn = meta.funcName;
   let parseBlock = "";
-  let argNames: string[] = [];
+  const argNames: string[] = [];
   let lineIdx = 0;
 
   meta.params.forEach((param, idx) => {
@@ -909,4 +909,84 @@ function getCReturn(ret: string): string {
   if (ret === 'float') return 'double';
   if (ret === 'space-array') return 'int*';
   return 'int**';
+}
+
+export function getUnwrappedCode(code: string, language: string): string {
+  const trimmed = code.trim();
+  
+  if (language === 'python') {
+    const idx = trimmed.indexOf("if __name__ == '__main__':");
+    if (idx !== -1) {
+      let userCode = trimmed.substring(0, idx).trim();
+      const prefix = "import sys\nimport json";
+      if (userCode.replace(/\r/g, "").startsWith(prefix)) {
+        userCode = userCode.substring(userCode.indexOf(prefix) + prefix.length).trim();
+      }
+      return userCode;
+    }
+  }
+  
+  if (language === 'javascript') {
+    const idx = trimmed.indexOf("function main() {");
+    if (idx !== -1) {
+      let userCode = trimmed.substring(0, idx).trim();
+      const prefix = "const fs = require('fs');";
+      if (userCode.replace(/\r/g, "").startsWith(prefix)) {
+        userCode = userCode.substring(userCode.indexOf(prefix) + prefix.length).trim();
+      }
+      return userCode;
+    }
+  }
+  
+  if (language === 'java') {
+    const idx = trimmed.indexOf("public class Main {");
+    if (idx !== -1) {
+      let userCode = trimmed.substring(0, idx).trim();
+      const prefix = "import java.util.*;\nimport java.io.*;\nimport java.util.stream.*;";
+      if (userCode.replace(/\r/g, "").startsWith(prefix.replace(/\r/g, ""))) {
+        userCode = userCode.substring(userCode.indexOf("import java.util.stream.*;") + "import java.util.stream.*;".length).trim();
+      }
+      return userCode;
+    }
+  }
+
+  if (language === 'cpp') {
+    const idx = trimmed.indexOf("int main() {");
+    if (idx !== -1) {
+      let userCode = trimmed.substring(0, idx).trim();
+      const prefixMarker = "using namespace std;";
+      const markerIdx = userCode.indexOf(prefixMarker);
+      if (markerIdx !== -1) {
+        userCode = userCode.substring(markerIdx + prefixMarker.length).trim();
+      }
+      // Also remove formatJson helper if present
+      const helperMarker = "string formatJson(const vector<T>& vec)";
+      const helperIdx = userCode.indexOf(helperMarker);
+      if (helperIdx !== -1) {
+        const helperEndMarker = "}";
+        const afterHelperIdx = userCode.indexOf(helperEndMarker, helperIdx + helperMarker.length);
+        if (afterHelperIdx !== -1) {
+          userCode = userCode.substring(afterHelperIdx + 1).trim();
+        }
+      }
+      return userCode;
+    }
+  }
+
+  if (language === 'c') {
+    const idx = trimmed.indexOf("int main() {");
+    if (idx !== -1) {
+      let userCode = trimmed.substring(0, idx).trim();
+      const classSolutionIdx = userCode.indexOf("class Solution");
+      const structSolutionIdx = userCode.indexOf("struct Solution");
+      if (classSolutionIdx !== -1) {
+        userCode = userCode.substring(classSolutionIdx).trim();
+      } else if (structSolutionIdx !== -1) {
+        userCode = userCode.substring(structSolutionIdx).trim();
+      }
+      return userCode;
+    }
+  }
+
+  return code;
 }

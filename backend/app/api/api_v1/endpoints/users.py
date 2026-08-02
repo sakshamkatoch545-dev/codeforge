@@ -83,7 +83,8 @@ def read_leaderboard(
     """
     users = db.query(models.User).filter(
         models.User.is_active == True,
-        models.User.username != "demo-user"
+        models.User.username != "demo-user",
+        ~models.User.username.ilike("%test%")
     ).all()
     leaderboard = []
 

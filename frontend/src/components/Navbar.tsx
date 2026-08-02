@@ -122,7 +122,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentUser, onLogout }) => {
               <Link to="/login" className="px-5 py-2 rounded-xl text-gray-700 dark:text-gray-200 font-bold hover:text-brand-600 dark:hover:text-brand-400 transition-all">
                 Sign In
               </Link>
-              <Link to="/login" className="px-5 py-2 rounded-xl bg-gradient-to-r from-brand-600 to-purple-500 text-white font-bold hover:scale-105 transform transition-all duration-300 shadow-lg shadow-brand-500/30">
+              <Link to="/register" className="px-5 py-2 rounded-xl bg-gradient-to-r from-brand-600 to-purple-500 text-white font-bold hover:scale-105 transform transition-all duration-300 shadow-lg shadow-brand-500/30">
                 Register
               </Link>
             </div>

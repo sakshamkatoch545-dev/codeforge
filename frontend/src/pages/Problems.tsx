@@ -45,7 +45,7 @@ export default function Problems() {
     loadData()
   }, [])
 
-  const handleProblemClick = (e: React.MouseEvent, _slug: string) => {
+  const handleProblemClick = (e: React.MouseEvent) => {
     const isLoggedIn = !!localStorage.getItem('codeforge_token')
     if (!isLoggedIn) {
       e.preventDefault()
@@ -94,7 +94,7 @@ export default function Problems() {
 
             <div className="glass-table overflow-x-auto">
               <table className="w-full text-left border-collapse">
-                <thead className="text-xs font-black text-gray-600 dark:text-cyan-200 uppercase tracking-widest border-b border-white/20 dark:border-white/10">
+                <thead className="text-xs font-black text-gray-800 dark:text-white uppercase tracking-widest border-b border-white/20 dark:border-white/10">
                   <tr>
                     <th className="px-6 py-4 w-24 text-center">Status</th>
                     <th className="px-6 py-4">Title</th>
@@ -106,29 +106,29 @@ export default function Problems() {
                     <tr key={prob.id} className="transition-colors duration-300">
                       <td className="px-6 py-4 font-medium flex justify-center items-center">
                         {solvedIds.has(prob.id) ? (
-                          <div className="flex items-center justify-center w-8 h-8 rounded-full bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 shadow-sm shadow-green-500/20">
-                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" /></svg>
+                          <div className="flex items-center justify-center w-7 h-7 rounded-full bg-emerald-100 dark:bg-emerald-950/80 text-emerald-600 dark:text-emerald-400 shadow-sm">
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3.5} d="M5 13l4 4L19 7" /></svg>
                           </div>
                         ) : (
-                          <span className="text-gray-300 dark:text-gray-600 font-bold">-</span>
+                          <span className="text-gray-300 dark:text-gray-700 font-bold">-</span>
                         )}
                       </td>
                       <td className="px-6 py-4">
                         <Link
                           to={`/problems/${prob.slug}`}
-                          onClick={(e) => handleProblemClick(e, prob.slug)}
-                          className="text-gray-900 dark:text-white font-bold hover:text-brand-600 dark:hover:text-cyan-300 transition-colors text-base"
+                          onClick={handleProblemClick}
+                          className="text-gray-950 dark:text-white font-extrabold hover:text-brand-500 dark:hover:text-cyan-300 transition-colors text-base"
                         >
                           {index + 1}. {prob.title}
                         </Link>
                       </td>
                       <td className="px-6 py-4">
-                        <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider ${
+                        <span className={`inline-flex items-center px-3.5 py-1 rounded-full text-xs font-black uppercase tracking-wider border ${
                           prob.difficulty === 'EASY'
-                            ? 'bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-300 border border-green-300/40'
+                            ? 'bg-emerald-500/10 dark:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border-emerald-500/10'
                             : prob.difficulty === 'MEDIUM'
-                            ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/40 dark:text-yellow-300 border border-yellow-300/40'
-                            : 'bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-300 border border-red-300/40'
+                            ? 'bg-yellow-500/10 dark:bg-yellow-500/20 text-yellow-600 dark:text-yellow-400 border-yellow-500/10'
+                            : 'bg-red-500/10 dark:bg-red-500/20 text-red-600 dark:text-red-400 border-red-500/10'
                         }`}>
                           {prob.difficulty}
                         </span>
