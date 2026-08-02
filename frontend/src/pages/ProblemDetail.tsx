@@ -442,12 +442,12 @@ export default function ProblemDetail() {
         </div>
 
         {/* Controls Bar */}
-        <div className="h-20 bg-white/60 dark:bg-gray-950/60 backdrop-blur-md flex items-center px-8 justify-between">
+        <div className="h-auto md:h-20 bg-white/60 dark:bg-gray-950/60 backdrop-blur-md flex flex-col md:flex-row items-center px-4 md:px-8 py-4 md:py-0 justify-between gap-4 md:gap-0">
           <div className="flex items-center gap-3">
             <select
               value={language}
               onChange={(e) => setLanguage(e.target.value)}
-              className="bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white border-none rounded-xl py-2.5 px-5 text-lg outline-none font-bold cursor-pointer shadow-sm"
+              className="bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white border-none rounded-xl py-2 px-3 md:py-2.5 md:px-5 text-sm md:text-lg outline-none font-bold cursor-pointer shadow-sm"
             >
               <option value="python">Python</option>
               <option value="javascript">JavaScript</option>
@@ -463,14 +463,14 @@ export default function ProblemDetail() {
               ↺ Reset
             </button>
           </div>
-          <div className="space-x-3 flex items-center">
+          <div className="flex flex-wrap items-center justify-center gap-3">
             {running && (
-              <span className="text-lg text-brand-600 animate-pulse font-bold mr-2">Running...</span>
+              <span className="text-sm md:text-lg text-brand-600 animate-pulse font-bold mr-2">Running...</span>
             )}
             {(runResult || submission || error || submitting) && (
               <button
                 onClick={() => setShowConsole(!showConsole)}
-                className={`px-4 py-2.5 text-sm font-extrabold rounded-xl border transition-all flex items-center gap-2 shadow-sm cursor-pointer ${
+                className={`px-3 md:px-4 py-2 md:py-2.5 text-xs md:text-sm font-extrabold rounded-xl border transition-all flex items-center gap-2 shadow-sm cursor-pointer ${
                   showConsole
                     ? 'bg-brand-500/20 text-brand-300 border-brand-500/40 hover:bg-brand-500/30'
                     : 'bg-gray-800/80 text-gray-200 border-gray-700 hover:bg-gray-700'
@@ -484,14 +484,14 @@ export default function ProblemDetail() {
             <button
               onClick={handleRun}
               disabled={running || submitting}
-              className="px-8 py-3 text-lg font-black glass-button rounded-xl transition disabled:opacity-50 text-gray-800 dark:text-gray-200 shadow-md hover:scale-105"
+              className="px-4 md:px-8 py-2 md:py-3 text-sm md:text-lg font-black glass-button rounded-xl transition disabled:opacity-50 text-gray-800 dark:text-gray-200 shadow-md hover:scale-105"
             >
               Run Code
             </button>
             <button
               onClick={handleSubmit}
               disabled={submitting || running}
-              className="px-8 py-3 text-lg font-black glass-button-primary rounded-xl transition disabled:opacity-50 shadow-md shadow-brand-500/30 hover:scale-105"
+              className="px-4 md:px-8 py-2 md:py-3 text-sm md:text-lg font-black glass-button-primary rounded-xl transition disabled:opacity-50 shadow-md shadow-brand-500/30 hover:scale-105"
             >
               {submitting ? 'Submitting...' : 'Submit'}
             </button>

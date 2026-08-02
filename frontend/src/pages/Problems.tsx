@@ -64,7 +64,7 @@ export default function Problems() {
   return (
     <div className="relative min-h-[calc(100vh-4rem)]">
 
-      <div className="relative z-10 max-w-6xl mx-auto p-6 mt-16 animate-float">
+      <div className="relative z-10 max-w-6xl mx-auto px-4 md:px-6 mt-16 animate-float">
         <div className="glass-panel p-7 shadow-[0_20px_50px_rgba(0,0,0,0.05)] dark:shadow-[0_30px_70px_rgba(0,0,0,0.6)] relative overflow-hidden transform-gpu">
           
           <div className="relative z-10 space-y-6">
