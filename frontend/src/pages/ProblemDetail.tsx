@@ -219,19 +219,6 @@ export default function ProblemDetail() {
   const [running, setRunning] = useState(false)
   const [runResult, setRunResult] = useState<{output: string, error: string, status: string, expected?: string, match?: boolean, input?: string} | null>(null)
 
-  // Theme observer for Monaco Editor
-  const [isDarkMode, setIsDarkMode] = useState(() => 
-    typeof document !== 'undefined' ? document.documentElement.classList.contains('dark') : true
-  )
-
-  useEffect(() => {
-    const observer = new MutationObserver(() => {
-      setIsDarkMode(document.documentElement.classList.contains('dark'))
-    })
-    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] })
-    return () => observer.disconnect()
-  }, [])
-
   useEffect(() => {
     async function loadProblem() {
       if (!slug) return
@@ -441,7 +428,7 @@ export default function ProblemDetail() {
           <Editor
             height="100%"
             language={language}
-            theme={isDarkMode ? 'vs-dark' : 'light'}
+            theme="vs-dark"
             value={code}
             onChange={handleCodeChange}
             options={{
