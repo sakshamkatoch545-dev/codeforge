@@ -1,128 +1,119 @@
-# CodeForge
+<div align="center">
+  <h1>🚀 CodeForge</h1>
+  <p><em>A full-stack, production-ready coding practice platform featuring a Docker-isolated code judge, real-time leaderboard, discussions, and AI-powered hints.</em></p>
+</div>
 
-A full-stack, production-ready coding practice platform featuring a Docker-isolated code judge, real-time leaderboard, discussions, and AI-powered hints.
+---
 
-## Tech Stack
+## 🛠️ Tech Stack
 
-- **Frontend**: React, Vite, TypeScript, Tailwind CSS, Framer Motion, Monaco Editor
-- **Backend**: FastAPI, Python 3.12, SQLAlchemy, Pydantic
-- **Database**: PostgreSQL (Production), SQLite (Development)
-- **Judge Engine**: Docker-based secure sandbox execution (Python, C++, Java, JS)
+| Domain | Technologies |
+| :--- | :--- |
+| **Frontend** | React, Vite, TypeScript, Tailwind CSS, Framer Motion, Monaco Editor |
+| **Backend** | FastAPI, Python 3.12, SQLAlchemy, Pydantic |
+| **Database** | PostgreSQL (Production), SQLite (Development) |
+| **Judge Engine** | Docker-based secure sandbox execution (Python, C++, Java, JS) |
 
-## Quick Start (Docker)
+---
 
-1. Clone the repository.
-2. Copy `.env.example` to `.env`:
+## ⚡ Quick Start (Docker)
+
+Get up and running in minutes with Docker Compose:
+
+1. **Clone the repository**
+2. **Setup environment variables**:
    ```bash
    cp .env.example .env
    ```
-3. Run with Docker Compose:
+3. **Run with Docker Compose**:
    ```bash
    docker-compose up -d --build
    ```
-4. Access the platform:
-   - Frontend: `http://localhost:3000`
-   - Backend API Docs: `http://localhost:8000/docs`
-   - Admin Dashboard: `http://localhost:8501`
+4. **Access the platform**:
+   - 🌐 **Frontend**: [http://localhost:3000](http://localhost:3000)
+   - 📖 **Backend API Docs**: [http://localhost:8000/docs](http://localhost:8000/docs)
+   - 📊 **Admin Dashboard**: [http://localhost:8501](http://localhost:8501)
 
-## Local Development (Without Docker Compose)
+---
 
-### Backend
-1. Navigate to `backend/`:
-   ```bash
-   cd backend
-   ```
-2. Create virtual environment and install dependencies:
-   ```bash
-   python -m venv venv
-   source venv/bin/activate  # On Windows: venv\Scripts\activate
-   pip install -r requirements.txt
-   ```
-3. Run Alembic migrations (make sure DB is running):
-   ```bash
-   alembic upgrade head
-   ```
-4. Start FastAPI server:
-   ```bash
-   uvicorn app.main:app --reload
-   ```
+## 💻 Local Development (Without Docker Compose)
 
-### Frontend
-1. Navigate to `frontend/`:
-   ```bash
-   cd frontend
-   ```
-2. Install dependencies:
-   ```bash
-   npm install
-   ```
-3. Start development server:
-   ```bash
-   npm run dev
-   ```
+> [!TIP]
+> Use these steps if you want to run the services individually for active development.
 
-### Admin Dashboard
-1. Navigate to `admin_dashboard/`:
-   ```bash
-   cd admin_dashboard
-   ```
-2. Install dependencies:
-   ```bash
-   pip install -r requirements.txt
-   ```
-3. Run Streamlit app:
-   ```bash
-   streamlit run app.py
-   ```
+### 🔌 Backend
+```bash
+cd backend
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+pip install -r requirements.txt
+alembic upgrade head      # Ensure DB is running first
+uvicorn app.main:app --reload
+```
 
-## Documentation
-- Architecture overview can be found in `docs/architecture.md` (to be created)
-- API documentation is available at `/docs` when the backend is running.
+### 🎨 Frontend
+```bash
+cd frontend
+npm install
+npm run dev
+```
 
-## Features
+### 📈 Admin Dashboard
+```bash
+cd admin_dashboard
+pip install -r requirements.txt
+streamlit run app.py
+```
+
+---
+
+## ✨ Features
 
 ### 🚀 Core Platform
-- **Secure Code Execution**: Isolated Docker containers for evaluating user submissions safely. Limits CPU and memory usage to prevent malicious code from impacting the host.
-- **Multi-Language Support**: Currently supporting Python, JavaScript, Java, and C++. Easily extensible architecture allows adding new language runtimes by defining a new Docker image.
-- **Real-Time Leaderboard**: Competitive ranking system based on problem difficulty, successful completions, and execution time.
-- **Integrated Admin Dashboard**: Streamlit-powered dashboard for managing users, adding new problems, and viewing real-time site analytics.
+- 🔒 **Secure Code Execution**: Isolated Docker containers evaluate user submissions safely, limiting CPU and memory usage to protect the host.
+- 🌍 **Multi-Language Support**: Execute Python, JavaScript, Java, and C++ out of the box. Easily extensible for new languages.
+- 🏆 **Real-Time Leaderboard**: Competitive ranking system driven by problem difficulty, completions, and execution time.
+- 📊 **Admin Dashboard**: A Streamlit interface to manage users, add problems, and view site analytics.
 
 ### 💡 Interactive Learning
-- **AI-Powered Hints**: LLM-integrated hints and code explanations tailored to the user's specific errors, guiding them without giving away the direct answer.
-- **Discussion Forums**: Threaded discussions for each problem, allowing users to share approaches, ask questions, and upvote helpful answers.
-- **Rich Code Editor**: Monaco-editor integration (the core of VS Code) with syntax highlighting, auto-completion, snippet support, and customizable themes.
-- **Detailed Execution Analytics**: View execution time, memory usage, and detailed error tracebacks to help optimize solutions.
+- 🤖 **AI-Powered Hints**: LLM-integrated explanations tailored to user errors, guiding without revealing the full answer.
+- 💬 **Discussion Forums**: Threaded problem discussions for sharing approaches, asking questions, and upvoting solutions.
+- ⌨️ **Rich Code Editor**: Monaco-editor (VS Code engine) integration with syntax highlighting, auto-completion, and themes.
+- 📉 **Execution Analytics**: Detailed metrics on execution time, memory usage, and error tracebacks.
 
-## Architecture
+---
 
-CodeForge follows a modern, decoupled microservices architecture designed for scalability, security, and ease of maintenance:
+## 🏗️ Architecture
 
-1. **Frontend Client (React/Vite)**: 
-   - Handles the UI/UX, routing, and state management. Communicates with the backend via RESTful endpoints and uses WebSockets for real-time updates (like submission status and leaderboard changes).
-2. **Backend API (FastAPI)**: 
-   - Serves as the main gateway. It manages business logic, secure authentication (JWT), role-based access control, and database interactions using SQLAlchemy.
-3. **Execution Judge Engine**: 
-   - A highly secure, specialized background worker system. When a submission is created, the backend enqueues a job. The Judge picks it up, spins up a temporary, sandboxed Docker container, executes the user code against predefined, hidden test cases, captures the standard output/error, and reports the verdict (Accepted, Wrong Answer, Time Limit Exceeded, etc.).
-4. **Relational Database (PostgreSQL)**:
-   - The primary data store for users, problems, test cases, submissions, and discussion threads. Optimized with appropriate indexing for fast queries.
-5. **Caching & Message Queue (Redis)**:
-   - Used for rate-limiting API requests, managing active sessions, and serving as the message broker for the execution queue.
+CodeForge utilizes a decoupled microservices architecture for scalability and security:
 
-## Key API Endpoints
+1. **Frontend Client**: React/Vite app communicating via REST and WebSockets (for live leaderboard/submission status).
+2. **Backend API**: FastAPI gateway handling business logic, JWT authentication, and DB interactions.
+3. **Judge Engine**: Background worker that spins up ephemeral, sandboxed Docker containers to evaluate code against hidden test cases.
+4. **Database (PostgreSQL)**: Primary store for users, problems, test cases, and discussions.
+5. **Cache & Queue (Redis)**: Manages API rate-limiting, sessions, and task queuing for the judge engine.
 
-The API is fully documented using OpenAPI standard. Once the backend is running, visit `/docs` for the interactive Swagger UI. Below are some of the core endpoints:
+---
 
-- `POST /api/v1/auth/login`: Authenticate a user and receive a JWT access token.
-- `POST /api/v1/auth/register`: Create a new user account.
-- `GET /api/v1/problems`: Retrieve a paginated list of available problems with filtering and sorting.
-- `GET /api/v1/problems/{id}`: Fetch detailed problem descriptions, constraints, and skeleton code.
-- `POST /api/v1/submissions`: Submit a code solution for evaluation.
-- `GET /api/v1/submissions/{id}`: Poll for the status and results of a specific submission.
-- `GET /api/v1/leaderboard`: Fetch the global ranking of users, sorted by score.
+## 🔌 Key API Endpoints
 
-## Environment Variables
+Once the backend is running, the interactive Swagger UI is available at `/docs`.
 
-To properly configure the application for local development or production, you need to set up your environment variables. A sample `.env.example` is provided in the root directory. Key variables include:
+| Method | Endpoint | Description |
+| :--- | :--- | :--- |
+| `POST` | `/api/v1/auth/login` | Authenticate and receive a JWT token |
+| `POST` | `/api/v1/auth/register`| Create a new user account |
+| `GET`  | `/api/v1/problems`     | Paginated list of available problems |
+| `GET`  | `/api/v1/problems/{id}`| Detailed problem constraints and skeleton code |
+| `POST` | `/api/v1/submissions`  | Submit a code solution for evaluation |
+| `GET`  | `/api/v1/submissions/{id}`| Poll for submission status |
+| `GET`  | `/api/v1/leaderboard`  | Global user rankings |
+
+---
+
+## ⚙️ Environment Variables
+
+A sample `.env.example` is provided in the root directory. Key variables include:
 
 ```env
 # Database Configuration
@@ -138,22 +129,27 @@ ACCESS_TOKEN_EXPIRE_MINUTES=1440
 # Redis Connection
 REDIS_URL=redis://redis:6379/0
 
-# Optional: AI Integration (for hints)
+# Optional: AI Integration
 OPENAI_API_KEY=your_openai_key_here
 ```
 
-## Contributing
+---
 
-We welcome contributions from the community! Whether it's a bug fix, new feature, or adding a new coding problem, please follow these steps:
+## 🤝 Contributing
 
-1. **Fork the Repository**: Create your own fork of the project on GitHub.
-2. **Create a Feature Branch**: `git checkout -b feature/amazing-feature`.
-3. **Commit your Changes**: `git commit -m 'Add amazing feature'`.
-4. **Push to the Branch**: `git push origin feature/amazing-feature`.
-5. **Open a Pull Request**: Submit your PR for review. Provide a clear description of your changes.
+We welcome community contributions! To get started:
 
-Please ensure your code passes all linting rules and tests before opening a PR. For major architectural changes, open an issue first to discuss what you would like to change.
+1. **Fork** the repository.
+2. **Create a branch**: `git checkout -b feature/amazing-feature`.
+3. **Commit changes**: `git commit -m 'Add amazing feature'`.
+4. **Push**: `git push origin feature/amazing-feature`.
+5. **Open a PR**: Submit a detailed Pull Request.
 
-## License
+> [!NOTE]
+> Ensure your code passes all linting rules and tests before opening a PR. For major changes, please open an issue first to discuss your ideas.
 
-This project is licensed under the MIT License. See the `LICENSE` file for more details.
+---
+
+## 📄 License
+
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for more details.
