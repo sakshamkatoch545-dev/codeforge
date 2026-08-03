@@ -23,6 +23,7 @@ A full-stack, production-ready coding practice platform featuring a Docker-isola
 4. Access the platform:
    - Frontend: `http://localhost:3000`
    - Backend API Docs: `http://localhost:8000/docs`
+   - Admin Dashboard: `http://localhost:8501`
 
 ## Local Development (Without Docker Compose)
 
@@ -58,6 +59,20 @@ A full-stack, production-ready coding practice platform featuring a Docker-isola
 3. Start development server:
    ```bash
    npm run dev
+   ```
+
+### Admin Dashboard
+1. Navigate to `admin_dashboard/`:
+   ```bash
+   cd admin_dashboard
+   ```
+2. Install dependencies:
+   ```bash
+   pip install -r requirements.txt
+   ```
+3. Run Streamlit app:
+   ```bash
+   streamlit run app.py
    ```
 
 ## Documentation
