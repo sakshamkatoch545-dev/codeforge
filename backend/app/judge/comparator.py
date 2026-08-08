@@ -32,6 +32,10 @@ def compare(actual: str, expected: str, float_tolerance: float = 1e-5) -> bool:
     if actual_s == expected_s:
         return True
 
+    # Normalize array representations by stripping brackets and commas
+    actual_s = re.sub(r'[\[\],]', ' ', actual_s)
+    expected_s = re.sub(r'[\[\],]', ' ', expected_s)
+
     # Token-by-token float comparison
     actual_tokens = actual_s.split()
     expected_tokens = expected_s.split()

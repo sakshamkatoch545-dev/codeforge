@@ -58,6 +58,38 @@ def read_user_me(
     user_schema.practice_count = practice_count
     return user_schema
 
+@router.put("/me", response_model=schemas.User)
+def update_user_me(
+    *,
+    db: Session = Depends(deps.get_db),
+    body: schemas.UserUpdateMe,
+    current_user: models.User = Depends(deps.get_current_active_user),
+) -> Any:
+    """
+    Update current user's username and/or password.
+    """
+    from app.core.security import verify_password, get_password_hash
+
+    # --- Username change ---
+    if body.username and body.username != current_user.username:
+        existing = crud.user.get_by_username(db, username=body.username)
+        if existing:
+            raise HTTPException(status_code=400, detail="Username already taken.")
+        current_user.username = body.username
+
+    # --- Password change ---
+    if body.new_password:
+        if not body.current_password:
+            raise HTTPException(status_code=400, detail="Current password is required to set a new one.")
+        if not verify_password(body.current_password, current_user.hashed_password):
+            raise HTTPException(status_code=400, detail="Current password is incorrect.")
+        current_user.hashed_password = get_password_hash(body.new_password)
+
+    db.add(current_user)
+    db.commit()
+    db.refresh(current_user)
+    return schemas.User.model_validate(current_user)
+
 @router.get("/me/solved", response_model=List[int])
 def read_user_solved(
     db: Session = Depends(deps.get_db),

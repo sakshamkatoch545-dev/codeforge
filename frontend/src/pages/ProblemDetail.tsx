@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'
 import Editor from '@monaco-editor/react'
 import { api, Problem, Submission, TestCase } from '../api'
@@ -255,6 +255,75 @@ export default function ProblemDetail() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
 
+  const editorRef = useRef<any>(null)
+
+  const handleEditorMount = (editor: any, monaco: any) => {
+    editorRef.current = editor;
+
+    // Add Select All to the right-click / long-press context menu
+    editor.addAction({
+      id: 'custom-select-all',
+      label: 'Select All',
+      contextMenuGroupId: '9_cutcopypaste',
+      contextMenuOrder: 1.5,
+      run: function (ed: any) {
+        const fullRange = ed.getModel().getFullModelRange();
+        ed.setSelection(fullRange);
+        ed.focus();
+      }
+    });
+
+    // Add Paste to the right-click / long-press context menu
+    editor.addAction({
+      id: 'custom-paste',
+      label: 'Paste',
+      contextMenuGroupId: '9_cutcopypaste',
+      contextMenuOrder: 2.5,
+      run: async function (ed: any) {
+        try {
+          const text = await navigator.clipboard.readText();
+          ed.executeEdits('custom-paste', [{
+            range: ed.getSelection(),
+            text: text,
+            forceMoveMarkers: true
+          }]);
+        } catch (err) {
+          console.error('Failed to read clipboard contents: ', err);
+          alert('Clipboard access denied. Please use your device paste option.');
+        }
+      }
+    });
+  }
+
+  const handleFormatCode = () => {
+    if (!editorRef.current) return;
+    const editor = editorRef.current;
+    
+    const model = editor.getModel();
+    if (model) {
+      const currentCode = model.getValue();
+      
+      // Clean up excessive blank lines and trailing whitespace (common on mobile copy/paste)
+      let cleanedCode = currentCode
+        .split('\n')
+        .map((line: string) => line.trimEnd())
+        .join('\n')
+        .replace(/\n{3,}/g, '\n\n'); // Max 2 consecutive newlines
+        
+      if (currentCode !== cleanedCode) {
+        editor.executeEdits("formatter", [{
+          range: model.getFullModelRange(),
+          text: cleanedCode
+        }]);
+      }
+    }
+
+    // Try standard format (works for JS/TS)
+    editor.getAction('editor.action.formatDocument')?.run();
+    // Try reindent lines (works for Python without a formatter)
+    editor.getAction('editor.action.reindentlines')?.run();
+  }
+
   const [language, setLanguage] = useState('python')
   const [code, setCode] = useState('')
   
@@ -292,10 +361,13 @@ export default function ProblemDetail() {
     const saved = localStorage.getItem(`codeforge_code_${problemObj.slug}_${lang}`);
     if (saved !== null) {
       setCode(saved);
-    } else if (problemObj.starter_code && problemObj.starter_code[lang]) {
-      setCode(problemObj.starter_code[lang]);
     } else {
-      setCode(getStarterCode(problemObj.slug, lang));
+      // Prioritize the frontend dynamic generator for the new formatting
+      let defaultCode = getStarterCode(problemObj.slug, lang);
+      if ((defaultCode.includes('def solve()') || defaultCode === '// here goes the code') && problemObj.starter_code && problemObj.starter_code[lang]) {
+        defaultCode = problemObj.starter_code[lang];
+      }
+      setCode(defaultCode);
     }
   }
 
@@ -309,14 +381,14 @@ export default function ProblemDetail() {
 
   const handleResetCode = () => {
     if (!problem) return;
-    if (window.confirm('Reset code to original starter template?')) {
-      localStorage.removeItem(`codeforge_code_${problem.slug}_${language}`);
-      if (problem.starter_code && problem.starter_code[language]) {
-        setCode(problem.starter_code[language]);
-      } else {
-        setCode(getStarterCode(problem.slug, language));
-      }
+    
+    // Remove confirm dialog because mobile browsers sometimes block it, breaking the button
+    localStorage.removeItem(`codeforge_code_${problem.slug}_${language}`);
+    let defaultCode = getStarterCode(problem.slug, language);
+    if ((defaultCode.includes('def solve()') || defaultCode === '// here goes the code') && problem.starter_code && problem.starter_code[language]) {
+      defaultCode = problem.starter_code[language];
     }
+    setCode(defaultCode);
   }
 
   // Update code when language changes
@@ -358,11 +430,13 @@ export default function ProblemDetail() {
 
       const res = await api.runCode(wrappedCode, langParam, inputData, problem?.id)
       
+      const normalizeOutput = (str: string) => str.replace(/[\[\],]/g, ' ').trim().replace(/\s+/g, ' ');
+
       setRunResult({
         ...res,
         input: inputData,
         expected: expectedOutput,
-        match: res.status === 'SUCCESS' && res.output.trim() === expectedOutput
+        match: res.status === 'SUCCESS' && normalizeOutput(res.output) === normalizeOutput(expectedOutput)
       })
     } catch (err) {
       const error = err as { response?: { data?: { detail?: string } } }
@@ -478,7 +552,30 @@ export default function ProblemDetail() {
       </div>
 
       {/* Code Editor Panel */}
-      <div className="relative z-10 w-full lg:w-1/2 flex flex-col bg-white/40 dark:bg-gray-900/40 backdrop-blur-md glass-panel shadow-2xl rounded-2xl overflow-hidden min-h-[600px] h-fit">
+      <div className="relative z-10 w-full lg:w-1/2 flex flex-col md:bg-white/40 md:dark:bg-gray-900/40 md:backdrop-blur-md md:glass-panel md:shadow-2xl md:rounded-2xl bg-[#1e1e1e] overflow-hidden min-h-[600px] h-fit">
+
+        {/* Mobile Top Bar (LeetCode Style) */}
+        <div className="md:hidden flex items-center justify-between px-3 py-2 bg-[#282828] border-b border-[#3e3e42] z-30 shrink-0">
+          <select
+            value={language}
+            onChange={(e) => setLanguage(e.target.value)}
+            className="bg-transparent text-gray-300 text-sm font-semibold outline-none border-none appearance-none cursor-pointer"
+          >
+            <option value="python">Python</option>
+            <option value="javascript">JavaScript</option>
+            <option value="c">C</option>
+            <option value="cpp">C++</option>
+            <option value="java">Java</option>
+          </select>
+          <div className="flex gap-4 items-center">
+            <button onClick={handleFormatCode} className="text-gray-400 hover:text-white font-mono font-bold" title="Format Code">
+              {'{ }'}
+            </button>
+            <button onClick={handleResetCode} className="text-gray-400 hover:text-white text-lg leading-none" title="Reset Code">
+              ↺
+            </button>
+          </div>
+        </div>
 
         {/* Editor Container (Flexible Middle) */}
         <div className="flex-1 min-h-[500px] relative">
@@ -489,19 +586,27 @@ export default function ProblemDetail() {
             theme="vs-dark"
             value={code}
             onChange={handleCodeChange}
+            onMount={handleEditorMount}
             options={{
               minimap: { enabled: false },
-              fontSize: 14,
+              fontSize: window.innerWidth < 768 ? 12 : 14,
               fontFamily: 'Fira Code, Menlo, Monaco, Consolas, Courier New, monospace',
               padding: { top: 16, bottom: 16 },
-              lineHeight: 22,
+              lineHeight: window.innerWidth < 768 ? 20 : 22,
+              wordWrap: 'on',
+              wordWrapIndent: 'none',
+              scrollBeyondLastLine: false,
+              automaticLayout: true,
+              guides: {
+                indentation: window.innerWidth >= 768,
+              },
             }}
           />
           </div>
         </div>
 
-        {/* Controls Bar (Moved to Bottom) */}
-        <div className="relative z-30 min-h-[90px] py-4 bg-white/60 dark:bg-gray-950/60 backdrop-blur-md flex flex-col md:flex-row items-center px-4 md:px-8 justify-between gap-4 md:gap-0 border-t border-white/20 dark:border-white/10 shrink-0 mt-auto">
+        {/* Controls Bar (Desktop Only) */}
+        <div className="hidden md:flex relative z-30 min-h-[90px] py-4 bg-white/60 dark:bg-gray-950/60 backdrop-blur-md flex-row items-center px-4 md:px-8 justify-between gap-4 md:gap-0 border-t border-white/20 dark:border-white/10 shrink-0 mt-auto">
           <div className="flex items-center gap-3">
             <select
               value={language}
@@ -557,8 +662,35 @@ export default function ProblemDetail() {
           </div>
         </div>
 
+        {/* Mobile Bottom Bar (LeetCode Style) */}
+        <div className="md:hidden flex items-center justify-between px-3 py-2 bg-[#282828] border-t border-[#3e3e42] z-30 shrink-0 mt-auto">
+          <button
+            onClick={() => setShowConsole(!showConsole)}
+            className="text-gray-400 text-xs flex items-center gap-1 hover:text-white font-medium"
+          >
+            {showConsole ? '▼ Console' : '▲ Console'}
+            {(runResult || submission || error || submitting) && <span className="h-1.5 w-1.5 rounded-full bg-brand-400 animate-pulse ml-1" />}
+          </button>
+          <div className="flex gap-2">
+            <button
+              onClick={handleRun}
+              disabled={running || submitting}
+              className="px-4 py-1.5 rounded-md text-sm font-semibold bg-[#3e3e42] hover:bg-[#4e4e52] text-gray-200 disabled:opacity-50"
+            >
+              Run
+            </button>
+            <button
+              onClick={handleSubmit}
+              disabled={submitting || running}
+              className="px-4 py-1.5 rounded-md text-sm font-semibold bg-[#2cbb5d] hover:bg-[#32d46a] text-white disabled:opacity-50"
+            >
+              {submitting ? '...' : 'Submit'}
+            </button>
+          </div>
+        </div>
+
         {/* Results Panel overlay */}
-        {showConsole && (submission || submitting || error || runResult) && (
+        {showConsole && (submission || submitting || running || error || runResult) && (
           <div className="w-full h-[500px] bg-gradient-to-br from-slate-50/90 via-blue-50/90 to-teal-50/90 dark:from-slate-900/90 dark:via-blue-900/40 dark:to-teal-900/40 backdrop-blur-2xl border-t border-blue-200/50 dark:border-white/5 shadow-[0_-10px_40px_rgba(0,0,0,0.1)] dark:shadow-[0_-10px_40px_rgba(0,0,0,0.3)] overflow-y-auto flex flex-col z-20 mt-auto relative">
             {/* Console Header Bar */}
             <div className="sticky top-0 bg-white/40 dark:bg-black/30 backdrop-blur-3xl z-10 flex justify-between items-center px-6 py-3.5 border-b border-blue-200/50 dark:border-white/5 shadow-sm">
@@ -621,7 +753,21 @@ export default function ProblemDetail() {
                     <div>
                       <h4 className="text-sm font-black text-emerald-600 dark:text-emerald-400 uppercase tracking-widest mb-2">Expected Output</h4>
                       <div className="bg-emerald-50/50 dark:bg-gray-900/90 border border-emerald-200 dark:border-emerald-900/50 text-emerald-800 dark:text-emerald-300 rounded-xl p-4 font-mono text-lg font-black whitespace-pre-wrap leading-relaxed min-h-[56px] shadow-inner tracking-wide">
-                        {runResult.expected}
+                        {(() => {
+                           // If it's a match, just show the actual output so it's visually identical
+                           if (runResult.match) return runResult.output;
+                           
+                           const str = runResult.expected.trim();
+                           if (!str.startsWith('[') && str.includes(' ')) {
+                             // Try to match the actual output's spacing if actual output is an array
+                             const actual = runResult.output.trim();
+                             if (actual.startsWith('[') && actual.includes(', ')) {
+                               return '[' + str.split(/\s+/).join(', ') + ']';
+                             }
+                             return '[' + str.split(/\s+/).join(',') + ']';
+                           }
+                           return str;
+                        })()}
                       </div>
                     </div>
                   )}
@@ -639,7 +785,7 @@ export default function ProblemDetail() {
             )}
 
             {/* Submission Output — Loading State */}
-            {submitting && (
+            {(submitting || running) && (
               <div className="flex flex-col gap-4 py-5 animate-in fade-in duration-300">
                 <div className="flex items-center gap-3 text-cyan-400 font-bold">
                   <span className="animate-spin h-5 w-5 border-2 border-cyan-500 border-t-transparent rounded-full shadow-[0_0_10px_rgba(6,182,212,0.5)]" />
@@ -720,15 +866,95 @@ export default function ProblemDetail() {
                       <h4 className="text-xs font-extrabold uppercase tracking-widest text-gray-300 mb-2">
                         {isAccepted ? '📋 Judge Log' : '🔍 Error Details'}
                       </h4>
-                      <pre className={`p-4 rounded-xl text-sm font-bold overflow-x-auto border font-mono whitespace-pre-wrap leading-relaxed shadow-inner ${
-                        isAccepted
-                          ? 'bg-emerald-950/40 text-emerald-300 border-emerald-500/40'
-                          : submission.status === 'COMPILATION_ERROR'
-                          ? 'bg-pink-950/40 text-pink-300 border-pink-500/40'
-                          : 'bg-red-950/40 text-red-300 border-red-500/40'
-                      }`}>
-                        {submission.error_message}
-                      </pre>
+                      <div>
+                        {(() => {
+                          try {
+                            const data = JSON.parse(submission.error_message);
+                            if (Array.isArray(data)) {
+                              const validData = data
+                                .filter((tc: any) => tc.input_data?.trim() || tc.expected_output?.trim() || tc.actual_output?.trim())
+                                .slice(0, 10);
+                              return (
+                                <div className="flex flex-col gap-4">
+                                  {validData.map((tc: any, i: number) => {
+                                    const actualStr = String(tc.actual_output || '').trim();
+                                    let expectedStr = String(tc.expected_output || '').trim();
+                                    
+                                    if (tc.verdict === 'ACCEPTED') {
+                                      expectedStr = actualStr;
+                                    } else if (!expectedStr.startsWith('[') && expectedStr.includes(' ')) {
+                                      if (actualStr.startsWith('[') && actualStr.includes(', ')) {
+                                        expectedStr = '[' + expectedStr.split(/\s+/).join(', ') + ']';
+                                      } else if (actualStr.startsWith('[')) {
+                                        expectedStr = '[' + expectedStr.split(/\s+/).join(',') + ']';
+                                      }
+                                    }
+
+                                    const isTcAccepted = tc.verdict === 'ACCEPTED';
+
+                                    return (
+                                      <div key={i} className="border border-gray-700/80 bg-gray-900/90 rounded-2xl p-5 shadow-inner">
+                                        <div className="flex items-center justify-between mb-4">
+                                          <h4 className="text-sm font-black text-white uppercase tracking-widest">Test Case {tc.test_case_id || i + 1}</h4>
+                                          <span className={`text-xs font-black px-2 py-1 rounded-md uppercase tracking-widest ${isTcAccepted ? 'bg-emerald-900/40 text-emerald-400' : 'bg-red-900/40 text-red-400'}`}>
+                                            {tc.verdict}
+                                          </span>
+                                        </div>
+                                        
+                                        {tc.input_data && (
+                                          <div className="mb-4">
+                                            <h5 className="text-[10px] font-extrabold text-gray-500 uppercase tracking-widest mb-1.5">Input</h5>
+                                            <div className="bg-gray-950/80 rounded-xl p-3 font-mono text-sm text-gray-300 border border-gray-800">
+                                              {tc.input_data.trim()}
+                                            </div>
+                                          </div>
+                                        )}
+
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                          <div>
+                                            <h5 className="text-[10px] font-extrabold text-gray-500 uppercase tracking-widest mb-1.5">Your Output</h5>
+                                            <div className={`rounded-xl p-3 font-mono text-sm font-bold whitespace-pre-wrap ${isTcAccepted ? 'bg-emerald-950/20 text-emerald-300 border border-emerald-900/50' : 'bg-red-950/20 text-red-300 border border-red-900/50'}`}>
+                                              {actualStr || <span className="text-gray-600 italic">None</span>}
+                                            </div>
+                                          </div>
+                                          <div>
+                                            <h5 className="text-[10px] font-extrabold text-gray-500 uppercase tracking-widest mb-1.5">Expected Output</h5>
+                                            <div className="bg-emerald-950/20 text-emerald-300 border border-emerald-900/50 rounded-xl p-3 font-mono text-sm font-bold whitespace-pre-wrap">
+                                              {expectedStr || <span className="text-gray-600 italic">None</span>}
+                                            </div>
+                                          </div>
+                                        </div>
+                                        
+                                        {tc.stderr && (
+                                          <div className="mt-4">
+                                            <h5 className="text-[10px] font-extrabold text-pink-500 uppercase tracking-widest mb-1.5">Error</h5>
+                                            <div className="bg-pink-950/20 text-pink-300 border border-pink-900/50 rounded-xl p-3 font-mono text-xs whitespace-pre-wrap">
+                                              {tc.stderr.trim()}
+                                            </div>
+                                          </div>
+                                        )}
+                                      </div>
+                                    );
+                                  })}
+                                </div>
+                              );
+                            }
+                          } catch (e) {
+                            // fallback to raw string
+                          }
+                          return (
+                            <pre className={`p-4 rounded-xl text-sm font-bold overflow-x-auto border font-mono whitespace-pre-wrap leading-relaxed shadow-inner ${
+                              isAccepted
+                                ? 'bg-emerald-950/40 text-emerald-300 border-emerald-500/40'
+                                : submission.status === 'COMPILATION_ERROR'
+                                ? 'bg-pink-950/40 text-pink-300 border-pink-500/40'
+                                : 'bg-red-950/40 text-red-300 border-red-500/40'
+                            }`}>
+                              {submission.error_message}
+                            </pre>
+                          );
+                        })()}
+                      </div>
                     </div>
                   )}
 

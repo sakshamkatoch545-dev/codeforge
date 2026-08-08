@@ -64,12 +64,12 @@ export default function Problems() {
   return (
     <div className="relative min-h-[calc(100vh-4rem)]">
 
-      <div className="relative z-10 max-w-6xl mx-auto px-4 md:px-6 mt-16">
-        <div className="glass-panel p-7 shadow-[0_20px_50px_rgba(0,0,0,0.05)] dark:shadow-[0_30px_70px_rgba(0,0,0,0.6)] relative overflow-hidden transform-gpu">
+      <div className="relative z-10 max-w-6xl mx-auto px-3 md:px-6 mt-8 md:mt-16">
+        <div className="glass-panel p-4 md:p-7 shadow-[0_20px_50px_rgba(0,0,0,0.05)] dark:shadow-[0_30px_70px_rgba(0,0,0,0.6)] relative overflow-hidden transform-gpu">
           
-          <div className="relative z-10 space-y-6">
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-6 pb-2">
-              <h1 className="text-4xl font-black tracking-tighter text-gray-900 dark:text-white uppercase mb-0">
+          <div className="relative z-10 space-y-4 md:space-y-6">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4 pb-2">
+              <h1 className="text-2xl md:text-4xl font-black tracking-tighter text-gray-900 dark:text-white uppercase mb-0">
                 <span className="bg-gradient-to-r from-gray-900 dark:from-white via-cyan-600 dark:via-cyan-100 to-gray-900 dark:to-white bg-clip-text text-transparent drop-shadow-md">
                   Problems
                 </span>
@@ -77,10 +77,10 @@ export default function Problems() {
               
               {localStorage.getItem('codeforge_token') && (
                 <div className="flex flex-col items-start sm:items-end gap-2 w-full sm:w-auto">
-                  <span className="text-xs font-black text-cyan-800 dark:text-cyan-300 uppercase tracking-widest bg-cyan-100 dark:bg-cyan-950/80 px-4 py-2 rounded-2xl border border-cyan-300 dark:border-cyan-400/50 shadow-md">
+                  <span className="text-xs font-black text-cyan-800 dark:text-cyan-300 uppercase tracking-widest bg-cyan-100 dark:bg-cyan-950/80 px-3 py-1.5 rounded-2xl border border-cyan-300 dark:border-cyan-400/50 shadow-md">
                     ⚡ Progress: {solvedIds.size} / {problems.length}
                   </span>
-                  <div className="w-full sm:w-64 h-3 bg-gray-200/50 dark:bg-gray-800/50 rounded-full overflow-hidden shadow-inner border border-white/20">
+                  <div className="w-full sm:w-64 h-2.5 bg-gray-200/50 dark:bg-gray-800/50 rounded-full overflow-hidden shadow-inner border border-white/20">
                     <div 
                       className="h-full bg-gradient-to-r from-brand-500 to-purple-500 rounded-full transition-all duration-1000 relative"
                       style={{ width: `${problems.length ? (solvedIds.size / problems.length) * 100 : 0}%` }}
@@ -92,7 +92,47 @@ export default function Problems() {
               )}
             </div>
 
-            <div className="glass-table overflow-x-auto">
+            {/* ── Mobile Card List (visible on small screens) ── */}
+            <div className="flex flex-col gap-2 md:hidden">
+              {problems.map((prob, index) => (
+                <Link
+                  key={prob.id}
+                  to={`/problems/${prob.slug}`}
+                  onClick={handleProblemClick}
+                  className="flex items-center gap-3 p-4 rounded-2xl bg-white/60 dark:bg-gray-800/60 border border-white/50 dark:border-white/10 hover:bg-white/80 dark:hover:bg-gray-700/60 active:scale-[0.98] transition-all duration-200 shadow-sm"
+                >
+                  {/* Solved indicator */}
+                  <div className="shrink-0">
+                    {solvedIds.has(prob.id) ? (
+                      <div className="flex items-center justify-center w-7 h-7 rounded-full bg-emerald-500/15 dark:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400">
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3.5} d="M5 13l4 4L19 7" /></svg>
+                      </div>
+                    ) : (
+                      <div className="w-7 h-7 rounded-full border-2 border-gray-200 dark:border-gray-700 flex items-center justify-center">
+                        <span className="text-xs font-black text-gray-400">{index + 1}</span>
+                      </div>
+                    )}
+                  </div>
+                  {/* Title */}
+                  <span className="flex-1 font-bold text-sm text-gray-900 dark:text-white">
+                    {index + 1}. {prob.title}
+                  </span>
+                  {/* Difficulty badge */}
+                  <span className={`shrink-0 inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-wider border ${
+                    prob.difficulty === 'EASY'
+                      ? 'bg-emerald-500/10 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-400 border-emerald-500/20'
+                      : prob.difficulty === 'MEDIUM'
+                      ? 'bg-yellow-500/10 dark:bg-yellow-500/20 text-yellow-700 dark:text-yellow-400 border-yellow-500/20'
+                      : 'bg-red-500/10 dark:bg-red-500/20 text-red-700 dark:text-red-400 border-red-500/20'
+                  }`}>
+                    {prob.difficulty}
+                  </span>
+                </Link>
+              ))}
+            </div>
+
+            {/* ── Desktop Table (hidden on small screens) ── */}
+            <div className="hidden md:block glass-table overflow-x-auto">
               <table className="w-full text-left border-collapse">
                 <thead>
                   <tr>

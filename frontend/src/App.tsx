@@ -8,6 +8,7 @@ import Login from './pages/Login'
 import Register from './pages/Register'
 import Home from './pages/Home'
 import SubmissionResult from './pages/SubmissionResult'
+import About from './pages/About'
 import { api, UserInfo } from './api'
 import Navbar from './components/Navbar'
 import BackgroundAnimation from './components/BackgroundAnimation'
@@ -62,6 +63,7 @@ function App() {
           <Route path="/submissions/:id" element={<SubmissionResult />} />
           <Route path="/leaderboard" element={<Leaderboard />} />
           <Route path="/profile" element={<Profile />} />
+          <Route path="/about" element={<About />} />
         </Routes>
       </main>
     </div>

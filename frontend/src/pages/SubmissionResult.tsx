@@ -290,16 +290,16 @@ export default function SubmissionResult() {
           </div>
 
           {/* Quick stats (Right aligned inside the glass panel with glowing colors) */}
-          <div className="flex gap-8 md:gap-12 flex-wrap items-center md:justify-end w-full md:w-auto relative z-10">
+          <div className="flex flex-row flex-wrap gap-x-6 gap-y-5 sm:gap-8 md:gap-12 justify-start md:justify-end w-full md:w-auto relative z-10 mt-4 md:mt-0">
             {[
               { label: 'Runtime', value: runtime > 0 ? `${runtime}ms` : 'N/A', color: 'text-slate-900 dark:text-white', glow: undefined },
               { label: 'Language', value: submission.language.toUpperCase(), color: 'text-cyan-600 dark:text-cyan-400', glow: 'rgba(34,211,238,0.2)' },
               { label: 'Lines', value: `${linesOfCode}`, color: 'text-purple-600 dark:text-purple-400', glow: 'rgba(192,132,252,0.2)' },
             ].map(s => (
-              <div key={s.label} className="flex flex-col items-center md:items-end text-center md:text-right">
+              <div key={s.label} className="flex flex-col items-start md:items-end text-left md:text-right min-w-[80px]">
                 <span className="text-[10px] font-black uppercase tracking-widest text-slate-500 dark:text-slate-400">{s.label}</span>
                 <span 
-                  className={`text-4xl font-black mt-1 ${s.color}`}
+                  className={`text-2xl sm:text-3xl md:text-4xl font-black mt-1 ${s.color}`}
                   style={{ textShadow: s.glow ? `0 0 15px ${s.glow}` : undefined }}
                 >
                   {s.value}
@@ -359,7 +359,7 @@ export default function SubmissionResult() {
                 <div>
                   <span className="text-[10px] font-black uppercase tracking-wider text-slate-500 dark:text-slate-400">Time Complexity</span>
                   <span 
-                    className="block text-3xl font-black text-slate-950 dark:text-white font-mono mt-1"
+                    className="block text-2xl md:text-3xl font-black text-slate-950 dark:text-white font-mono mt-1"
                   >
                     {complexity.time}
                   </span>
@@ -373,7 +373,7 @@ export default function SubmissionResult() {
                 <div>
                   <span className="text-[10px] font-black uppercase tracking-wider text-slate-500 dark:text-slate-400">Space Complexity</span>
                   <span 
-                    className="block text-3xl font-black text-slate-950 dark:text-white font-mono mt-1"
+                    className="block text-2xl md:text-3xl font-black text-slate-950 dark:text-white font-mono mt-1"
                   >
                     {complexity.space}
                   </span>
@@ -387,7 +387,7 @@ export default function SubmissionResult() {
                 <div>
                   <span className="text-[10px] font-black uppercase tracking-wider text-slate-500 dark:text-slate-400">Optimal Approach</span>
                   <span 
-                    className="block text-xl font-black text-cyan-600 dark:text-cyan-400 leading-snug mt-2"
+                    className="block text-lg md:text-xl font-black text-cyan-600 dark:text-cyan-400 leading-snug mt-2"
                   >
                     {complexity.approach}
                   </span>
@@ -403,13 +403,13 @@ export default function SubmissionResult() {
                   </span>
                   {isAccepted ? (
                     <span 
-                      className="block text-2xl font-black text-emerald-600 dark:text-emerald-400 mt-2"
+                      className="block text-xl md:text-2xl font-black text-emerald-600 dark:text-emerald-400 mt-2"
                     >
                       Beats {beats}%
                     </span>
                   ) : (
                     <span 
-                      className="block text-3xl font-black text-slate-950 dark:text-white mt-1 font-mono"
+                      className="block text-2xl md:text-3xl font-black text-slate-950 dark:text-white mt-1 font-mono"
                     >
                       {runtime > 0 ? `${runtime}ms` : 'N/A'}
                     </span>
@@ -443,10 +443,37 @@ export default function SubmissionResult() {
 
                 {testResults.length > 0 ? (
                   <div className="space-y-4 max-h-[500px] overflow-y-auto custom-scrollbar pr-2">
-                    {testResults.map((tc, idx) => {
-                      const tcPassed = tc.verdict === 'ACCEPTED'
-                      return (
-                        <div key={idx} className={`p-4 sm:p-5 rounded-2xl border transition-all duration-300 ${tcPassed ? 'bg-emerald-50/50 dark:bg-emerald-950/20 border-emerald-100 dark:border-emerald-900/30' : 'bg-red-50/50 dark:bg-red-950/20 border-red-100 dark:border-red-900/30'}`}>
+                    {(() => {
+                      const seen = new Set<string>();
+                      const uniqueResults = testResults
+                        .filter((tc) => (tc.input_data || '').trim() || (tc.expected_output || '').trim() || (tc.actual_output || '').trim())
+                        .filter((tc) => {
+                          const key = `${(tc.input_data || '').trim()}___${(tc.expected_output || '').trim()}___${(tc.actual_output || '').trim()}`;
+                          if (seen.has(key)) return false;
+                          seen.add(key);
+                          return true;
+                        })
+                        .slice(0, 10);
+
+                      return uniqueResults.map((tc, idx) => {
+                        const tcPassed = tc.verdict === 'ACCEPTED';
+                        const actualStr = String(tc.actual_output || '').trim();
+                        let expectedStr = String(tc.expected_output || '').trim();
+
+                        if (tcPassed) {
+                          expectedStr = actualStr || expectedStr;
+                        } else if (!expectedStr.startsWith('[') && expectedStr.includes(' ')) {
+                          if (actualStr.startsWith('[') && actualStr.includes(', ')) {
+                            expectedStr = '[' + expectedStr.split(/\s+/).join(', ') + ']';
+                          } else if (actualStr.startsWith('[')) {
+                            expectedStr = '[' + expectedStr.split(/\s+/).join(',') + ']';
+                          }
+                        } else if (!expectedStr && actualStr === '[]') {
+                          expectedStr = '[]';
+                        }
+
+                        return (
+                          <div key={idx} className={`p-4 sm:p-5 rounded-2xl border transition-all duration-300 ${tcPassed ? 'bg-emerald-50/50 dark:bg-emerald-950/20 border-emerald-100 dark:border-emerald-900/30' : 'bg-red-50/50 dark:bg-red-950/20 border-red-100 dark:border-red-900/30'}`}>
                           <div className="flex flex-wrap items-center justify-between gap-4 mb-4">
                             <div className="flex items-center gap-3">
                               <span className="font-bold text-gray-900 dark:text-white">Test Case #{tc.test_case_id}</span>
@@ -468,12 +495,12 @@ export default function SubmissionResult() {
                             <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
                               <div className="space-y-1">
                                 <span className="text-xs font-black text-gray-400 dark:text-gray-500 uppercase tracking-wider pl-1">Expected Output</span>
-                                <pre className="text-xs font-mono font-bold bg-emerald-50/50 dark:bg-emerald-950/20 p-3 rounded-xl overflow-x-auto text-emerald-700 dark:text-emerald-400 shadow-inner border border-emerald-100 dark:border-emerald-900/20">{tc.expected_output}</pre>
+                                <pre className="text-xs font-mono font-bold bg-emerald-50/50 dark:bg-emerald-950/20 p-3 rounded-xl overflow-x-auto text-emerald-700 dark:text-emerald-400 shadow-inner border border-emerald-100 dark:border-emerald-900/20">{expectedStr}</pre>
                               </div>
                               <div className="space-y-1">
                                 <span className="text-xs font-black text-gray-400 dark:text-gray-500 uppercase tracking-wider pl-1">Actual Output</span>
                                 <pre className={`text-xs font-mono font-bold p-3 rounded-xl overflow-x-auto shadow-inner border ${tcPassed ? 'bg-emerald-50/50 dark:bg-emerald-950/20 text-emerald-700 dark:text-emerald-400 border-emerald-100 dark:border-emerald-900/20' : 'bg-red-50/50 dark:bg-red-950/20 text-red-700 dark:text-red-400 border-red-100 dark:border-red-900/20'}`}>
-                                  {tc.actual_output || (tcPassed ? tc.expected_output : 'No Output')}
+                                  {actualStr || (tcPassed ? expectedStr : 'No Output')}
                                 </pre>
                               </div>
                             </div>
@@ -487,9 +514,10 @@ export default function SubmissionResult() {
                               </div>
                             )}
                           </div>
-                        </div>
-                      )
-                    })}
+                          </div>
+                        );
+                      });
+                    })()}
                   </div>
                 ) : (
                   <pre className={`p-6 rounded-[24px] text-xs font-mono font-bold whitespace-pre-wrap leading-relaxed border overflow-y-auto max-h-80 min-h-[14rem] shadow-xl bg-slate-950/95 border-red-500/30 text-red-200 dark:bg-slate-950 dark:text-red-300`}>

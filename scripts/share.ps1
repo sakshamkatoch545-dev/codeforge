@@ -29,4 +29,4 @@ Write-Host ""
 # Kill any existing ngrok to avoid ERR_NGROK_334
 Stop-Process -Name "ngrok" -Force -ErrorAction SilentlyContinue
 
-& $NGROK http $Port
+& $NGROK http "127.0.0.1:$Port"

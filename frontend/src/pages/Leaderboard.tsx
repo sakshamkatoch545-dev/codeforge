@@ -93,10 +93,10 @@ export default function Leaderboard() {
   return (
     <div className="relative min-h-[calc(100vh-4rem)] text-gray-900 dark:text-white pb-20 overflow-hidden">
       
-      <div className="relative z-10 max-w-5xl mx-auto p-6 mt-12 space-y-8 animate-fade-in">
+      <div className="relative z-10 max-w-5xl mx-auto p-4 md:p-6 mt-8 md:mt-12 space-y-6 md:space-y-8 animate-fade-in">
         <div className="text-center md:text-left flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
-            <h1 className="text-4xl font-black uppercase tracking-tight text-gray-900 dark:text-white flex items-center justify-center md:justify-start gap-3 drop-shadow-sm">
+            <h1 className="text-2xl md:text-4xl font-black uppercase tracking-tight text-gray-900 dark:text-white flex items-center justify-center md:justify-start gap-3 drop-shadow-sm">
               🏆 Global Leaderboard
             </h1>
             <p className="text-gray-600 dark:text-gray-300 text-sm mt-1.5 font-medium">
@@ -107,24 +107,54 @@ export default function Leaderboard() {
 
         {/* ── Top Podium Section ── */}
         {users.length > 0 && (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-end max-w-3xl mx-auto pt-4 pb-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 items-end max-w-3xl mx-auto pt-4 pb-4">
+            {/* 1st Place (Gold) — always first on mobile */}
+            {goldUser && (
+              <div 
+                onClick={() => setSelectedUser(goldUser)}
+                className="order-1 md:order-2 glass-table md:-translate-y-4 hover:scale-[1.05] transition-all duration-300 cursor-pointer group p-6 md:p-8 flex flex-col items-center justify-center text-center relative"
+              >
+                <div className="relative mb-4 md:mb-5">
+                  <div className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-gradient-to-tr from-yellow-500 via-amber-400 to-yellow-300 text-white flex items-center justify-center font-black text-2xl shadow-xl ring-4 ring-yellow-400/50 shadow-yellow-500/30">
+                    {goldUser.username.charAt(0).toUpperCase()}
+                  </div>
+                  <span className="absolute -top-3 -right-3 md:-top-4 md:-right-4 text-3xl md:text-4xl animate-bounce-subtle">👑</span>
+                </div>
+                <h3 className="font-black text-gray-900 dark:text-white text-lg md:text-xl group-hover:text-yellow-600 dark:group-hover:text-yellow-400 transition-colors">
+                  {goldUser.username}
+                </h3>
+                <span className="text-xs text-yellow-600 dark:text-yellow-400 font-black uppercase tracking-widest mt-1">Champion</span>
+                <div className="mt-3 md:mt-4 flex gap-4 md:gap-6 w-full justify-center text-sm border-t border-yellow-500/20 pt-3 md:pt-4">
+                  <div>
+                    <span className="block font-black text-yellow-600 dark:text-yellow-400 text-base md:text-lg">{goldUser.solved_count}</span>
+                    <span className="text-[10px] text-gray-500 dark:text-gray-400 font-semibold uppercase">Solved</span>
+                  </div>
+                  <div className="w-px bg-yellow-500/20 h-8 self-center" />
+                  <div>
+                    <span className="block font-black text-emerald-600 dark:text-emerald-400 text-base md:text-lg">{goldUser.points}</span>
+                    <span className="text-[10px] text-gray-500 dark:text-gray-400 font-semibold uppercase">Points</span>
+                  </div>
+                </div>
+              </div>
+            )}
+
             {/* 2nd Place (Silver) */}
             {silverUser ? (
               <div 
                 onClick={() => setSelectedUser(silverUser)}
-                className="order-2 md:order-1 glass-table hover:scale-[1.03] transition-all duration-300 cursor-pointer group p-6 flex flex-col items-center justify-center text-center"
+                className="order-2 md:order-1 glass-table hover:scale-[1.03] transition-all duration-300 cursor-pointer group p-5 md:p-6 flex flex-col items-center justify-center text-center"
               >
-                <div className="relative mb-4">
-                  <div className="w-16 h-16 rounded-full bg-gradient-to-tr from-slate-400 to-slate-200 text-white flex items-center justify-center font-black text-xl shadow-md ring-4 ring-slate-300/40">
+                <div className="relative mb-3 md:mb-4">
+                  <div className="w-14 h-14 md:w-16 md:h-16 rounded-full bg-gradient-to-tr from-slate-400 to-slate-200 text-white flex items-center justify-center font-black text-xl shadow-md ring-4 ring-slate-300/40">
                     {silverUser.username.charAt(0).toUpperCase()}
                   </div>
-                  <span className="absolute -top-3 -right-3 text-3xl animate-bounce-subtle">🥈</span>
+                  <span className="absolute -top-3 -right-3 text-2xl md:text-3xl animate-bounce-subtle">🥈</span>
                 </div>
-                <h3 className="font-black text-gray-900 dark:text-white text-lg group-hover:text-cyan-600 dark:group-hover:text-cyan-300 transition-colors">
+                <h3 className="font-black text-gray-900 dark:text-white text-base md:text-lg group-hover:text-cyan-600 dark:group-hover:text-cyan-300 transition-colors">
                   {silverUser.username}
                 </h3>
                 <span className="text-xs text-gray-500 dark:text-gray-400 font-bold uppercase tracking-wider mt-1">Silver Rank</span>
-                <div className="mt-4 flex gap-4 w-full justify-center text-sm border-t border-white/10 pt-4">
+                <div className="mt-3 md:mt-4 flex gap-4 w-full justify-center text-sm border-t border-white/10 pt-3 md:pt-4">
                   <div>
                     <span className="block font-black text-brand-600 dark:text-cyan-400">{silverUser.solved_count}</span>
                     <span className="text-[10px] text-gray-500 dark:text-gray-400 font-semibold uppercase">Solved</span>
@@ -140,53 +170,23 @@ export default function Leaderboard() {
               <div className="order-2 md:order-1 h-1 hidden md:block" />
             )}
 
-            {/* 1st Place (Gold) */}
-            {goldUser && (
-              <div 
-                onClick={() => setSelectedUser(goldUser)}
-                className="order-1 md:order-2 glass-table md:-translate-y-4 hover:scale-[1.05] transition-all duration-300 cursor-pointer group p-8 flex flex-col items-center justify-center text-center relative"
-              >
-                <div className="relative mb-5">
-                  <div className="w-20 h-20 rounded-full bg-gradient-to-tr from-yellow-500 via-amber-400 to-yellow-300 text-white flex items-center justify-center font-black text-2xl shadow-xl ring-4 ring-yellow-400/50 shadow-yellow-500/30">
-                    {goldUser.username.charAt(0).toUpperCase()}
-                  </div>
-                  <span className="absolute -top-4 -right-4 text-4xl animate-bounce-subtle">👑</span>
-                </div>
-                <h3 className="font-black text-gray-900 dark:text-white text-xl group-hover:text-yellow-600 dark:group-hover:text-yellow-400 transition-colors">
-                  {goldUser.username}
-                </h3>
-                <span className="text-xs text-yellow-600 dark:text-yellow-400 font-black uppercase tracking-widest mt-1">Champion</span>
-                <div className="mt-4 flex gap-6 w-full justify-center text-sm border-t border-yellow-500/20 pt-4">
-                  <div>
-                    <span className="block font-black text-yellow-600 dark:text-yellow-400 text-lg">{goldUser.solved_count}</span>
-                    <span className="text-[10px] text-gray-500 dark:text-gray-400 font-semibold uppercase">Solved</span>
-                  </div>
-                  <div className="w-px bg-yellow-500/20 h-8 self-center" />
-                  <div>
-                    <span className="block font-black text-emerald-600 dark:text-emerald-400 text-lg">{goldUser.points}</span>
-                    <span className="text-[10px] text-gray-500 dark:text-gray-400 font-semibold uppercase">Points</span>
-                  </div>
-                </div>
-              </div>
-            )}
-
             {/* 3rd Place (Bronze) */}
             {bronzeUser ? (
               <div 
                 onClick={() => setSelectedUser(bronzeUser)}
-                className="order-3 glass-table hover:scale-[1.03] transition-all duration-300 cursor-pointer group p-6 flex flex-col items-center justify-center text-center"
+                className="order-3 glass-table hover:scale-[1.03] transition-all duration-300 cursor-pointer group p-5 md:p-6 flex flex-col items-center justify-center text-center"
               >
-                <div className="relative mb-4">
-                  <div className="w-16 h-16 rounded-full bg-gradient-to-tr from-amber-600 to-amber-400 text-white flex items-center justify-center font-black text-xl shadow-md ring-4 ring-amber-500/40">
+                <div className="relative mb-3 md:mb-4">
+                  <div className="w-14 h-14 md:w-16 md:h-16 rounded-full bg-gradient-to-tr from-amber-600 to-amber-400 text-white flex items-center justify-center font-black text-xl shadow-md ring-4 ring-amber-500/40">
                     {bronzeUser.username.charAt(0).toUpperCase()}
                   </div>
-                  <span className="absolute -top-3 -right-3 text-3xl animate-bounce-subtle">🥉</span>
+                  <span className="absolute -top-3 -right-3 text-2xl md:text-3xl animate-bounce-subtle">🥉</span>
                 </div>
-                <h3 className="font-black text-gray-900 dark:text-white text-lg group-hover:text-cyan-600 dark:group-hover:text-cyan-300 transition-colors">
+                <h3 className="font-black text-gray-900 dark:text-white text-base md:text-lg group-hover:text-cyan-600 dark:group-hover:text-cyan-300 transition-colors">
                   {bronzeUser.username}
                 </h3>
                 <span className="text-xs text-gray-500 dark:text-gray-400 font-bold uppercase tracking-wider mt-1">Bronze Rank</span>
-                <div className="mt-4 flex gap-4 w-full justify-center text-sm border-t border-white/10 pt-4">
+                <div className="mt-3 md:mt-4 flex gap-4 w-full justify-center text-sm border-t border-white/10 pt-3 md:pt-4">
                   <div>
                     <span className="block font-black text-brand-600 dark:text-cyan-400">{bronzeUser.solved_count}</span>
                     <span className="text-[10px] text-gray-500 dark:text-gray-400 font-semibold uppercase">Solved</span>
@@ -204,11 +204,43 @@ export default function Leaderboard() {
           </div>
         )}
 
-        {/* Ultra-Translucent Aesthetic Table Container */}
-        <div className="glass-panel p-7 shadow-[0_20px_50px_rgba(0,0,0,0.05)] dark:shadow-[0_30px_70px_rgba(0,0,0,0.6)] relative overflow-hidden transform-gpu">
+        {/* Rankings Panel */}
+        <div className="glass-panel p-4 md:p-7 shadow-[0_20px_50px_rgba(0,0,0,0.05)] dark:shadow-[0_30px_70px_rgba(0,0,0,0.6)] relative overflow-hidden transform-gpu">
           
           <div className="relative z-10 space-y-6">
-            <div className="glass-table overflow-x-auto">
+
+            {/* ── Mobile Card List ── */}
+            <div className="flex flex-col gap-2 md:hidden">
+              {users.map((user) => (
+                <div
+                  key={user.id}
+                  onClick={() => setSelectedUser(user)}
+                  className="flex items-center gap-3 p-3.5 rounded-2xl bg-white/60 dark:bg-gray-800/60 border border-white/50 dark:border-white/10 active:scale-[0.98] transition-all duration-200 cursor-pointer"
+                >
+                  {/* Rank badge */}
+                  <div className="shrink-0 w-9 text-center">
+                    {user.rank === 1 ? <span className="text-lg">🥇</span>
+                      : user.rank === 2 ? <span className="text-lg">🥈</span>
+                      : user.rank === 3 ? <span className="text-lg">🥉</span>
+                      : <span className="text-xs font-black text-gray-500 dark:text-gray-400">#{user.rank}</span>
+                    }
+                  </div>
+                  {/* Avatar */}
+                  <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-cyan-500 to-purple-600 text-white flex items-center justify-center font-black text-sm shadow-md shrink-0">
+                    {user.username.charAt(0).toUpperCase()}
+                  </div>
+                  {/* Username */}
+                  <span className="flex-1 font-bold text-sm text-gray-900 dark:text-white truncate">{user.username}</span>
+                  {/* Solved */}
+                  <span className="shrink-0 text-sm font-black text-brand-600 dark:text-cyan-400">{user.solved_count} <span className="text-[10px] text-gray-400 font-semibold">solved</span></span>
+                  {/* Points */}
+                  <span className="shrink-0 px-2.5 py-1 rounded-full bg-emerald-500/10 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-400 border border-emerald-500/10 font-extrabold text-xs">{user.points}pts</span>
+                </div>
+              ))}
+            </div>
+
+            {/* ── Desktop Table ── */}
+            <div className="hidden md:block glass-table overflow-x-auto">
               <table className="w-full text-left border-collapse">
                 <thead>
                   <tr>

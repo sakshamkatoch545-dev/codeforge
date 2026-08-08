@@ -98,16 +98,11 @@ export const Navbar: React.FC<NavbarProps> = ({ currentUser, onLogout }) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   return (
-    <div className="sticky top-6 z-50 px-4 md:px-6 animate-fade-in">
-      <header className={`h-16 max-w-6xl mx-auto glass-panel !rounded-full flex items-center px-4 md:px-8 justify-between shadow-2xl ${theme.shadow} border ${theme.border} backdrop-saturate-200 transition-all duration-500`}>
-        <Link to="/" className={`text-2xl md:text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r ${theme.logoGradient} tracking-tight flex items-center gap-3 md:gap-4 uppercase group transition-all duration-500`}>
-          {currentUser && localStorage.getItem('codeforge_google_avatar') && (
-            <div className={`relative flex items-center justify-center w-10 h-10 md:w-12 md:h-12 rounded-xl bg-gradient-to-tr ${theme.logoIconBg} shadow-lg group-hover:scale-110 transition-all duration-300`}>
-              <img src={localStorage.getItem('codeforge_google_avatar')!} alt="Google Avatar" className="w-full h-full rounded-xl object-cover" />
-            </div>
-          )}
-          <img src="/anvil.png" alt="CodeForge Anvil" className="h-10 md:h-12 w-auto object-contain drop-shadow-md group-hover:scale-110 transition-transform duration-300" />
-          <span className="hidden sm:inline">CodeForge</span>
+    <div className="sticky top-3 md:top-6 z-50 px-3 md:px-6 animate-fade-in">
+      <header className={`h-14 md:h-16 max-w-6xl mx-auto glass-panel !rounded-full flex items-center px-3 md:px-8 justify-between shadow-2xl ${theme.shadow} border ${theme.border} backdrop-saturate-200 transition-all duration-500`}>
+        <Link to="/" className={`text-xl md:text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r ${theme.logoGradient} tracking-tight flex items-center gap-2 md:gap-4 uppercase group transition-all duration-500`}>
+          <img src="/anvil.png" alt="CodeForge Anvil" className="h-8 md:h-11 w-auto object-contain drop-shadow-md group-hover:scale-110 transition-transform duration-300" />
+          <span className="text-sm md:text-base">CodeForge</span>
         </Link>
         <nav className="hidden md:flex space-x-8 items-center">
           <Link to="/" className={`relative hover:text-brand-600 dark:hover:text-cyan-400 font-bold text-lg transition-colors group ${isHomeActive ? theme.activeText : 'text-gray-700 dark:text-gray-200'}`}>
@@ -122,9 +117,13 @@ export const Navbar: React.FC<NavbarProps> = ({ currentUser, onLogout }) => {
             Leaderboard
             <span className={`absolute -bottom-1 left-0 h-0.5 transition-all duration-300 ${isLeaderboardActive ? `w-full ${theme.underline}` : 'w-0 bg-brand-500 group-hover:w-full'}`}></span>
           </Link>
+          <Link to="/about" className={`relative hover:text-brand-600 dark:hover:text-cyan-400 font-bold text-lg transition-colors group ${location.pathname === '/about' ? theme.activeText : 'text-gray-700 dark:text-gray-200'}`}>
+            About
+            <span className={`absolute -bottom-1 left-0 h-0.5 transition-all duration-300 ${location.pathname === '/about' ? `w-full ${theme.underline}` : 'w-0 bg-brand-500 group-hover:w-full'}`}></span>
+          </Link>
         </nav>
         
-        <div className="flex items-center gap-2 md:gap-4">
+        <div className="flex items-center gap-1.5 md:gap-4">
           <button
             onClick={toggleTheme}
             className="p-1.5 md:p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-800 transition-colors text-gray-700 dark:text-gray-200 flex items-center justify-center cursor-pointer"
@@ -182,21 +181,60 @@ export const Navbar: React.FC<NavbarProps> = ({ currentUser, onLogout }) => {
 
       {/* Mobile Menu */}
       {isMobileMenuOpen && (
-        <div className="md:hidden absolute top-24 left-4 right-4 glass-panel rounded-2xl p-4 flex flex-col gap-4 shadow-2xl z-50 bg-white/90 dark:bg-gray-900/90 backdrop-blur-xl border border-gray-200 dark:border-gray-800">
-          <Link onClick={() => setIsMobileMenuOpen(false)} to="/" className="font-bold text-lg text-gray-800 dark:text-gray-200">Home</Link>
-          <Link onClick={() => setIsMobileMenuOpen(false)} to="/problems" className="font-bold text-lg text-gray-800 dark:text-gray-200">Problems</Link>
-          <Link onClick={() => setIsMobileMenuOpen(false)} to="/leaderboard" className="font-bold text-lg text-gray-800 dark:text-gray-200">Leaderboard</Link>
-          <div className="h-px w-full bg-gray-200 dark:bg-gray-800 my-2"></div>
+        <div className="md:hidden absolute top-16 left-3 right-3 rounded-2xl py-3 px-2 flex flex-col shadow-2xl z-50 bg-white/95 dark:bg-gray-900/95 backdrop-blur-xl border border-gray-200/70 dark:border-gray-700/60 animate-modal-in">
+          {[
+            { to: '/', label: 'Home' },
+            { to: '/problems', label: 'Problems' },
+            { to: '/leaderboard', label: 'Leaderboard' },
+            { to: '/about', label: 'About' },
+          ].map(({ to, label }) => (
+            <Link
+              key={to}
+              onClick={() => setIsMobileMenuOpen(false)}
+              to={to}
+              className={`px-4 py-3 rounded-xl font-bold text-base transition-colors ${
+                location.pathname === to || (to !== '/' && location.pathname.startsWith(to))
+                  ? `${theme.activeText} bg-gray-100 dark:bg-gray-800`
+                  : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'
+              }`}
+            >
+              {label}
+            </Link>
+          ))}
+          <div className="h-px w-full bg-gray-200 dark:bg-gray-700 my-2 mx-2" style={{width: 'calc(100% - 16px)'}} />
           {currentUser ? (
             <>
-              <Link onClick={() => setIsMobileMenuOpen(false)} to="/profile" className="font-bold text-lg text-brand-600 dark:text-brand-400">Profile ({currentUser.username})</Link>
-              <button onClick={() => { onLogout(); setIsMobileMenuOpen(false); }} className="text-left font-bold text-lg text-red-500">Log Out</button>
+              <Link
+                onClick={() => setIsMobileMenuOpen(false)}
+                to="/profile"
+                className="px-4 py-3 rounded-xl font-bold text-base text-brand-600 dark:text-brand-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+              >
+                {currentUser.username}
+              </Link>
+              <button
+                onClick={() => { onLogout(); setIsMobileMenuOpen(false); }}
+                className="px-4 py-3 rounded-xl font-bold text-base text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors text-left w-full"
+              >
+                Log Out
+              </button>
             </>
           ) : (
-            <>
-              <Link onClick={() => setIsMobileMenuOpen(false)} to="/login" className="font-bold text-lg text-gray-800 dark:text-gray-200">Sign In</Link>
-              <Link onClick={() => setIsMobileMenuOpen(false)} to="/register" className="font-bold text-lg text-brand-600 dark:text-brand-400">Register</Link>
-            </>
+            <div className="flex gap-2 pt-1 px-2">
+              <Link
+                onClick={() => setIsMobileMenuOpen(false)}
+                to="/login"
+                className="flex-1 py-2.5 text-center rounded-xl font-bold text-sm text-gray-800 dark:text-gray-200 border border-gray-300 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+              >
+                Sign In
+              </Link>
+              <Link
+                onClick={() => setIsMobileMenuOpen(false)}
+                to="/register"
+                className="flex-1 py-2.5 text-center rounded-xl font-bold text-sm text-white bg-gradient-to-r from-brand-600 to-purple-600 shadow-lg shadow-brand-500/20 transition-all"
+              >
+                Register
+              </Link>
+            </div>
           )}
         </div>
       )}

@@ -219,15 +219,15 @@ export function getStarterCode(slug: string, language: string): string {
 
   switch (language) {
     case 'python':
-      return `class Solution:\n    def ${fn}(self, ${getPythonParams(meta.params, meta)}) -> ${getPythonReturn(meta.returnType)}:\n        # here goes the code\n        pass`;
+      return `class Solution:\n    def ${fn}(\n        self,\n        ${getPythonParams(meta.params, meta).split(', ').join(',\n        ')}\n    ) -> ${getPythonReturn(meta.returnType)}:\n        # here goes the code\n        pass`;
     case 'javascript':
-      return `class Solution {\n    ${fn}(${getJsParams(meta.params, meta)}) {\n        // here goes the code\n    }\n}`;
+      return `class Solution {\n    ${fn}(\n        ${getJsParams(meta.params, meta).split(', ').join(',\n        ')}\n    ) {\n        // here goes the code\n    }\n}`;
     case 'java':
-      return `import java.util.*;\n\nclass Solution {\n    public ${getJavaReturn(meta.returnType)} ${fn}(${getJavaParams(meta.params, meta)}) {\n        // here goes the code\n        return ${getJavaReturnDefault(meta.returnType)};\n    }\n}`;
+      return `import java.util.*;\n\nclass Solution {\n    public ${getJavaReturn(meta.returnType)} ${fn}(\n        ${getJavaParams(meta.params, meta).split(', ').join(',\n        ')}\n    ) {\n        // here goes the code\n        return ${getJavaReturnDefault(meta.returnType)};\n    }\n}`;
     case 'cpp':
-      return `#include <iostream>\n#include <vector>\n#include <string>\n#include <unordered_map>\n#include <unordered_set>\n#include <queue>\n#include <algorithm>\n\nusing namespace std;\n\nclass Solution {\npublic:\n    ${getCppReturn(meta.returnType)} ${fn}(${getCppParams(meta.params, meta)}) {\n        // here goes the code\n    }\n};`;
+      return `#include <iostream>\n#include <vector>\n#include <string>\n#include <unordered_map>\n#include <unordered_set>\n#include <queue>\n#include <algorithm>\n\nusing namespace std;\n\nclass Solution {\npublic:\n    ${getCppReturn(meta.returnType)} ${fn}(\n        ${getCppParams(meta.params, meta).split(', ').join(',\n        ')}\n    ) {\n        // here goes the code\n    }\n};`;
     case 'c':
-      return `#include <stdio.h>\n#include <stdlib.h>\n#include <stdbool.h>\n#include <string.h>\n\n${getCReturn(meta.returnType)} ${fn}(${getCParams(meta.params, meta)}) {\n    // here goes the code\n}`;
+      return `#include <stdio.h>\n#include <stdlib.h>\n#include <stdbool.h>\n#include <string.h>\n\n${getCReturn(meta.returnType)} ${fn}(\n    ${getCParams(meta.params, meta).split(', ').join(',\n    ')}\n) {\n    // here goes the code\n}`;
     default:
       return `// here goes the code`;
   }

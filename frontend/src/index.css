@@ -208,3 +208,60 @@
 .animate-neon-glow {
   animation: neonGlow 4s ease-in-out infinite;
 }
+
+/* ── Mobile Performance: reduce expensive GPU effects ── */
+@media (max-width: 768px) {
+  .frosted-glass {
+    background: rgba(255, 255, 255, 0.65) !important;
+    backdrop-filter: blur(10px) saturate(150%) !important;
+    -webkit-backdrop-filter: blur(10px) saturate(150%) !important;
+  }
+
+  .dark .frosted-glass {
+    background: rgba(17, 24, 39, 0.75) !important;
+  }
+
+  .glass-table {
+    backdrop-filter: blur(10px) saturate(150%) !important;
+    -webkit-backdrop-filter: blur(10px) saturate(150%) !important;
+    border-radius: 20px !important;
+  }
+
+  /* Tighter table cells on mobile */
+  .glass-table th {
+    @apply py-3 px-4 text-[10px];
+  }
+
+  .glass-table td {
+    @apply py-3 px-4;
+  }
+
+  /* Snappier touch response */
+  button, a {
+    touch-action: manipulation;
+  }
+
+  /* Reduce font weight for headings on mobile to save rendering */
+  h1 {
+    letter-spacing: -0.02em;
+  }
+}
+
+/* ── Respect reduced motion preferences ── */
+@media (prefers-reduced-motion: reduce) {
+  .animate-bounce-subtle,
+  .animate-float,
+  .animate-flash-sweep,
+  .animate-neon-glow,
+  .animate-pulse,
+  .animate-ping,
+  .animate-spin {
+    animation: none !important;
+  }
+
+  .transition-all,
+  .transition-colors,
+  .transition-transform {
+    transition-duration: 50ms !important;
+  }
+}

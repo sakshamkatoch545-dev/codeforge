@@ -119,6 +119,11 @@ export const api = {
     return response.data
   },
 
+  async updateMe(data: { username?: string; new_password?: string; current_password?: string }): Promise<UserInfo> {
+    const response = await client.put<UserInfo>('/users/me', data)
+    return response.data
+  },
+
   async getSolvedProblems(): Promise<number[]> {
     const response = await client.get<number[]>('/users/me/solved')
     return response.data
