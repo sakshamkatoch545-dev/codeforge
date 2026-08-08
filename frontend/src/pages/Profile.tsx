@@ -210,15 +210,15 @@ export default function Profile() {
               </div>
             ) : (
               <div className="glass-table overflow-x-auto">
-                <table className="w-full text-left border-collapse">
-                  <thead className="text-xs font-black text-gray-800 dark:text-white uppercase tracking-widest border-b border-white/20 dark:border-white/10">
+                <table className="w-full text-left border-collapse [&_th]:px-5 [&_th]:py-3.5 [&_th]:text-[10px] [&_td]:px-5 [&_td]:py-3.5">
+                  <thead>
                     <tr>
-                      <th className="px-6 py-4">Submission ID</th>
-                      <th className="px-6 py-4">Language</th>
-                      <th className="px-6 py-4">Status</th>
-                      <th className="px-6 py-4">Runtime</th>
-                      <th className="px-6 py-4">Date</th>
-                      <th className="px-6 py-4 text-right">Action</th>
+                      <th>Submission ID</th>
+                      <th>Language</th>
+                      <th>Status</th>
+                      <th>Runtime</th>
+                      <th>Date</th>
+                      <th className="text-right">Action</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-white/10 text-sm text-gray-700 dark:text-gray-200">
@@ -227,50 +227,50 @@ export default function Profile() {
                         key={sub.id}
                         className="group transition-all duration-300 ease-out cursor-pointer"
                       >
-                        <td className="px-6 py-4 font-mono font-bold text-gray-950 dark:text-white flex items-center gap-3">
+                        <td className="font-mono font-bold text-gray-900 dark:text-white flex items-center gap-2">
                           <span className={`w-2 h-2 rounded-full ${
                             sub.status === 'ACCEPTED'
                               ? 'bg-emerald-400 shadow-[0_0_12px_rgba(16,185,129,0.8)]'
                               : 'bg-red-500 shadow-[0_0_12px_rgba(239,68,68,0.8)]'
                           }`} />
-                          <Link to={`/submissions/${sub.id}`} className="text-gray-950 dark:text-white font-extrabold hover:text-brand-500 transition-colors flex items-center gap-1">
+                          <Link to={`/submissions/${sub.id}`} className="text-gray-900 dark:text-white font-extrabold hover:text-brand-500 transition-colors flex items-center gap-1">
                             <span>#{sub.id}</span>
                           </Link>
                         </td>
-                        <td className="px-6 py-4 capitalize font-bold text-gray-600 dark:text-gray-300">
-                          <span className="px-3.5 py-1 rounded-full bg-gray-100/90 dark:bg-gray-950/80 border border-gray-200/50 dark:border-white/5 text-gray-800 dark:text-gray-200 text-xs font-black font-mono shadow-sm">
+                        <td className="capitalize font-bold text-gray-600 dark:text-gray-300">
+                          <span className="px-3 py-1 rounded-full bg-gray-100/90 dark:bg-gray-950/80 border border-gray-200/50 dark:border-white/5 text-gray-800 dark:text-gray-200 text-[10px] font-black font-mono shadow-sm">
                             {sub.language}
                           </span>
                         </td>
-                        <td className="px-6 py-4">
+                        <td>
                           <span
-                            className={`inline-flex items-center px-3.5 py-1 rounded-full text-xs font-black uppercase tracking-wider border transition-all group-hover:scale-105 shadow-sm ${
+                            className={`inline-flex items-center px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider border transition-all group-hover:scale-105 shadow-sm ${
                               sub.status === 'ACCEPTED'
-                                ? 'bg-emerald-500/10 dark:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border-emerald-500/10'
+                                ? 'bg-emerald-500/10 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-400 border-emerald-500/10'
                                 : sub.status === 'WRONG_ANSWER'
-                                ? 'bg-red-500/10 dark:bg-red-500/20 text-red-600 dark:text-red-400 border-red-500/10'
-                                : 'bg-yellow-500/10 dark:bg-yellow-500/20 text-yellow-600 dark:text-yellow-400 border-yellow-500/10'
+                                ? 'bg-red-500/10 dark:bg-red-500/20 text-red-700 dark:text-red-400 border-red-500/10'
+                                : 'bg-yellow-500/10 dark:bg-yellow-500/20 text-yellow-700 dark:text-yellow-400 border-yellow-500/10'
                             }`}
                           >
                             {sub.status.replace('_', ' ')}
                           </span>
                         </td>
-                        <td className="px-6 py-4 font-mono font-extrabold text-gray-950 dark:text-white">
-                          {sub.execution_time !== null ? `${sub.execution_time}ms` : 'N/A'}
+                        <td className="font-mono font-extrabold text-gray-900 dark:text-white">
+                          {sub.execution_time !== null ? `${Math.round(sub.execution_time)}ms` : 'N/A'}
                         </td>
-                        <td className="px-6 py-4 text-gray-700 dark:text-gray-300 text-xs font-bold">
+                        <td className="text-gray-700 dark:text-gray-300 text-xs font-bold">
                           {new Date(sub.created_at).toLocaleDateString()}{' '}
                           <span className="text-gray-500 dark:text-gray-500 font-semibold">
                             {new Date(sub.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                           </span>
                         </td>
-                        <td className="px-6 py-4 text-right">
+                        <td className="text-right">
                           <button
                             onClick={(e) => {
                               e.stopPropagation();
                               handleDeleteSubmission(sub.id);
                             }}
-                            className="px-3.5 py-1.5 bg-red-500/10 hover:bg-red-500/20 text-red-600 dark:text-red-400 border border-red-500/20 rounded-full text-xs font-black transition-all hover:scale-105 active:scale-95 cursor-pointer"
+                            className="px-3 py-1 bg-red-500/10 hover:bg-red-500/20 text-red-700 dark:text-red-400 border border-red-500/20 rounded-full text-[10px] font-black transition-all hover:scale-105 active:scale-95 cursor-pointer"
                             title="Delete this submission"
                           >
                             🗑️ Delete

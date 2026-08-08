@@ -95,6 +95,10 @@ export default function Login() {
               )
               const decoded = JSON.parse(jsonPayload)
               
+              if (decoded.picture) {
+                localStorage.setItem('codeforge_google_avatar', decoded.picture)
+              }
+              
               const token = await api.oauthLogin(
                 'google',
                 decoded.email,

@@ -22,6 +22,7 @@ export interface Problem {
   difficulty: 'EASY' | 'MEDIUM' | 'HARD'
   time_limit?: number
   memory_limit?: number
+  starter_code?: Record<string, string>
   created_at: string
 }
 
@@ -34,8 +35,20 @@ export interface Submission {
   status: 'PENDING' | 'RUNNING' | 'ACCEPTED' | 'WRONG_ANSWER' | 'TIME_LIMIT_EXCEEDED' | 'MEMORY_LIMIT_EXCEEDED' | 'RUNTIME_ERROR' | 'COMPILATION_ERROR' | 'INTERNAL_ERROR'
   execution_time: number | null
   memory_usage: number | null
+  passed_tests: number
+  total_tests: number
   error_message: string | null
   created_at: string
+}
+
+export interface TestCaseResult {
+  test_case_id: number
+  verdict: string
+  actual_output: string
+  expected_output: string
+  input_data: string
+  wall_time_ms: number
+  stderr: string
 }
 
 export interface UserInfo {
@@ -162,11 +175,12 @@ export const api = {
     return response.data
   },
 
-  async runCode(code: string, language: string, inputData: string = ''): Promise<{output: string, error: string, status: string}> {
+  async runCode(code: string, language: string, inputData: string = '', problemId?: number): Promise<{output: string, error: string, status: string}> {
     const response = await client.post<{output: string, error: string, status: string}>('/run/', {
       code,
       language,
       input_data: inputData,
+      problem_id: problemId ?? null,
     })
     return response.data
   },

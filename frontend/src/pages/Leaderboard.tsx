@@ -112,7 +112,7 @@ export default function Leaderboard() {
             {silverUser ? (
               <div 
                 onClick={() => setSelectedUser(silverUser)}
-                className="order-2 md:order-1 glass-card bg-white/10 dark:bg-gray-950/20 border border-white/20 dark:border-white/10 backdrop-blur-xl shadow-lg hover:shadow-xl hover:scale-[1.03] transition-all duration-300 cursor-pointer group p-6 flex flex-col items-center justify-center text-center"
+                className="order-2 md:order-1 glass-table hover:scale-[1.03] transition-all duration-300 cursor-pointer group p-6 flex flex-col items-center justify-center text-center"
               >
                 <div className="relative mb-4">
                   <div className="w-16 h-16 rounded-full bg-gradient-to-tr from-slate-400 to-slate-200 text-white flex items-center justify-center font-black text-xl shadow-md ring-4 ring-slate-300/40">
@@ -144,7 +144,7 @@ export default function Leaderboard() {
             {goldUser && (
               <div 
                 onClick={() => setSelectedUser(goldUser)}
-                className="order-1 md:order-2 glass-card bg-amber-500/10 dark:bg-yellow-500/10 border-yellow-400/40 dark:border-yellow-400/40 backdrop-blur-xl shadow-[0_20px_50px_rgba(234,179,8,0.15)] dark:shadow-[0_25px_60px_rgba(234,179,8,0.2)] md:-translate-y-4 hover:scale-[1.05] transition-all duration-300 cursor-pointer group p-8 flex flex-col items-center justify-center text-center"
+                className="order-1 md:order-2 glass-table md:-translate-y-4 hover:scale-[1.05] transition-all duration-300 cursor-pointer group p-8 flex flex-col items-center justify-center text-center relative"
               >
                 <div className="relative mb-5">
                   <div className="w-20 h-20 rounded-full bg-gradient-to-tr from-yellow-500 via-amber-400 to-yellow-300 text-white flex items-center justify-center font-black text-2xl shadow-xl ring-4 ring-yellow-400/50 shadow-yellow-500/30">
@@ -174,7 +174,7 @@ export default function Leaderboard() {
             {bronzeUser ? (
               <div 
                 onClick={() => setSelectedUser(bronzeUser)}
-                className="order-3 glass-card bg-white/10 dark:bg-gray-950/20 border border-white/20 dark:border-white/10 backdrop-blur-xl shadow-lg hover:shadow-xl hover:scale-[1.03] transition-all duration-300 cursor-pointer group p-6 flex flex-col items-center justify-center text-center"
+                className="order-3 glass-table hover:scale-[1.03] transition-all duration-300 cursor-pointer group p-6 flex flex-col items-center justify-center text-center"
               >
                 <div className="relative mb-4">
                   <div className="w-16 h-16 rounded-full bg-gradient-to-tr from-amber-600 to-amber-400 text-white flex items-center justify-center font-black text-xl shadow-md ring-4 ring-amber-500/40">
@@ -210,13 +210,13 @@ export default function Leaderboard() {
           <div className="relative z-10 space-y-6">
             <div className="glass-table overflow-x-auto">
               <table className="w-full text-left border-collapse">
-                <thead className="text-xs font-black text-gray-800 dark:text-white uppercase tracking-widest border-b border-white/20 dark:border-white/10">
+                <thead>
                   <tr>
-                    <th className="px-6 py-4">Rank</th>
-                    <th className="px-6 py-4">User</th>
-                    <th className="px-6 py-4 text-center">Problems Solved</th>
-                    <th className="px-6 py-4 text-center">Score Points</th>
-                    <th className="px-6 py-4 text-right">Accepted Submissions</th>
+                    <th>Rank</th>
+                    <th>User</th>
+                    <th className="text-center">Problems Solved</th>
+                    <th className="text-center">Score Points</th>
+                    <th className="text-right">Accepted Submissions</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-white/10 text-sm text-gray-700 dark:text-gray-200">
@@ -227,38 +227,38 @@ export default function Leaderboard() {
                       className="group transition-all duration-300 ease-out cursor-pointer"
                       title="Click to view detailed coding statistics"
                     >
-                      <td className="px-6 py-4 font-bold">
+                      <td className="font-bold">
                         {user.rank === 1 ? (
-                          <span className="inline-flex items-center justify-center px-3.5 py-1 rounded-full bg-yellow-500/10 dark:bg-yellow-500/20 text-yellow-600 dark:text-yellow-400 border border-yellow-500/10 font-black text-xs shadow-sm">
+                          <span className="inline-flex items-center justify-center px-4 py-1.5 rounded-full bg-yellow-500/10 dark:bg-yellow-500/20 text-yellow-700 dark:text-yellow-400 border border-yellow-500/10 font-black text-xs shadow-sm">
                             🥇 #1
                           </span>
                         ) : user.rank === 2 ? (
-                          <span className="inline-flex items-center justify-center px-3.5 py-1 rounded-full bg-slate-500/10 dark:bg-gray-300/20 text-slate-600 dark:text-gray-200 border border-slate-300/20 font-black text-xs shadow-sm">
+                          <span className="inline-flex items-center justify-center px-4 py-1.5 rounded-full bg-slate-500/10 dark:bg-gray-300/20 text-slate-700 dark:text-gray-200 border border-slate-300/20 font-black text-xs shadow-sm">
                             🥈 #2
                           </span>
                         ) : user.rank === 3 ? (
-                          <span className="inline-flex items-center justify-center px-3.5 py-1 rounded-full bg-amber-600/10 dark:bg-amber-600/20 text-amber-600 dark:text-amber-300 border border-amber-500/10 font-black text-xs shadow-sm">
+                          <span className="inline-flex items-center justify-center px-4 py-1.5 rounded-full bg-amber-600/10 dark:bg-amber-600/20 text-amber-700 dark:text-amber-300 border border-amber-500/10 font-black text-xs shadow-sm">
                             🥉 #3
                           </span>
                         ) : (
                           <span className="text-gray-500 dark:text-gray-400 font-extrabold pl-2">#{user.rank}</span>
                         )}
                       </td>
-                      <td className="px-6 py-4 font-semibold text-gray-900 dark:text-white flex items-center gap-3">
+                      <td className="font-semibold text-gray-900 dark:text-white flex items-center gap-3">
                         <div className="w-9 h-9 rounded-full bg-gradient-to-tr from-cyan-500 to-purple-600 text-white flex items-center justify-center font-black text-sm shadow-md ring-2 ring-cyan-400/40">
                           {user.username.charAt(0).toUpperCase()}
                         </div>
-                        <span className="group-hover:text-brand-500 dark:group-hover:text-cyan-300 transition-colors font-extrabold text-base text-gray-950 dark:text-white">{user.username}</span>
+                        <span className="group-hover:text-brand-500 dark:group-hover:text-cyan-300 transition-colors font-extrabold text-base text-gray-900 dark:text-white">{user.username}</span>
                       </td>
-                      <td className="px-6 py-4 text-center font-black text-brand-600 dark:text-cyan-300 text-base">
+                      <td className="text-center font-black text-brand-600 dark:text-cyan-300 text-base">
                         {user.solved_count}
                       </td>
-                      <td className="px-6 py-4 text-center">
-                        <span className="px-3.5 py-1 rounded-full bg-emerald-500/10 dark:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border border-emerald-500/10 font-extrabold text-xs transition-transform inline-block group-hover:scale-105 shadow-sm">
+                      <td className="text-center">
+                        <span className="px-4 py-1.5 rounded-full bg-emerald-500/10 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-400 border border-emerald-500/10 font-extrabold text-xs transition-transform inline-block group-hover:scale-105 shadow-sm">
                           {user.points} pts
                         </span>
                       </td>
-                      <td className="px-6 py-4 text-right text-gray-950 dark:text-white font-extrabold font-mono">
+                      <td className="text-right text-gray-900 dark:text-white font-extrabold font-mono">
                         {user.total_submissions}
                       </td>
                     </tr>

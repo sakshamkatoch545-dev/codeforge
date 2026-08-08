@@ -2,6 +2,7 @@ export interface ProblemMetadata {
   slug: string;
   funcName: string;
   params: string[];
+  paramNames?: string[];
   returnType: 'json' | 'space-array' | 'bool' | 'val' | 'float' | 'inplace-str';
 }
 
@@ -10,18 +11,21 @@ export const problemsMetadata: Record<string, ProblemMetadata> = {
     slug: 'two-sum',
     funcName: 'twoSum',
     params: ['json-array', 'int'],
+    paramNames: ['nums', 'target'],
     returnType: 'json'
   },
   'reverse-string': {
     slug: 'reverse-string',
     funcName: 'reverseString',
     params: ['char-array'],
+    paramNames: ['s'],
     returnType: 'inplace-str'
   },
   'palindrome-number': {
     slug: 'palindrome-number',
     funcName: 'isPalindrome',
     params: ['int'],
+    paramNames: ['x'],
     returnType: 'bool'
   },
   'valid-parentheses': {
@@ -34,18 +38,21 @@ export const problemsMetadata: Record<string, ProblemMetadata> = {
     slug: 'merge-two-sorted-lists',
     funcName: 'mergeTwoLists',
     params: ['space-array', 'space-array'],
+    paramNames: ['list1', 'list2'],
     returnType: 'space-array'
   },
   'maximum-subarray': {
     slug: 'maximum-subarray',
     funcName: 'maxSubArray',
     params: ['space-array'],
+    paramNames: ['nums'],
     returnType: 'val'
   },
   'container-with-most-water': {
     slug: 'container-with-most-water',
     funcName: 'maxArea',
     params: ['space-array'],
+    paramNames: ['height'],
     returnType: 'val'
   },
   '3sum': {
@@ -70,6 +77,7 @@ export const problemsMetadata: Record<string, ProblemMetadata> = {
     slug: 'n-queens',
     funcName: 'solveNQueens',
     params: ['int'],
+    paramNames: ['n'],
     returnType: 'json'
   },
   'binary-search': {
@@ -88,12 +96,14 @@ export const problemsMetadata: Record<string, ProblemMetadata> = {
     slug: 'valid-anagram',
     funcName: 'isAnagram',
     params: ['str', 'str'],
+    paramNames: ['s', 't'],
     returnType: 'bool'
   },
   'group-anagrams': {
     slug: 'group-anagrams',
     funcName: 'groupAnagrams',
     params: ['space-str-array'],
+    paramNames: ['strs'],
     returnType: 'json'
   },
   'product-of-array-except-self': {
@@ -112,12 +122,14 @@ export const problemsMetadata: Record<string, ProblemMetadata> = {
     slug: 'median-of-two-sorted-arrays',
     funcName: 'findMedianSortedArrays',
     params: ['space-array', 'space-array'],
+    paramNames: ['nums1', 'nums2'],
     returnType: 'float'
   },
   'merge-k-sorted-lists': {
     slug: 'merge-k-sorted-lists',
     funcName: 'mergeKLists',
     params: ['merge-k'],
+    paramNames: ['lists'],
     returnType: 'space-array'
   },
   'search-in-rotated-sorted-array': {
@@ -142,6 +154,7 @@ export const problemsMetadata: Record<string, ProblemMetadata> = {
     slug: 'merge-intervals',
     funcName: 'merge',
     params: ['lines-array'],
+    paramNames: ['intervals'],
     returnType: 'json'
   },
   'jump-game': {
@@ -154,30 +167,35 @@ export const problemsMetadata: Record<string, ProblemMetadata> = {
     slug: 'unique-paths',
     funcName: 'uniquePaths',
     params: ['two-ints'],
+    paramNames: ['m', 'n'],
     returnType: 'val'
   },
   'edit-distance': {
     slug: 'edit-distance',
     funcName: 'minDistance',
     params: ['str', 'str'],
+    paramNames: ['word1', 'word2'],
     returnType: 'val'
   },
   'word-search': {
     slug: 'word-search',
     funcName: 'exist',
     params: ['grid-char'],
+    paramNames: ['board', 'word'],
     returnType: 'bool'
   },
   'best-time-to-buy-and-sell-stock': {
     slug: 'best-time-to-buy-and-sell-stock',
     funcName: 'maxProfit',
     params: ['space-array'],
+    paramNames: ['prices'],
     returnType: 'val'
   },
   'linked-list-cycle': {
     slug: 'linked-list-cycle',
     funcName: 'hasCycle',
     params: ['space-array', 'int'],
+    paramNames: ['head'],
     returnType: 'bool'
   },
   'longest-consecutive-sequence': {
@@ -201,15 +219,15 @@ export function getStarterCode(slug: string, language: string): string {
 
   switch (language) {
     case 'python':
-      return `class Solution:\n    def ${fn}(self, ${getPythonParams(meta.params)}) -> ${getPythonReturn(meta.returnType)}:\n        # here goes the code\n        pass`;
+      return `class Solution:\n    def ${fn}(self, ${getPythonParams(meta.params, meta)}) -> ${getPythonReturn(meta.returnType)}:\n        # here goes the code\n        pass`;
     case 'javascript':
-      return `class Solution {\n    ${fn}(${getJsParams(meta.params)}) {\n        // here goes the code\n    }\n}`;
+      return `class Solution {\n    ${fn}(${getJsParams(meta.params, meta)}) {\n        // here goes the code\n    }\n}`;
     case 'java':
-      return `import java.util.*;\n\nclass Solution {\n    public ${getJavaReturn(meta.returnType)} ${fn}(${getJavaParams(meta.params)}) {\n        // here goes the code\n        return ${getJavaReturnDefault(meta.returnType)};\n    }\n}`;
+      return `import java.util.*;\n\nclass Solution {\n    public ${getJavaReturn(meta.returnType)} ${fn}(${getJavaParams(meta.params, meta)}) {\n        // here goes the code\n        return ${getJavaReturnDefault(meta.returnType)};\n    }\n}`;
     case 'cpp':
-      return `#include <iostream>\n#include <vector>\n#include <string>\n#include <unordered_map>\n#include <unordered_set>\n#include <queue>\n#include <algorithm>\n\nusing namespace std;\n\nclass Solution {\npublic:\n    ${getCppReturn(meta.returnType)} ${fn}(${getCppParams(meta.params)}) {\n        // here goes the code\n    }\n};`;
+      return `#include <iostream>\n#include <vector>\n#include <string>\n#include <unordered_map>\n#include <unordered_set>\n#include <queue>\n#include <algorithm>\n\nusing namespace std;\n\nclass Solution {\npublic:\n    ${getCppReturn(meta.returnType)} ${fn}(${getCppParams(meta.params, meta)}) {\n        // here goes the code\n    }\n};`;
     case 'c':
-      return `#include <stdio.h>\n#include <stdlib.h>\n#include <stdbool.h>\n#include <string.h>\n\n${getCReturn(meta.returnType)} ${fn}(${getCParams(meta.params)}) {\n    // here goes the code\n}`;
+      return `#include <stdio.h>\n#include <stdlib.h>\n#include <stdbool.h>\n#include <string.h>\n\n${getCReturn(meta.returnType)} ${fn}(${getCParams(meta.params, meta)}) {\n    // here goes the code\n}`;
     default:
       return `// here goes the code`;
   }
@@ -297,7 +315,7 @@ export function getWrappedCode(slug: string, language: string, code: string): st
   }
 
   // ── Structured (LeetCode-style) — wrap with harness ─────────────────────
-  if (language === 'python')     return getPythonWrapper(code, meta);
+  if (language === 'python')     return code; // Backend handles python driver code
   if (language === 'javascript') return getJsWrapper(code, meta);
   if (language === 'java')       return getJavaWrapper(code, meta);
   if (language === 'cpp')        return getCppWrapper(code, meta);
@@ -818,10 +836,15 @@ int* parse_json_array(char* line, int* size) {
   return `#include <stdio.h>\n#include <stdlib.h>\n#include <stdbool.h>\n#include <string.h>\n\n${helpers}\n\n${code}\n\nint main() {\n    char lines[100][1000];\n    int line_count = 0;\n    char buffer[1000];\n    while (fgets(buffer, sizeof(buffer), stdin)) {\n        buffer[strcspn(buffer, "\\r\\n")] = 0;\n        if (strlen(buffer) > 0) {\n            strcpy(lines[line_count++], buffer);\n        }\n    }\n    if (line_count == 0) return 0;\n\n${parseBlock}    auto ans = ${fn}(${argNames.join(', ')});\n    ${formatterBlock}\n    return 0;\n}\n`;
 }
 
-function getPythonParams(params: string[]): string {
+function getPythonParams(params: string[], meta?: ProblemMetadata): string {
   return params.map((p, idx) => {
-    const name = p.includes('array') || p === 'merge-k' ? 'nums' : p === 'str' ? 's' : 'x';
-    const finalName = params.length > 1 ? `${name}${idx + 1}` : name;
+    let finalName = "";
+    if (meta?.paramNames && meta.paramNames[idx]) {
+      finalName = meta.paramNames[idx];
+    } else {
+      const name = p.includes('array') || p === 'merge-k' ? 'nums' : p === 'str' ? 's' : 'x';
+      finalName = params.length > 1 ? `${name}${idx + 1}` : name;
+    }
     if (p === 'int') return `${finalName}: int`;
     if (p === 'str') return `${finalName}: str`;
     if (p === 'char-array') return `${finalName}: list[str]`;
@@ -839,17 +862,23 @@ function getPythonReturn(ret: string): string {
   return 'any';
 }
 
-function getJsParams(params: string[]): string {
+function getJsParams(params: string[], meta?: ProblemMetadata): string {
   return params.map((p, idx) => {
+    if (meta?.paramNames && meta.paramNames[idx]) return meta.paramNames[idx];
     const name = p.includes('array') || p === 'merge-k' ? 'nums' : p === 'str' ? 's' : 'x';
     return params.length > 1 ? `${name}${idx + 1}` : name;
   }).join(', ');
 }
 
-function getJavaParams(params: string[]): string {
+function getJavaParams(params: string[], meta?: ProblemMetadata): string {
   return params.map((p, idx) => {
-    const name = p.includes('array') || p === 'merge-k' ? 'nums' : p === 'str' ? 's' : 'x';
-    const finalName = params.length > 1 ? `${name}${idx + 1}` : name;
+    let finalName = "";
+    if (meta?.paramNames && meta.paramNames[idx]) {
+      finalName = meta.paramNames[idx];
+    } else {
+      const name = p.includes('array') || p === 'merge-k' ? 'nums' : p === 'str' ? 's' : 'x';
+      finalName = params.length > 1 ? `${name}${idx + 1}` : name;
+    }
     if (p === 'int') return `int ${finalName}`;
     if (p === 'str') return `String ${finalName}`;
     if (p === 'space-str-array') return `String[] ${finalName}`;
@@ -873,10 +902,15 @@ function getJavaReturnDefault(ret: string): string {
   return 'new ArrayList<>()';
 }
 
-function getCppParams(params: string[]): string {
+function getCppParams(params: string[], meta?: ProblemMetadata): string {
   return params.map((p, idx) => {
-    const name = p.includes('array') || p === 'merge-k' ? 'nums' : p === 'str' ? 's' : 'x';
-    const finalName = params.length > 1 ? `${name}${idx + 1}` : name;
+    let finalName = "";
+    if (meta?.paramNames && meta.paramNames[idx]) {
+      finalName = meta.paramNames[idx];
+    } else {
+      const name = p.includes('array') || p === 'merge-k' ? 'nums' : p === 'str' ? 's' : 'x';
+      finalName = params.length > 1 ? `${name}${idx + 1}` : name;
+    }
     if (p === 'int') return `int ${finalName}`;
     if (p === 'str') return `string ${finalName}`;
     if (p === 'space-str-array') return `vector<string>& ${finalName}`;
@@ -892,10 +926,15 @@ function getCppReturn(ret: string): string {
   return 'vector<vector<int>>';
 }
 
-function getCParams(params: string[]): string {
+function getCParams(params: string[], meta?: ProblemMetadata): string {
   return params.map((p, idx) => {
-    const name = p.includes('array') || p === 'merge-k' ? 'nums' : p === 'str' ? 's' : 'x';
-    const finalName = params.length > 1 ? `${name}${idx + 1}` : name;
+    let finalName = "";
+    if (meta?.paramNames && meta.paramNames[idx]) {
+      finalName = meta.paramNames[idx];
+    } else {
+      const name = p.includes('array') || p === 'merge-k' ? 'nums' : p === 'str' ? 's' : 'x';
+      finalName = params.length > 1 ? `${name}${idx + 1}` : name;
+    }
     if (p === 'int') return `int ${finalName}`;
     if (p === 'str') return `char* ${finalName}`;
     if (p === 'space-str-array') return `char** ${finalName}, int ${finalName}Size`;

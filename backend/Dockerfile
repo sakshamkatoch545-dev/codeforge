@@ -13,6 +13,7 @@ RUN echo 'Acquire::https::Verify-Peer "false";' > /etc/apt/apt.conf.d/99mysettin
     gcc \
     g++ \
     default-jdk-headless \
+    docker.io \
     && rm -rf /var/lib/apt/lists/*
 
 # Install Node.js without using apt-get to avoid repository 403 errors

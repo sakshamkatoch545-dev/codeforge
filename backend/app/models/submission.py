@@ -11,6 +11,7 @@ class SubmissionStatus(str, enum.Enum):
     WRONG_ANSWER = "WRONG_ANSWER"
     TIME_LIMIT_EXCEEDED = "TIME_LIMIT_EXCEEDED"
     MEMORY_LIMIT_EXCEEDED = "MEMORY_LIMIT_EXCEEDED"
+    OUTPUT_LIMIT_EXCEEDED = "OUTPUT_LIMIT_EXCEEDED"
     RUNTIME_ERROR = "RUNTIME_ERROR"
     COMPILATION_ERROR = "COMPILATION_ERROR"
     INTERNAL_ERROR = "INTERNAL_ERROR"
@@ -21,6 +22,8 @@ class LanguageEnum(str, enum.Enum):
     JAVA = "java"
     JAVASCRIPT = "javascript"
     C = "c"
+    GO = "go"
+    RUST = "rust"
 
 class Submission(Base):
     id = Column(Integer, primary_key=True, index=True)
@@ -31,6 +34,8 @@ class Submission(Base):
     status = Column(Enum(SubmissionStatus), default=SubmissionStatus.PENDING)
     execution_time = Column(Float, nullable=True) # in ms
     memory_usage = Column(Float, nullable=True) # in MB
+    passed_tests = Column(Integer, default=0)
+    total_tests = Column(Integer, default=0)
     error_message = Column(Text, nullable=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 

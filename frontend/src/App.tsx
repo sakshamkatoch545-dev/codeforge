@@ -24,9 +24,14 @@ function App() {
         try {
           const user = await api.getMe()
           setCurrentUser(user)
-        } catch {
-          localStorage.removeItem('codeforge_token')
-          setCurrentUser(null)
+        } catch (err: any) {
+          // Only log out if the server explicitly says unauthorized (401)
+          // Don't remove token on network errors or server errors
+          if (err?.response?.status === 401) {
+            localStorage.removeItem('codeforge_token')
+            localStorage.removeItem('codeforge_google_avatar')
+            setCurrentUser(null)
+          }
         }
       } else {
         setCurrentUser(null)
@@ -37,6 +42,7 @@ function App() {
 
   const handleLogout = () => {
     localStorage.removeItem('codeforge_token')
+    localStorage.removeItem('codeforge_google_avatar')
     setCurrentUser(null)
     navigate('/login')
   }

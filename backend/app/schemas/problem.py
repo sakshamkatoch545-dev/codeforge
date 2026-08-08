@@ -10,6 +10,7 @@ class ProblemBase(BaseModel):
     difficulty: DifficultyEnum
     time_limit: Optional[int] = 1000
     memory_limit: Optional[int] = 256
+    starter_code: Optional[dict] = {}
 
 class ProblemCreate(ProblemBase):
     pass

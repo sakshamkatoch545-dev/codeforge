@@ -64,7 +64,7 @@ export default function Problems() {
   return (
     <div className="relative min-h-[calc(100vh-4rem)]">
 
-      <div className="relative z-10 max-w-6xl mx-auto px-4 md:px-6 mt-16 animate-float">
+      <div className="relative z-10 max-w-6xl mx-auto px-4 md:px-6 mt-16">
         <div className="glass-panel p-7 shadow-[0_20px_50px_rgba(0,0,0,0.05)] dark:shadow-[0_30px_70px_rgba(0,0,0,0.6)] relative overflow-hidden transform-gpu">
           
           <div className="relative z-10 space-y-6">
@@ -94,41 +94,41 @@ export default function Problems() {
 
             <div className="glass-table overflow-x-auto">
               <table className="w-full text-left border-collapse">
-                <thead className="text-xs font-black text-gray-800 dark:text-white uppercase tracking-widest border-b border-white/20 dark:border-white/10">
+                <thead>
                   <tr>
-                    <th className="px-6 py-4 w-24 text-center">Status</th>
-                    <th className="px-6 py-4">Title</th>
-                    <th className="px-6 py-4 w-32">Difficulty</th>
+                    <th className="w-24 text-center">Status</th>
+                    <th>Title</th>
+                    <th className="w-32">Difficulty</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-white/10">
                   {problems.map((prob, index) => (
-                    <tr key={prob.id} className="transition-colors duration-300">
-                      <td className="px-6 py-4 font-medium flex justify-center items-center">
+                    <tr key={prob.id}>
+                      <td className="font-medium text-center">
                         {solvedIds.has(prob.id) ? (
-                          <div className="flex items-center justify-center w-7 h-7 rounded-full bg-emerald-100 dark:bg-emerald-950/80 text-emerald-600 dark:text-emerald-400 shadow-sm">
+                          <div className="mx-auto flex items-center justify-center w-8 h-8 rounded-full bg-emerald-500/15 dark:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 shadow-sm">
                             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3.5} d="M5 13l4 4L19 7" /></svg>
                           </div>
                         ) : (
                           <span className="text-gray-300 dark:text-gray-700 font-bold">-</span>
                         )}
                       </td>
-                      <td className="px-6 py-4">
+                      <td>
                         <Link
                           to={`/problems/${prob.slug}`}
                           onClick={handleProblemClick}
-                          className="text-gray-950 dark:text-white font-extrabold hover:text-brand-500 dark:hover:text-cyan-300 transition-colors text-base"
+                          className="text-gray-900 dark:text-white font-black hover:text-brand-500 dark:hover:text-cyan-400 transition-colors text-lg"
                         >
                           {index + 1}. {prob.title}
                         </Link>
                       </td>
-                      <td className="px-6 py-4">
-                        <span className={`inline-flex items-center px-3.5 py-1 rounded-full text-xs font-black uppercase tracking-wider border ${
+                      <td>
+                        <span className={`inline-flex items-center px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-wider border ${
                           prob.difficulty === 'EASY'
-                            ? 'bg-emerald-500/10 dark:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border-emerald-500/10'
+                            ? 'bg-emerald-500/10 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-400 border-emerald-500/10'
                             : prob.difficulty === 'MEDIUM'
-                            ? 'bg-yellow-500/10 dark:bg-yellow-500/20 text-yellow-600 dark:text-yellow-400 border-yellow-500/10'
-                            : 'bg-red-500/10 dark:bg-red-500/20 text-red-600 dark:text-red-400 border-red-500/10'
+                            ? 'bg-yellow-500/10 dark:bg-yellow-500/20 text-yellow-700 dark:text-yellow-400 border-yellow-500/10'
+                            : 'bg-red-500/10 dark:bg-red-500/20 text-red-700 dark:text-red-400 border-red-500/10'
                         }`}>
                           {prob.difficulty}
                         </span>

@@ -1,12 +1,13 @@
-import tempfile
-import subprocess
 import os
-from typing import Any
+from typing import Any, Optional
 from pydantic import BaseModel
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from app.api import deps
 from app import models
+from app.judge.docker_runner import setup_sandbox_volume, compile_in_sandbox, execute_in_sandbox, cleanup_sandbox_volume
+from app.judge.languages import get_language
+from app.judge.limits import DEFAULT_LIMITS
 
 router = APIRouter()
 
@@ -14,6 +15,7 @@ class RunCodeRequest(BaseModel):
     code: str
     language: str
     input_data: str = ""
+    problem_id: Optional[int] = None  # If provided, driver_code is fetched from DB
 
 class RunCodeResponse(BaseModel):
     output: str
@@ -23,73 +25,54 @@ class RunCodeResponse(BaseModel):
 @router.post("/", response_model=RunCodeResponse)
 def run_code(
     *,
+    db: Session = Depends(deps.get_db),
     request: RunCodeRequest,
     current_user: models.User = Depends(deps.get_current_active_user),
 ) -> Any:
     """
     Execute code and return the standard output and error.
+    If problem_id is provided, the user's code is wrapped with the problem's driver_code
+    (same mechanism as submission) so only the function body needs to be written.
     """
     if request.language not in ["python", "javascript", "c", "cpp", "java"]:
         raise HTTPException(status_code=400, detail="Unsupported language")
 
-    output = ""
-    error = ""
-    status = "SUCCESS"
+    lang = get_language(request.language)
+    if lang is None:
+        raise HTTPException(status_code=400, detail=f"Unsupported language: {request.language}")
 
-    with tempfile.TemporaryDirectory() as temp_dir:
-        cmd = []
-        if request.language == "python":
-            file_path = os.path.join(temp_dir, "script.py")
-            cmd = ["python", file_path]
-            with open(file_path, "w") as f:
-                f.write(request.code)
-        elif request.language == "javascript":
-            file_path = os.path.join(temp_dir, "script.js")
-            cmd = ["node", file_path]
-            with open(file_path, "w") as f:
-                f.write(request.code)
-        elif request.language == "c":
-            file_path = os.path.join(temp_dir, "main.c")
-            out_path = os.path.join(temp_dir, "a.exe")
-            with open(file_path, "w") as f:
-                f.write(request.code)
-            # Compile
-            compile_res = subprocess.run(["gcc", "-O2", "-o", out_path, file_path], capture_output=True, text=True)
-            if compile_res.returncode != 0:
-                return RunCodeResponse(output="", error=compile_res.stderr, status="COMPILATION_ERROR")
-            cmd = [out_path]
-        elif request.language == "cpp":
-            file_path = os.path.join(temp_dir, "main.cpp")
-            out_path = os.path.join(temp_dir, "a.exe")
-            with open(file_path, "w") as f:
-                f.write(request.code)
-            # Compile
-            compile_res = subprocess.run(["g++", "-O2", "-o", out_path, file_path], capture_output=True, text=True)
-            if compile_res.returncode != 0:
-                return RunCodeResponse(output="", error=compile_res.stderr, status="COMPILATION_ERROR")
-            cmd = [out_path]
-        elif request.language == "java":
-            file_path = os.path.join(temp_dir, "Main.java")
-            with open(file_path, "w") as f:
-                f.write(request.code)
-            # Compile
-            compile_res = subprocess.run(["javac", file_path], capture_output=True, text=True)
-            if compile_res.returncode != 0:
-                return RunCodeResponse(output="", error=compile_res.stderr, status="COMPILATION_ERROR")
-            cmd = ["java", "-cp", temp_dir, "Main"]
-            
-        try:
-            # We add a 5 second timeout to prevent infinite loops from hanging the backend
-            result = subprocess.run(cmd, input=request.input_data, capture_output=True, text=True, timeout=5)
-            output = result.stdout
-            error = result.stderr
-            if result.returncode != 0:
-                status = "ERROR"
-        except subprocess.TimeoutExpired:
-            error = "Execution timed out (5s limit)."
-            status = "TIMEOUT"
-        except Exception as e:
-            error = str(e)
-            status = "SYSTEM_ERROR"
-            
-    return RunCodeResponse(output=output, error=error, status=status)
+    # Build the final code to run
+    final_code = request.code
+
+    # If problem_id is given, wrap user code with the problem's driver_code
+    if request.problem_id is not None:
+        from app.models.problem import Problem
+        problem = db.query(Problem).filter(Problem.id == request.problem_id).first()
+        if problem and problem.driver_code:
+            driver = problem.driver_code
+            if isinstance(driver, dict) and request.language in driver:
+                driver_template = driver[request.language]
+                if "{USER_CODE}" in driver_template:
+                    final_code = driver_template.replace("{USER_CODE}", request.code)
+
+    print("FINAL_CODE_RUN IS:\n", final_code)
+    try:
+        volume_name = setup_sandbox_volume(final_code, lang)
+        compile_result = compile_in_sandbox(volume_name, lang, DEFAULT_LIMITS)
+        
+        if compile_result and (compile_result.exit_code != 0 or compile_result.timed_out):
+            if compile_result.timed_out:
+                return RunCodeResponse(output="", error="Compilation timed out.", status="TIMEOUT")
+            else:
+                return RunCodeResponse(output=compile_result.stdout, error=compile_result.stderr, status="ERROR")
+                
+        run = execute_in_sandbox(volume_name, request.input_data, lang, DEFAULT_LIMITS)
+    finally:
+        cleanup_sandbox_volume(volume_name)
+
+    if run.timed_out:
+        return RunCodeResponse(output="", error="Execution timed out.", status="TIMEOUT")
+    elif run.exit_code != 0:
+        return RunCodeResponse(output=run.stdout, error=run.stderr, status="ERROR")
+    else:
+        return RunCodeResponse(output=run.stdout, error=run.stderr, status="SUCCESS")

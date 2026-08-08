@@ -23,6 +23,8 @@ class SubmissionInDBBase(SubmissionBase):
     status: SubmissionStatus
     execution_time: Optional[float]
     memory_usage: Optional[float]
+    passed_tests: int
+    total_tests: int
     error_message: Optional[str]
     created_at: datetime
 

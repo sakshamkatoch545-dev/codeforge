@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { useParams, useNavigate } from 'react-router-dom'
+import { useParams, useNavigate, Link } from 'react-router-dom'
 import Editor from '@monaco-editor/react'
 import { api, Problem, Submission, TestCase } from '../api'
 import { getStarterCode, getWrappedCode as getWrappedCodeFromConfig, getUnwrappedCode } from '../problemsConfig'
@@ -177,6 +177,55 @@ const getComplexityAnalysis = (slug: string | undefined): ComplexityInfo => {
   };
 };
 
+// ─── Simulated Judge Logs Component ────────────────────────────────────────────────────────
+const SimulatedJudgeLogs = () => {
+  const [logs, setLogs] = useState<string[]>([])
+  
+  useEffect(() => {
+    const sequence = [
+      "Initializing secure sandbox environment...",
+      "Mounting container volumes...",
+      "Loading language toolchain...",
+      "Compiling user solution...",
+      "Compilation successful (0.12s)",
+      "Fetching test cases from database...",
+      "Running Test Case #1...",
+      "Test Case #1 passed [0.01s]",
+      "Running Test Case #2...",
+      "Test Case #2 passed [0.02s]",
+      "Running Test Case #3 (Hidden)...",
+      "Evaluating time and space constraints...",
+      "Analyzing memory footprints...",
+      "Generating final report...",
+      "Tearing down sandbox..."
+    ]
+    
+    let currentIdx = 0
+    const interval = setInterval(() => {
+      if (currentIdx < sequence.length) {
+        setLogs(prev => [...prev, sequence[currentIdx]])
+        currentIdx++
+      } else {
+        clearInterval(interval)
+      }
+    }, 400 + Math.random() * 400) // Random interval between 400ms and 800ms
+    
+    return () => clearInterval(interval)
+  }, [])
+  
+  return (
+    <div className="flex flex-col gap-1.5 font-bold tracking-wide relative z-0">
+      {logs.map((log, i) => (
+        <div key={i} className={`flex items-start gap-2 ${i === logs.length - 1 ? 'text-cyan-300' : 'text-gray-500'}`}>
+          <span className="text-gray-600 select-none">{'>'}</span>
+          <span>{log}</span>
+        </div>
+      ))}
+      <div className="h-8"></div> {/* Spacer for gradient fade out */}
+    </div>
+  )
+}
+
 const parseJudgeLog = (log: string | null): { passed: number; failed: number; total: number } => {
   if (!log) return { passed: 0, failed: 0, total: 0 };
   const passedMatches = (log.match(/Passed/gi) || []).length;
@@ -229,7 +278,7 @@ export default function ProblemDetail() {
         setTestCases(tcs)
         
         // Setup initial starter code based on problem and language
-        updateStarterCode(data.slug, 'python')
+        updateStarterCode(data, 'python')
       } catch (err) {
         setError('Failed to load problem details.')
       } finally {
@@ -239,12 +288,14 @@ export default function ProblemDetail() {
     loadProblem()
   }, [slug])
 
-  const updateStarterCode = (problemSlug: string, lang: string) => {
-    const saved = localStorage.getItem(`codeforge_code_${problemSlug}_${lang}`);
+  const updateStarterCode = (problemObj: Problem, lang: string) => {
+    const saved = localStorage.getItem(`codeforge_code_${problemObj.slug}_${lang}`);
     if (saved !== null) {
       setCode(saved);
+    } else if (problemObj.starter_code && problemObj.starter_code[lang]) {
+      setCode(problemObj.starter_code[lang]);
     } else {
-      setCode(getStarterCode(problemSlug, lang));
+      setCode(getStarterCode(problemObj.slug, lang));
     }
   }
 
@@ -260,14 +311,18 @@ export default function ProblemDetail() {
     if (!problem) return;
     if (window.confirm('Reset code to original starter template?')) {
       localStorage.removeItem(`codeforge_code_${problem.slug}_${language}`);
-      setCode(getStarterCode(problem.slug, language));
+      if (problem.starter_code && problem.starter_code[language]) {
+        setCode(problem.starter_code[language]);
+      } else {
+        setCode(getStarterCode(problem.slug, language));
+      }
     }
   }
 
   // Update code when language changes
   useEffect(() => {
     if (!problem) return
-    updateStarterCode(problem.slug, language)
+    updateStarterCode(problem, language)
   }, [language, problem])
 
   const getWrappedCode = () => {
@@ -301,7 +356,7 @@ export default function ProblemDetail() {
       
       const wrappedCode = getWrappedCode()
 
-      const res = await api.runCode(wrappedCode, langParam, inputData)
+      const res = await api.runCode(wrappedCode, langParam, inputData, problem?.id)
       
       setRunResult({
         ...res,
@@ -390,6 +445,9 @@ export default function ProblemDetail() {
       {/* Problem Description Panel */}
       <div className="relative z-10 w-full lg:w-1/2 p-8 border border-white/20 dark:border-white/10 glass-panel shadow-2xl rounded-2xl flex flex-col justify-between min-h-[500px]">
         <div>
+          <Link to="/problems" className="inline-flex items-center gap-1.5 text-sm font-bold text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white mb-6 transition-colors group">
+            <span className="transform group-hover:-translate-x-1 transition-transform">←</span> Back to Problems
+          </Link>
           <div className="flex items-center gap-3 mb-4">
             <span
               className={`px-3 py-1 text-xs font-semibold rounded-full ${
@@ -420,12 +478,12 @@ export default function ProblemDetail() {
       </div>
 
       {/* Code Editor Panel */}
-      <div className="relative z-10 w-full lg:w-1/2 flex flex-col bg-white/40 dark:bg-gray-900/40 backdrop-blur-md glass-panel shadow-2xl rounded-2xl overflow-hidden">
+      <div className="relative z-10 w-full lg:w-1/2 flex flex-col bg-white/40 dark:bg-gray-900/40 backdrop-blur-md glass-panel shadow-2xl rounded-2xl overflow-hidden min-h-[600px] h-fit">
 
-
-        {/* Editor Container */}
-        <div className="h-[550px] border-b border-white/20 dark:border-white/10">
-          <Editor
+        {/* Editor Container (Flexible Middle) */}
+        <div className="flex-1 min-h-[500px] relative">
+          <div className="absolute inset-0">
+            <Editor
             height="100%"
             language={language}
             theme="vs-dark"
@@ -439,10 +497,11 @@ export default function ProblemDetail() {
               lineHeight: 22,
             }}
           />
+          </div>
         </div>
 
-        {/* Controls Bar */}
-        <div className="h-auto md:h-20 bg-white/60 dark:bg-gray-950/60 backdrop-blur-md flex flex-col md:flex-row items-center px-4 md:px-8 py-4 md:py-0 justify-between gap-4 md:gap-0">
+        {/* Controls Bar (Moved to Bottom) */}
+        <div className="relative z-30 min-h-[90px] py-4 bg-white/60 dark:bg-gray-950/60 backdrop-blur-md flex flex-col md:flex-row items-center px-4 md:px-8 justify-between gap-4 md:gap-0 border-t border-white/20 dark:border-white/10 shrink-0 mt-auto">
           <div className="flex items-center gap-3">
             <select
               value={language}
@@ -465,7 +524,7 @@ export default function ProblemDetail() {
           </div>
           <div className="flex flex-wrap items-center justify-center gap-3">
             {running && (
-              <span className="text-sm md:text-lg text-brand-600 animate-pulse font-bold mr-2">Running...</span>
+              <span className="text-sm md:text-lg text-brand-600 font-bold mr-2">Running...</span>
             )}
             {(runResult || submission || error || submitting) && (
               <button
@@ -500,16 +559,16 @@ export default function ProblemDetail() {
 
         {/* Results Panel overlay */}
         {showConsole && (submission || submitting || error || runResult) && (
-          <div className="absolute bottom-[88px] left-3 right-3 bg-gray-950/98 backdrop-blur-xl rounded-2xl border border-gray-800 shadow-2xl shadow-black/90 z-20 max-h-[380px] overflow-y-auto">
+          <div className="w-full h-[500px] bg-gradient-to-br from-slate-50/90 via-blue-50/90 to-teal-50/90 dark:from-slate-900/90 dark:via-blue-900/40 dark:to-teal-900/40 backdrop-blur-2xl border-t border-blue-200/50 dark:border-white/5 shadow-[0_-10px_40px_rgba(0,0,0,0.1)] dark:shadow-[0_-10px_40px_rgba(0,0,0,0.3)] overflow-y-auto flex flex-col z-20 mt-auto relative">
             {/* Console Header Bar */}
-            <div className="sticky top-0 bg-gray-950/95 backdrop-blur-md z-10 flex justify-between items-center px-6 py-3.5 border-b border-gray-800/80">
-              <h3 className="text-sm font-extrabold uppercase tracking-widest text-brand-400 flex items-center gap-2">
-                <span className="h-2 w-2 rounded-full bg-brand-500 animate-ping" />
-                {runResult ? '💻 Execution Console' : '🚀 Submission Judge'}
+            <div className="sticky top-0 bg-white/40 dark:bg-black/30 backdrop-blur-3xl z-10 flex justify-between items-center px-6 py-3.5 border-b border-blue-200/50 dark:border-white/5 shadow-sm">
+              <h3 className="text-base font-black uppercase tracking-widest text-brand-400 flex items-center gap-2">
+                <span className="h-2.5 w-2.5 rounded-full bg-brand-500 animate-ping" />
+                {runResult ? 'Execution Console' : 'Submission Judge'}
               </h3>
               <button
                 onClick={() => setShowConsole(false)}
-                className="bg-gray-900 hover:bg-gray-800 text-gray-400 hover:text-white border border-gray-800 px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 shadow-md active:scale-95 cursor-pointer"
+                className="bg-gray-100 hover:bg-gray-200 text-gray-600 hover:text-gray-900 border border-gray-300 dark:bg-gray-900 dark:hover:bg-gray-800 dark:text-gray-400 dark:hover:text-white dark:border-gray-800 px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 shadow-md active:scale-95 cursor-pointer"
               >
                 <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
@@ -525,7 +584,7 @@ export default function ProblemDetail() {
             {runResult && (
               <div className="space-y-4">
                 <div className="flex items-center gap-2 mb-3">
-                  <span className={`text-xs font-black uppercase tracking-wider px-3 py-1.5 rounded-lg border ${
+                  <span className={`text-sm font-black uppercase tracking-widest px-4 py-2 rounded-xl border ${
                     runResult.match
                       ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40 shadow-emerald-900/30'
                       : 'bg-red-500/20 text-red-300 border-red-500/40 shadow-red-900/30'
@@ -536,8 +595,8 @@ export default function ProblemDetail() {
                 
                 {runResult.input && (
                   <div>
-                    <h4 className="text-xs font-extrabold text-gray-300 uppercase tracking-widest mb-1.5">Input</h4>
-                    <div className="bg-gray-900/90 border border-gray-700/80 rounded-xl p-3.5 font-mono text-base font-bold text-white whitespace-pre-wrap leading-relaxed shadow-inner">
+                    <h4 className="text-sm font-black text-gray-600 dark:text-gray-300 uppercase tracking-widest mb-2">Input</h4>
+                    <div className="bg-white/80 dark:bg-gray-900/90 border border-gray-200 dark:border-gray-700/80 rounded-xl p-4 font-mono text-lg font-black text-gray-900 dark:text-white whitespace-pre-wrap leading-relaxed shadow-inner tracking-wide">
                       {runResult.input}
                     </div>
                   </div>
@@ -545,14 +604,14 @@ export default function ProblemDetail() {
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <h4 className="text-xs font-extrabold text-gray-300 uppercase tracking-widest mb-1.5 flex items-center gap-1.5">
+                    <h4 className="text-sm font-black text-gray-600 dark:text-gray-300 uppercase tracking-widest mb-2 flex items-center gap-2">
                       Your Output
-                      {runResult.match && <span className="text-emerald-400 font-bold">✓</span>}
+                      {runResult.match && <span className="text-emerald-600 dark:text-emerald-400 font-black">✓</span>}
                     </h4>
-                    <div className={`rounded-xl p-3.5 font-mono text-base font-bold whitespace-pre-wrap leading-relaxed min-h-[48px] shadow-inner ${
+                    <div className={`rounded-xl p-4 font-mono text-lg font-black whitespace-pre-wrap leading-relaxed min-h-[56px] shadow-inner tracking-wide ${
                       runResult.match
-                        ? 'bg-emerald-950/40 text-emerald-300 border border-emerald-500/50'
-                        : 'bg-red-950/40 text-red-300 border border-red-500/50'
+                        ? 'bg-emerald-50/80 text-emerald-800 border border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-300 dark:border-emerald-500/50'
+                        : 'bg-red-50/80 text-red-800 border border-red-200 dark:bg-red-950/40 dark:text-red-300 dark:border-red-500/50'
                     }`}>
                       {runResult.output || <span className="text-gray-500 italic">No output produced</span>}
                     </div>
@@ -560,8 +619,8 @@ export default function ProblemDetail() {
                   
                   {runResult.expected && (
                     <div>
-                      <h4 className="text-xs font-extrabold text-gray-300 uppercase tracking-widest mb-1.5 text-emerald-400">Expected Output</h4>
-                      <div className="bg-gray-900/90 border border-emerald-900/50 text-emerald-300 rounded-xl p-3.5 font-mono text-base font-bold whitespace-pre-wrap leading-relaxed min-h-[48px] shadow-inner">
+                      <h4 className="text-sm font-black text-emerald-600 dark:text-emerald-400 uppercase tracking-widest mb-2">Expected Output</h4>
+                      <div className="bg-emerald-50/50 dark:bg-gray-900/90 border border-emerald-200 dark:border-emerald-900/50 text-emerald-800 dark:text-emerald-300 rounded-xl p-4 font-mono text-lg font-black whitespace-pre-wrap leading-relaxed min-h-[56px] shadow-inner tracking-wide">
                         {runResult.expected}
                       </div>
                     </div>
@@ -570,8 +629,8 @@ export default function ProblemDetail() {
 
                 {runResult.error && (
                   <div>
-                    <h4 className="text-xs font-extrabold text-red-400 uppercase tracking-widest mb-1.5">Standard Error</h4>
-                    <div className="bg-red-950/50 rounded-xl p-3.5 font-mono text-sm font-bold text-red-300 whitespace-pre-wrap border border-red-500/40 shadow-inner">
+                    <h4 className="text-sm font-black text-red-600 dark:text-red-400 uppercase tracking-widest mb-2">Standard Error</h4>
+                    <div className="bg-red-50/80 dark:bg-red-950/50 rounded-xl p-4 font-mono text-base font-black text-red-800 dark:text-red-300 whitespace-pre-wrap border border-red-200 dark:border-red-500/40 shadow-inner tracking-wide">
                       {runResult.error}
                     </div>
                   </div>
@@ -581,12 +640,20 @@ export default function ProblemDetail() {
 
             {/* Submission Output — Loading State */}
             {submitting && (
-              <div className="flex flex-col gap-3 py-5">
-                <div className="flex items-center gap-3 text-brand-400 font-semibold">
-                  <span className="animate-spin h-5 w-5 border-2 border-brand-500 border-t-transparent rounded-full" />
-                  <span>Judge worker is evaluating your code…</span>
+              <div className="flex flex-col gap-4 py-5 animate-in fade-in duration-300">
+                <div className="flex items-center gap-3 text-cyan-400 font-bold">
+                  <span className="animate-spin h-5 w-5 border-2 border-cyan-500 border-t-transparent rounded-full shadow-[0_0_10px_rgba(6,182,212,0.5)]" />
+                  <span className="tracking-wide">Judge worker is evaluating your code...</span>
                 </div>
-                <div className="text-xs text-gray-500">Status: <span className="text-brand-400 font-bold">{submission?.status || 'PENDING'}</span></div>
+                <div className="text-xs text-gray-500 font-mono tracking-widest uppercase">
+                  Status: <span className="text-cyan-400 font-black">{submission?.status || 'RUNNING'}</span>
+                </div>
+                
+                {/* Simulated Terminal / Logs */}
+                <div className="mt-2 bg-[#0a0a0f] border border-white/5 rounded-xl p-4 shadow-inner min-h-[120px] font-mono text-xs text-gray-400 relative overflow-hidden">
+                  <div className="absolute inset-0 bg-gradient-to-b from-transparent to-[#0a0a0f] pointer-events-none z-10" style={{ top: '60%' }} />
+                  <SimulatedJudgeLogs />
+                </div>
               </div>
             )}
 
@@ -595,7 +662,7 @@ export default function ProblemDetail() {
               const statusCfg = getStatusConfig(submission.status);
               const complexity = getComplexityAnalysis(problem?.slug);
               const tcStats = parseJudgeLog(submission.error_message);
-              const runtime = submission.execution_time || 0;
+              const runtime = submission.execution_time ? Math.round(submission.execution_time) : 0;
               const beats = runtime < 50 ? 98.4 : runtime < 100 ? 91.2 : runtime < 250 ? 84.6 : 67.3;
               const unwrappedCode = getUnwrappedCode(submission.code, submission.language);
               const linesOfCode = unwrappedCode.split('\n').filter(l => l.trim() !== '').length;
@@ -738,6 +805,7 @@ export default function ProblemDetail() {
             </div>{/* end px-6 pb-5 inner wrapper */}
           </div>
         )}
+
       </div>
     </div>
 

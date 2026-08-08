@@ -1,16 +1,70 @@
 from typing import Any, List
-from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks
+import logging
+
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException
 from sqlalchemy.orm import Session
+
 from app import crud, models, schemas
 from app.api import deps
-import subprocess
-import os
-import tempfile
-import time
 
+logger = logging.getLogger(__name__)
 router = APIRouter()
 
-def judge_submission_task(submission_id: int):
+
+@router.get("/", response_model=List[schemas.Submission])
+def read_submissions(
+    db: Session = Depends(deps.get_db),
+    skip: int = 0,
+    limit: int = 100,
+    current_user: models.User = Depends(deps.get_current_active_user),
+) -> Any:
+    """Retrieve submissions for the current user."""
+    if crud.user.is_superuser(current_user):
+        submissions = crud.submission.get_multi(db, skip=skip, limit=limit)
+    else:
+        submissions = crud.submission.get_multi_by_user(
+            db=db, user_id=current_user.id, skip=skip, limit=limit
+        )
+    return submissions
+
+
+@router.post("/", response_model=schemas.Submission)
+def create_submission(
+    *,
+    db: Session = Depends(deps.get_db),
+    submission_in: schemas.SubmissionCreate,
+    current_user: models.User = Depends(deps.get_current_active_user),
+) -> Any:
+    """Create a new submission and push it to the judge queue."""
+    problem = crud.problem.get(db=db, id=submission_in.problem_id)
+    if not problem:
+        raise HTTPException(status_code=404, detail="Problem not found")
+
+    submission = models.Submission(
+        problem_id=submission_in.problem_id,
+        language=submission_in.language,
+        code=submission_in.code,
+        user_id=current_user.id,
+    )
+    db.add(submission)
+    db.commit()
+    db.refresh(submission)
+
+    # Push to Redis queue (worker processes it asynchronously)
+    try:
+        from app.judge.queue import push_submission
+        push_submission(submission.id)
+        logger.info("Submission %d queued for judging", submission.id)
+    except Exception as e:
+        # Fall back to background-task judging if Redis is unavailable
+        logger.warning("Redis unavailable, falling back to background task: %s", e)
+        from fastapi import BackgroundTasks
+        from app.judge.worker import process_submission
+        import threading
+        t = threading.Thread(target=process_submission, args=(submission.id,), daemon=True)
+        t.start()
+
+    return submission
     from app.db.session import SessionLocal
     from app.models.testcase import TestCase
     db = SessionLocal()

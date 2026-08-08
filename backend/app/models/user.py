@@ -11,6 +11,8 @@ class User(Base):
     is_active = Column(Boolean(), default=True)
     is_superuser = Column(Boolean(), default=False)
     login_days = Column(Integer, default=1, nullable=False)
+    coding_days = Column(Integer, default=0, nullable=False)
+    practice_count = Column(Integer, default=0, nullable=False)
     last_login = Column(DateTime(timezone=True), nullable=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     

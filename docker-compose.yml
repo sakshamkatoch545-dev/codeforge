@@ -37,7 +37,8 @@ services:
       - db
       - redis
     volumes:
-      - ./backend:/app
+      - /var/run/docker.sock:/var/run/docker.sock
+    #   - ./backend:/app
 
   frontend:
     build:
@@ -51,9 +52,9 @@ services:
       - "3000:80"
     depends_on:
       - backend
-    volumes:
-      - ./frontend:/app
-      - /app/node_modules
+    # volumes:
+    #   - ./frontend:/app
+    #   - /app/node_modules
 
   admin_dashboard:
     build:

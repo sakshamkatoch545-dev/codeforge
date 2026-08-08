@@ -1,6 +1,7 @@
-import { useEffect, useState, useRef } from 'react'
+import { useEffect, useState, useRef, Fragment } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'
-import { api, Submission, Problem } from '../api'
+import { CheckCircle, XCircle } from 'lucide-react'
+import { api, Submission, Problem, TestCaseResult } from '../api'
 import { getUnwrappedCode } from '../problemsConfig'
 
 // ─── Complexity / analysis helpers (duplicated from ProblemDetail for self-containment) ──────────
@@ -83,11 +84,13 @@ const getComplexityAnalysis = (slug: string | undefined): ComplexityInfo => {
   }
 }
 
-const parseJudgeLog = (log: string | null) => {
-  if (!log) return { passed: 0, failed: 0, total: 0 }
-  const passed = (log.match(/Passed/gi) || []).length
-  const failed = (log.match(/Failed/gi) || []).length
-  return { passed, failed, total: passed + failed }
+const parseJudgeLog = (log: string | null): TestCaseResult[] => {
+  if (!log) return []
+  try {
+    return JSON.parse(log)
+  } catch {
+    return []
+  }
 }
 
 const STATUS_CONFIG: Record<string, { icon: string; label: string; colorClass: string; borderColorClass: string; ringClass: string; gradFrom: string; gradTo: string; particleColor: string }> = {
@@ -202,8 +205,11 @@ export default function SubmissionResult() {
   const cfg = STATUS_CONFIG[submission.status] ?? STATUS_CONFIG.INTERNAL_ERROR
   const isAccepted = submission.status === 'ACCEPTED'
   const complexity = getComplexityAnalysis(problem.slug)
-  const tcStats = parseJudgeLog(submission.error_message)
-  const runtime = submission.execution_time ?? 0
+  const testResults = parseJudgeLog(submission.error_message)
+  const passedTests = submission.passed_tests || 0
+  const totalTests = submission.total_tests || 0
+  const tcStats = { passed: passedTests, failed: totalTests - passedTests, total: totalTests }
+  const runtime = submission.execution_time ? Math.round(submission.execution_time) : 0
   const beats = runtime < 50 ? 98.4 : runtime < 100 ? 91.2 : runtime < 250 ? 84.6 : 67.3
   const unwrappedCode = getUnwrappedCode(submission.code, submission.language)
   const linesOfCode = unwrappedCode.split('\n').filter(l => l.trim() !== '').length
@@ -423,41 +429,99 @@ export default function SubmissionResult() {
               <p className="text-xs font-black uppercase tracking-wider text-brand-600 dark:text-cyan-300 mb-2">🚀 Pro Tip</p>
               <p className="text-sm text-brand-950 dark:text-cyan-100 leading-relaxed font-black">{complexity.tips}</p>
             </div>
+
           </div>
 
           {/* RIGHT: Judge Log + Code */}
-          <div className="space-y-4">
-            <h2 className="text-sm font-black uppercase tracking-wider text-slate-800 dark:text-slate-200 flex items-center gap-2">
-              <span className="h-[3px] w-6 bg-slate-500 dark:bg-slate-400 inline-block" />
-              {isAccepted ? 'Judge Log' : 'Error Details'}
-            </h2>
+          <div className="flex flex-col gap-4 h-full">
+            {(testResults.length > 0 || submission.error_message) && (
+              <>
+                <h2 className="text-sm font-black uppercase tracking-wider text-slate-800 dark:text-slate-200 flex items-center gap-2">
+                  <span className="h-[3px] w-6 bg-slate-500 dark:bg-slate-400 inline-block" />
+                  {isAccepted ? 'Judge Log' : 'Error Details'}
+                </h2>
 
-            {submission.error_message ? (
-              <pre className={`p-6 rounded-[24px] text-xs font-mono font-bold whitespace-pre-wrap leading-relaxed border overflow-y-auto max-h-80 min-h-[14rem] shadow-xl bg-slate-950/95 border-red-500/30 text-red-200 dark:bg-slate-950 dark:text-red-300`}>
-                {submission.error_message}
-              </pre>
-            ) : (
-              <div className="bg-white/80 dark:bg-slate-900/80 p-6 rounded-[24px] border border-white/50 dark:border-white/10 text-sm text-slate-400 italic backdrop-blur-xl">No judge output available.</div>
+                {testResults.length > 0 ? (
+                  <div className="space-y-4 max-h-[500px] overflow-y-auto custom-scrollbar pr-2">
+                    {testResults.map((tc, idx) => {
+                      const tcPassed = tc.verdict === 'ACCEPTED'
+                      return (
+                        <div key={idx} className={`p-4 sm:p-5 rounded-2xl border transition-all duration-300 ${tcPassed ? 'bg-emerald-50/50 dark:bg-emerald-950/20 border-emerald-100 dark:border-emerald-900/30' : 'bg-red-50/50 dark:bg-red-950/20 border-red-100 dark:border-red-900/30'}`}>
+                          <div className="flex flex-wrap items-center justify-between gap-4 mb-4">
+                            <div className="flex items-center gap-3">
+                              <span className="font-bold text-gray-900 dark:text-white">Test Case #{tc.test_case_id}</span>
+                              <span className={`text-[10px] px-2.5 py-1 rounded-full font-black uppercase tracking-wider flex items-center gap-1 ${tcPassed ? 'bg-emerald-100 dark:bg-emerald-900/50 text-emerald-700 dark:text-emerald-300' : 'bg-red-100 dark:bg-red-900/50 text-red-700 dark:text-red-300'}`}>
+                                {tcPassed ? 'Passed' : 'Failed'}
+                              </span>
+                            </div>
+                            <div className="text-xs font-mono text-gray-500 dark:text-gray-400 font-bold bg-white/60 dark:bg-gray-900/60 px-3 py-1.5 rounded-lg border border-gray-100 dark:border-white/5 shadow-sm">
+                              ⏱ {Math.round(tc.wall_time_ms)} ms
+                            </div>
+                          </div>
+
+                          <div className="space-y-3">
+                            <div className="space-y-1">
+                              <span className="text-xs font-black text-gray-400 dark:text-gray-500 uppercase tracking-wider pl-1">Input</span>
+                              <pre className="text-xs font-mono font-bold bg-white/60 dark:bg-[#060813]/60 p-3 rounded-xl overflow-x-auto text-gray-800 dark:text-gray-300 shadow-inner border border-white/40 dark:border-white/5">{tc.input_data}</pre>
+                            </div>
+                            
+                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
+                              <div className="space-y-1">
+                                <span className="text-xs font-black text-gray-400 dark:text-gray-500 uppercase tracking-wider pl-1">Expected Output</span>
+                                <pre className="text-xs font-mono font-bold bg-emerald-50/50 dark:bg-emerald-950/20 p-3 rounded-xl overflow-x-auto text-emerald-700 dark:text-emerald-400 shadow-inner border border-emerald-100 dark:border-emerald-900/20">{tc.expected_output}</pre>
+                              </div>
+                              <div className="space-y-1">
+                                <span className="text-xs font-black text-gray-400 dark:text-gray-500 uppercase tracking-wider pl-1">Actual Output</span>
+                                <pre className={`text-xs font-mono font-bold p-3 rounded-xl overflow-x-auto shadow-inner border ${tcPassed ? 'bg-emerald-50/50 dark:bg-emerald-950/20 text-emerald-700 dark:text-emerald-400 border-emerald-100 dark:border-emerald-900/20' : 'bg-red-50/50 dark:bg-red-950/20 text-red-700 dark:text-red-400 border-red-100 dark:border-red-900/20'}`}>
+                                  {tc.actual_output || (tcPassed ? tc.expected_output : 'No Output')}
+                                </pre>
+                              </div>
+                            </div>
+
+                            {tc.stderr && tc.stderr !== "Hidden error" && (
+                              <div className="space-y-1 mt-3">
+                                <span className="text-xs font-black text-red-400 dark:text-red-500 uppercase tracking-wider pl-1">Stderr / Error</span>
+                                <pre className="text-xs font-mono font-bold bg-red-50/50 dark:bg-red-950/20 p-3 rounded-xl overflow-x-auto text-red-600 dark:text-red-400 shadow-inner border border-red-100 dark:border-red-900/20 whitespace-pre-wrap">
+                                  {tc.stderr}
+                                </pre>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      )
+                    })}
+                  </div>
+                ) : (
+                  <pre className={`p-6 rounded-[24px] text-xs font-mono font-bold whitespace-pre-wrap leading-relaxed border overflow-y-auto max-h-80 min-h-[14rem] shadow-xl bg-slate-950/95 border-red-500/30 text-red-200 dark:bg-slate-950 dark:text-red-300`}>
+                    {submission.error_message}
+                  </pre>
+                )}
+              </>
             )}
 
-            {/* Submission metadata (Glass Panel) */}
-            <div className="bg-white/80 dark:bg-slate-900/80 p-5 rounded-[24px] border border-white/50 dark:border-white/10 shadow-lg backdrop-blur-xl relative overflow-hidden">
-              <p className="text-xs font-black uppercase tracking-wider text-slate-800 dark:text-slate-200 mb-4">Submission Details</p>
-              <div className="grid grid-cols-2 gap-y-4 text-sm">
-                {[
-                  { k: 'Submission ID', v: `#${submission.id}` },
-                  { k: 'Language', v: submission.language.toUpperCase() },
-                  { k: 'Lines of Code', v: `${linesOfCode}` },
-                  { k: 'Submitted At', v: new Date(submission.created_at).toLocaleString() },
-                ].map(({ k, v }) => (
-                  <div key={k}>
-                    <span className="block text-[10px] text-slate-500 dark:text-slate-400 font-extrabold uppercase tracking-wide">{k}</span>
-                    <span className="text-slate-950 dark:text-white font-extrabold mt-0.5 block text-base">{v}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
           </div>
+        </div>
+
+        {/* Submission metadata (Glass Panel) - Full Width */}
+        <div className="glass-table overflow-x-auto">
+          <table className="w-full text-left border-collapse">
+            <thead>
+              <tr>
+                <th>Submission ID</th>
+                <th>Language</th>
+                <th>Lines of Code</th>
+                <th>Submitted At</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-white/10 text-sm text-gray-700 dark:text-gray-200">
+              <tr>
+                <td className="font-bold text-gray-900 dark:text-white text-base">#{submission.id}</td>
+                <td className="font-bold text-gray-900 dark:text-white text-base">{submission.language.toUpperCase()}</td>
+                <td className="font-bold text-gray-900 dark:text-white text-base">{linesOfCode}</td>
+                <td className="font-bold text-gray-900 dark:text-white text-base">{new Date(submission.created_at).toLocaleString()}</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
 
         {/* ── Your Code (Glass Panel) ── */}

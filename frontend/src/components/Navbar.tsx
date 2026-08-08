@@ -78,36 +78,35 @@ export const Navbar: React.FC<NavbarProps> = ({ currentUser, onLogout }) => {
   const isLeaderboardActive = location.pathname === '/leaderboard';
 
   const [isDarkMode, setIsDarkMode] = useState(() => {
-    if (typeof window !== 'undefined') {
-      return localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches);
-    }
-    return true;
-  });
+    // Read from the html class set synchronously by main.tsx
+    return document.documentElement.classList.contains('dark')
+  })
 
   useEffect(() => {
-    const root = window.document.documentElement;
+    const root = window.document.documentElement
     if (isDarkMode) {
-      root.classList.add('dark');
-      localStorage.setItem('theme', 'dark');
+      root.classList.add('dark')
+      localStorage.setItem('theme', 'dark')
     } else {
-      root.classList.remove('dark');
-      localStorage.setItem('theme', 'light');
+      root.classList.remove('dark')
+      localStorage.setItem('theme', 'light')
     }
-  }, [isDarkMode]);
+  }, [isDarkMode])
 
-  const toggleTheme = () => setIsDarkMode(!isDarkMode);
+  const toggleTheme = () => setIsDarkMode(prev => !prev)
 
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   return (
     <div className="sticky top-6 z-50 px-4 md:px-6 animate-fade-in">
       <header className={`h-16 max-w-6xl mx-auto glass-panel !rounded-full flex items-center px-4 md:px-8 justify-between shadow-2xl ${theme.shadow} border ${theme.border} backdrop-saturate-200 transition-all duration-500`}>
-        <Link to="/" className={`text-xl md:text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r ${theme.logoGradient} tracking-tight flex items-center gap-2 md:gap-3 uppercase group transition-colors duration-500`}>
-          <div className={`relative flex items-center justify-center w-8 h-8 md:w-10 md:h-10 rounded-xl bg-gradient-to-tr ${theme.logoIconBg} shadow-lg group-hover:scale-110 transition-all duration-300`}>
-            <svg className="w-5 h-5 md:w-6 md:h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.2} d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-          </div>
+        <Link to="/" className={`text-2xl md:text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r ${theme.logoGradient} tracking-tight flex items-center gap-3 md:gap-4 uppercase group transition-all duration-500`}>
+          {currentUser && localStorage.getItem('codeforge_google_avatar') && (
+            <div className={`relative flex items-center justify-center w-10 h-10 md:w-12 md:h-12 rounded-xl bg-gradient-to-tr ${theme.logoIconBg} shadow-lg group-hover:scale-110 transition-all duration-300`}>
+              <img src={localStorage.getItem('codeforge_google_avatar')!} alt="Google Avatar" className="w-full h-full rounded-xl object-cover" />
+            </div>
+          )}
+          <img src="/anvil.png" alt="CodeForge Anvil" className="h-10 md:h-12 w-auto object-contain drop-shadow-md group-hover:scale-110 transition-transform duration-300" />
           <span className="hidden sm:inline">CodeForge</span>
         </Link>
         <nav className="hidden md:flex space-x-8 items-center">
