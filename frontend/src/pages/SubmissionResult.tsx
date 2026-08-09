@@ -492,11 +492,11 @@ export default function SubmissionResult() {
                             </div>
                             
                             <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
-                              <div className="space-y-1">
+                              <div className="space-y-1 min-w-0">
                                 <span className="text-xs font-black text-gray-400 dark:text-gray-500 uppercase tracking-wider pl-1">Expected Output</span>
                                 <pre className="text-xs font-mono font-bold bg-emerald-50/50 dark:bg-emerald-950/20 p-3 rounded-xl overflow-x-auto text-emerald-700 dark:text-emerald-400 shadow-inner border border-emerald-100 dark:border-emerald-900/20">{expectedStr}</pre>
                               </div>
-                              <div className="space-y-1">
+                              <div className="space-y-1 min-w-0">
                                 <span className="text-xs font-black text-gray-400 dark:text-gray-500 uppercase tracking-wider pl-1">Actual Output</span>
                                 <pre className={`text-xs font-mono font-bold p-3 rounded-xl overflow-x-auto shadow-inner border ${tcPassed ? 'bg-emerald-50/50 dark:bg-emerald-950/20 text-emerald-700 dark:text-emerald-400 border-emerald-100 dark:border-emerald-900/20' : 'bg-red-50/50 dark:bg-red-950/20 text-red-700 dark:text-red-400 border-red-100 dark:border-red-900/20'}`}>
                                   {actualStr || (tcPassed ? expectedStr : 'No Output')}

@@ -734,12 +734,12 @@ export default function ProblemDetail() {
                 )}
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
+                  <div className="min-w-0">
                     <h4 className="text-sm font-black text-gray-600 dark:text-gray-300 uppercase tracking-widest mb-2 flex items-center gap-2">
                       Your Output
                       {runResult.match && <span className="text-emerald-600 dark:text-emerald-400 font-black">✓</span>}
                     </h4>
-                    <div className={`rounded-xl p-4 font-mono text-lg font-black whitespace-pre-wrap leading-relaxed min-h-[56px] shadow-inner tracking-wide ${
+                    <div className={`rounded-xl p-4 font-mono text-lg font-black whitespace-pre overflow-auto max-h-[300px] leading-relaxed min-h-[56px] shadow-inner tracking-wide ${
                       runResult.match
                         ? 'bg-emerald-50/80 text-emerald-800 border border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-300 dark:border-emerald-500/50'
                         : 'bg-red-50/80 text-red-800 border border-red-200 dark:bg-red-950/40 dark:text-red-300 dark:border-red-500/50'
@@ -749,9 +749,9 @@ export default function ProblemDetail() {
                   </div>
                   
                   {runResult.expected && (
-                    <div>
+                    <div className="min-w-0">
                       <h4 className="text-sm font-black text-emerald-600 dark:text-emerald-400 uppercase tracking-widest mb-2">Expected Output</h4>
-                      <div className="bg-emerald-50/50 dark:bg-gray-900/90 border border-emerald-200 dark:border-emerald-900/50 text-emerald-800 dark:text-emerald-300 rounded-xl p-4 font-mono text-lg font-black whitespace-pre-wrap leading-relaxed min-h-[56px] shadow-inner tracking-wide">
+                      <div className="bg-emerald-50/50 dark:bg-gray-900/90 border border-emerald-200 dark:border-emerald-900/50 text-emerald-800 dark:text-emerald-300 rounded-xl p-4 font-mono text-lg font-black whitespace-pre overflow-auto max-h-[300px] leading-relaxed min-h-[56px] shadow-inner tracking-wide">
                         {(() => {
                            // If it's a match, just show the actual output so it's visually identical
                            if (runResult.match) return runResult.output;
