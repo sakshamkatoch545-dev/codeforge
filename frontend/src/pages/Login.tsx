@@ -51,7 +51,6 @@ function ConfettiCanvas() {
 }
 
 export default function Login() {
-  const [email, setEmail] = useState('')
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
@@ -75,7 +74,7 @@ export default function Login() {
     let attempts = 0
     const interval = setInterval(() => {
       attempts++
-      const g = window as any
+      const g = window as unknown as { google?: { accounts: { id: { initialize: (config: { client_id: string; callback: (res: { credential: string }) => void }) => void; renderButton: (el: HTMLElement, opts: Record<string, string | number>) => void } } } }
       const container = document.getElementById('main-google-btn-container')
       
       if (g.google && container) {
@@ -83,7 +82,7 @@ export default function Login() {
         
         g.google.accounts.id.initialize({
           client_id: clientId,
-          callback: async (response: any) => {
+          callback: async (response: { credential: string }) => {
             const idToken = response.credential
             setLoading(true)
             setError('')
@@ -105,8 +104,9 @@ export default function Login() {
                 decoded.name || decoded.given_name || undefined
               )
               triggerSuccessAndNavigate(token)
-            } catch (err: any) {
-              setError(err.response?.data?.detail || 'Google authentication failed.')
+            } catch (err: unknown) {
+              const error = err as { response?: { data?: { detail?: string } } }
+              setError(error?.response?.data?.detail || 'Google authentication failed.')
               setLoading(false)
             }
           }
@@ -115,18 +115,22 @@ export default function Login() {
         // Render the official button directly on the form
         g.google.accounts.id.renderButton(container, {
           theme: 'outline',
-          size: 'medium', // size 'medium' or 'small' disables personalization
+          size: 'large',
+          type: 'standard',
           shape: 'rectangular',
-          width: 199,     // width < 200px also disables personalization
           text: 'signin_with',
-          logo_alignment: 'center'
+          logo_alignment: 'left',
+          width: '280'
         })
-      } else if (attempts > 20) {
-        clearInterval(interval) // Give up after 2 seconds
+      }
+
+      if (attempts >= 40) {
+        clearInterval(interval)
       }
     }, 100)
 
     return () => clearInterval(interval)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
 
@@ -154,12 +158,7 @@ export default function Login() {
     }
   }
 
-  const openSocialAuth = (provider: 'GitHub') => {
-    setSocialModal({ open: true, provider })
-    setSocialEmail('')
-    setSocialUsername('')
-    setError('')
-  }
+
 
   const handleSocialSubmit = async (e: React.FormEvent) => {
     e.preventDefault()

@@ -3,7 +3,6 @@ import { createPortal } from 'react-dom'
 import { useNavigate, Link } from 'react-router-dom'
 import { api, UserInfo, Submission } from '../api'
 
-const AVATAR_EMOJIS = ['🧑‍💻','👨‍💻','👩‍💻','🦊','🐼','🐺','🦁','🐸','🤖','🎯','⚡','🔥','💎','🚀','🧠','👾']
 
 export default function Profile() {
   const navigate = useNavigate()
@@ -24,7 +23,6 @@ export default function Profile() {
   const [editLoading, setEditLoading] = useState(false)
   const [editSuccess, setEditSuccess] = useState('')
   const [editError, setEditError] = useState('')
-  const [showAvatarPicker, setShowAvatarPicker] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
@@ -89,8 +87,9 @@ export default function Profile() {
       localStorage.setItem('codeforge_avatar', editAvatar)
       setEditSuccess('Profile updated successfully!')
       setCurrentPassword(''); setNewPassword(''); setConfirmPassword('')
-    } catch (err: any) {
-      setEditError(err?.response?.data?.detail || 'Failed to save changes.')
+    } catch (err: unknown) {
+      const error = err as { response?: { data?: { detail?: string } } }
+      setEditError(error?.response?.data?.detail || 'Failed to save changes.')
     } finally {
       setEditLoading(false)
     }

@@ -1,6 +1,5 @@
-import { useEffect, useState, useRef, Fragment } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'
-import { CheckCircle, XCircle } from 'lucide-react'
 import { api, Submission, Problem, TestCaseResult } from '../api'
 import { getUnwrappedCode } from '../problemsConfig'
 

@@ -80,6 +80,7 @@ streamlit run app.py
 - 💬 **Discussion Forums**: Threaded problem discussions for sharing approaches, asking questions, and upvoting solutions.
 - ⌨️ **Rich Code Editor**: Monaco-editor (VS Code engine) integration with syntax highlighting, auto-completion, and themes.
 - 📉 **Execution Analytics**: Detailed metrics on execution time, memory usage, and error tracebacks.
+- 🎨 **Enhanced User Profiles**: A completely redesigned profile page with detailed statistics, recent submissions, and a visual heatmap of coding activity.
 
 ---
 

@@ -25,10 +25,11 @@ function App() {
         try {
           const user = await api.getMe()
           setCurrentUser(user)
-        } catch (err: any) {
+        } catch (err: unknown) {
           // Only log out if the server explicitly says unauthorized (401)
           // Don't remove token on network errors or server errors
-          if (err?.response?.status === 401) {
+          const error = err as { response?: { status?: number } };
+          if (error?.response?.status === 401) {
             localStorage.removeItem('codeforge_token')
             localStorage.removeItem('codeforge_google_avatar')
             setCurrentUser(null)

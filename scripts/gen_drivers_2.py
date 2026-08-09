@@ -8,7 +8,8 @@ DRIVERS["Longest Substring Without Repeating Characters"] = {
     "driver_code": """import sys
 {USER_CODE}
 if __name__ == '__main__':
-    s = sys.stdin.read().splitlines()[0] if sys.stdin.read().splitlines() else ""
+    lines = sys.stdin.read().splitlines()
+    s = lines[0] if lines else ""
     print(Solution().lengthOfLongestSubstring(s))"""
 }
 

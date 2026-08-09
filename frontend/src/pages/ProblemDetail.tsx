@@ -255,9 +255,9 @@ export default function ProblemDetail() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
 
-  const editorRef = useRef<any>(null)
+  const editorRef = useRef<unknown>(null)
 
-  const handleEditorMount = (editor: any, monaco: any) => {
+  const handleEditorMount = (editor: { addAction: (action: { id: string; label: string; contextMenuGroupId: string; contextMenuOrder: number; run: (ed: { getModel: () => { getFullModelRange: () => unknown }; setSelection: (r: unknown) => void; focus: () => void; getSelection: () => unknown; executeEdits: (src: string, edits: Array<{ range: unknown; text: string; forceMoveMarkers: boolean }>) => void }) => void }) => void }) => {
     editorRef.current = editor;
 
     // Add Select All to the right-click / long-press context menu
@@ -266,7 +266,7 @@ export default function ProblemDetail() {
       label: 'Select All',
       contextMenuGroupId: '9_cutcopypaste',
       contextMenuOrder: 1.5,
-      run: function (ed: any) {
+      run: function (ed: { getModel: () => { getFullModelRange: () => unknown }; setSelection: (r: unknown) => void; focus: () => void }) {
         const fullRange = ed.getModel().getFullModelRange();
         ed.setSelection(fullRange);
         ed.focus();
@@ -279,7 +279,7 @@ export default function ProblemDetail() {
       label: 'Paste',
       contextMenuGroupId: '9_cutcopypaste',
       contextMenuOrder: 2.5,
-      run: async function (ed: any) {
+      run: async function (ed: { getSelection: () => unknown; executeEdits: (src: string, edits: Array<{ range: unknown; text: string; forceMoveMarkers: boolean }>) => void }) {
         try {
           const text = await navigator.clipboard.readText();
           ed.executeEdits('custom-paste', [{
@@ -304,7 +304,7 @@ export default function ProblemDetail() {
       const currentCode = model.getValue();
       
       // Clean up excessive blank lines and trailing whitespace (common on mobile copy/paste)
-      let cleanedCode = currentCode
+      const cleanedCode = currentCode
         .split('\n')
         .map((line: string) => line.trimEnd())
         .join('\n')
@@ -430,7 +430,7 @@ export default function ProblemDetail() {
 
       const res = await api.runCode(wrappedCode, langParam, inputData, problem?.id)
       
-      const normalizeOutput = (str: string) => str.replace(/[\[\],]/g, ' ').trim().replace(/\s+/g, ' ');
+      const normalizeOutput = (str: string) => str.replace(/[[\],]/g, ' ').trim().replace(/\s+/g, ' ');
 
       setRunResult({
         ...res,
@@ -594,7 +594,6 @@ export default function ProblemDetail() {
               padding: { top: 16, bottom: 16 },
               lineHeight: window.innerWidth < 768 ? 20 : 22,
               wordWrap: 'on',
-              wordWrapIndent: 'none',
               scrollBeyondLastLine: false,
               automaticLayout: true,
               guides: {
@@ -872,11 +871,11 @@ export default function ProblemDetail() {
                             const data = JSON.parse(submission.error_message);
                             if (Array.isArray(data)) {
                               const validData = data
-                                .filter((tc: any) => tc.input_data?.trim() || tc.expected_output?.trim() || tc.actual_output?.trim())
+                                .filter((tc: TestCaseResult) => tc.input_data?.trim() || tc.expected_output?.trim() || tc.actual_output?.trim())
                                 .slice(0, 10);
                               return (
                                 <div className="flex flex-col gap-4">
-                                  {validData.map((tc: any, i: number) => {
+                                  {validData.map((tc: TestCaseResult, i: number) => {
                                     const actualStr = String(tc.actual_output || '').trim();
                                     let expectedStr = String(tc.expected_output || '').trim();
                                     

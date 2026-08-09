@@ -326,7 +326,7 @@ export function getWrappedCode(slug: string, language: string, code: string): st
 
 // Language Specific Wrappers
 
-function getPythonWrapper(code: string, meta: ProblemMetadata): string {
+export function getPythonWrapper(code: string, meta: ProblemMetadata): string {
   const fn = meta.funcName;
   let parseBlock = "";
   const argNames: string[] = [];

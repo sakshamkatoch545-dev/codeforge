@@ -116,7 +116,7 @@ PROBLEMS_DATA = [
         "difficulty": DifficultyEnum.MEDIUM,
         "description": "Given a string s, find the length of the longest substring without repeating characters.\n\nExample 1:\nInput: s = \"abcabcbb\"\nOutput: 3\nExplanation: The answer is \"abc\", with the length of 3.\n\nExample 2:\nInput: s = \"bbbbb\"\nOutput: 1\n\nExample 3:\nInput: s = \"pwwkew\"\nOutput: 3\nExplanation: The answer is \"wke\", with the length of 3.\nNotice that the answer must be a substring, \"pwke\" is a subsequence and not a substring.\n\nConstraints:\n- 0 <= s.length <= 5 * 10^4\n- s consists of English letters, digits, symbols and spaces.",
         "starter_code": {"python": "class Solution:\n    def lengthOfLongestSubstring(self, s: str) -> int:\n        pass"},
-        "driver_code": {"python": "import sys, json\nfrom typing import *\nimport collections\nimport math\nimport itertools\n{USER_CODE}\nif __name__ == '__main__':\n    s = sys.stdin.read().splitlines()[0] if sys.stdin.read().splitlines() else \"\"\n    print(Solution().lengthOfLongestSubstring(s))"},
+        "driver_code": {"python": "import sys, json\nfrom typing import *\nimport collections\nimport math\nimport itertools\n{USER_CODE}\nif __name__ == '__main__':\n    lines = sys.stdin.read().splitlines()\n    s = lines[0] if lines else \"\"\n    print(Solution().lengthOfLongestSubstring(s))"},
         "test_cases": [
             {"input": "abcabcbb\n", "output": "3\n", "hidden": False},
             {"input": "bbbbb\n", "output": "1\n", "hidden": True}
