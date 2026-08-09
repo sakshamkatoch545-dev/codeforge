@@ -35,7 +35,8 @@ PROBLEMS_DATA = [
         "difficulty": DifficultyEnum.EASY,
         "description": "Write a function that reverses a string. The input string is given as an array of characters s.\n\nYou must do this by modifying the input array in-place with O(1) extra memory.\n\nExample 1:\nInput: s = [\"h\",\"e\",\"l\",\"l\",\"o\"]\nOutput: [\"o\",\"l\",\"l\",\"e\",\"h\"]\n\nExample 2:\nInput: s = [\"H\",\"a\",\"n\",\"n\",\"a\",\"h\"]\nOutput: [\"h\",\"a\",\"n\",\"n\",\"a\",\"H\"]\n\nExample 3:\nInput: s = [\"C\",\"o\",\"d\",\"e\",\"F\",\"o\",\"r\",\"g\",\"e\"]\nOutput: [\"e\",\"g\",\"r\",\"o\",\"F\",\"e\",\"d\",\"o\",\"C\"]\n\nConstraints:\n- 1 <= s.length <= 10^5\n- s[i] is a printable ascii character.\n\nFollow-up: Can you solve it with exactly O(1) extra space?",
         "starter_code": {"python": "class Solution:\n    def reverseString(self, s: List[str]) -> None:\n        \"\"\"\n        Do not return anything, modify s in-place instead.\n        \"\"\"\n        pass"},
-        "driver_code": {"python": "import sys, json\nfrom typing import *\nimport collections\nimport math\nimport itertools\n{USER_CODE}\nif __name__ == '__main__':\n    s = list(sys.stdin.read().splitlines()[0])\n    Solution().reverseString(s)\n    print(\"\".join(s))"},
+        "driver_code": {"python": "import sys, json\nfrom typing import *\nimport collections\nimport math\nimport itertools\n{USER_CODE}\nif __name__ == '__main__':\n    lines = sys.stdin.read().splitlines()
+    s = list(lines[0]) if lines else []\n    Solution().reverseString(s)\n    print(\"\".join(s))"},
         "test_cases": [
             {"input": "hello\n", "output": "olleh\n", "hidden": False},
             {"input": "CodeForge\n", "output": "egroFedoC\n", "hidden": True}
@@ -47,7 +48,8 @@ PROBLEMS_DATA = [
         "difficulty": DifficultyEnum.EASY,
         "description": "Given an integer x, return true if x is a palindrome, and false otherwise.\n\nAn integer is a palindrome when it reads the same forward and backward.\n\nExample 1:\nInput: x = 121\nOutput: true\n\nExample 2:\nInput: x = -121\nOutput: false\nExplanation: From left to right, it reads -121. From right to left, it becomes 121-. Therefore it is not a palindrome.\n\nExample 3:\nInput: x = 10\nOutput: false\nExplanation: Reads 01 from right to left. Therefore it is not a palindrome.\n\nConstraints:\n- -2^31 <= x <= 2^31 - 1\n\nFollow-up: Could you solve it without converting the integer to a string?",
         "starter_code": {"python": "class Solution:\n    def isPalindrome(self, x: int) -> bool:\n        pass"},
-        "driver_code": {"python": "import sys, json\nfrom typing import *\nimport collections\nimport math\nimport itertools\n{USER_CODE}\nif __name__ == '__main__':\n    x = int(sys.stdin.read().splitlines()[0])\n    res = Solution().isPalindrome(x)\n    print(\"true\" if res else \"false\")"},
+        "driver_code": {"python": "import sys, json\nfrom typing import *\nimport collections\nimport math\nimport itertools\n{USER_CODE}\nif __name__ == '__main__':\n    lines = sys.stdin.read().splitlines()
+    x = int(lines[0]) if lines else 0\n    res = Solution().isPalindrome(x)\n    print(\"true\" if res else \"false\")"},
         "test_cases": [
             {"input": "121\n", "output": "true\n", "hidden": False},
             {"input": "-121\n", "output": "false\n", "hidden": True}
@@ -59,7 +61,8 @@ PROBLEMS_DATA = [
         "difficulty": DifficultyEnum.EASY,
         "description": "Given a string s containing just the characters '(', ')', '{', '}', '[' and ']', determine if the input string is valid.\n\nAn input string is valid if:\n1. Open brackets must be closed by the same type of brackets.\n2. Open brackets must be closed in the correct order.\n3. Every close bracket has a corresponding open bracket of the same type.\n\nExample 1:\nInput: s = \"()[]{}\"\nOutput: true\n\nExample 2:\nInput: s = \"(]\"\nOutput: false\n\nExample 3:\nInput: s = \"(]\"\nOutput: false\n\nExample 4:\nInput: s = \"([)]\"\nOutput: false\n\nConstraints:\n- 1 <= s.length <= 10^4\n- s consists of parentheses only '()[]{}'.",
         "starter_code": {"python": "class Solution:\n    def isValid(self, s: str) -> bool:\n        pass"},
-        "driver_code": {"python": "import sys, json\nfrom typing import *\nimport collections\nimport math\nimport itertools\n{USER_CODE}\nif __name__ == '__main__':\n    s = sys.stdin.read().splitlines()[0]\n    res = Solution().isValid(s)\n    print(\"true\" if res else \"false\")"},
+        "driver_code": {"python": "import sys, json\nfrom typing import *\nimport collections\nimport math\nimport itertools\n{USER_CODE}\nif __name__ == '__main__':\n    lines = sys.stdin.read().splitlines()
+    s = lines[0] if lines else ""\n    res = Solution().isValid(s)\n    print(\"true\" if res else \"false\")"},
         "test_cases": [
             {"input": "()[]{}\n", "output": "true\n", "hidden": False},
             {"input": "(]\n", "output": "false\n", "hidden": True}
@@ -82,7 +85,8 @@ PROBLEMS_DATA = [
         "difficulty": DifficultyEnum.MEDIUM,
         "description": "Given an integer array nums, find the subarray with the largest sum, and return its sum.\n\nA subarray is a contiguous non-empty sequence of elements within an array.\n\nExample 1:\nInput: nums = [-2,1,-3,4,-1,2,1,-5,4]\nOutput: 6\nExplanation: The subarray [4,-1,2,1] has the largest sum 6.\n\nExample 2:\nInput: nums = [1]\nOutput: 1\n\nExample 3:\nInput: nums = [5,4,-1,7,8]\nOutput: 23\n\nConstraints:\n- 1 <= nums.length <= 10^5\n- -10^4 <= nums[i] <= 10^4\n\nFollow-up: If you have figured out the O(n) solution, try coding another solution using the divide and conquer approach, which is more subtle.",
         "starter_code": {"python": "class Solution:\n    def maxSubArray(self, nums: List[int]) -> int:\n        pass"},
-        "driver_code": {"python": "import sys, json\nfrom typing import *\nimport collections\nimport math\nimport itertools\n{USER_CODE}\nif __name__ == '__main__':\n    nums = [int(x) for x in sys.stdin.read().splitlines()[0].split()]\n    print(Solution().maxSubArray(nums))"},
+        "driver_code": {"python": "import sys, json\nfrom typing import *\nimport collections\nimport math\nimport itertools\n{USER_CODE}\nif __name__ == '__main__':\n    lines = sys.stdin.read().splitlines()
+    nums = [int(x) for x in lines[0].split()] if lines else []\n    print(Solution().maxSubArray(nums))"},
         "test_cases": [
             {"input": "-2 1 -3 4 -1 2 1 -5 4\n", "output": "6\n", "hidden": False},
             {"input": "5 4 -1 7 8\n", "output": "23\n", "hidden": True}
@@ -94,7 +98,8 @@ PROBLEMS_DATA = [
         "difficulty": DifficultyEnum.MEDIUM,
         "description": "You are given an integer array height of length n. There are n vertical lines drawn such that the two endpoints of the ith line are (i, 0) and (i, height[i]).\n\nFind two lines that together with the x-axis form a container, such that the container contains the most water.\n\nReturn the maximum amount of water a container can store.\n\nExample 1:\nInput: height = [1,8,6,2,5,4,8,3,7]\nOutput: 49\n\nExample 2:\nInput: height = [1,1]\nOutput: 1\n\nConstraints:\n- n == height.length\n- 2 <= n <= 10^5\n- 0 <= height[i] <= 10^4",
         "starter_code": {"python": "class Solution:\n    def maxArea(self, height: List[int]) -> int:\n        pass"},
-        "driver_code": {"python": "import sys, json\nfrom typing import *\nimport collections\nimport math\nimport itertools\n{USER_CODE}\nif __name__ == '__main__':\n    height = [int(x) for x in sys.stdin.read().splitlines()[0].split()]\n    print(Solution().maxArea(height))"},
+        "driver_code": {"python": "import sys, json\nfrom typing import *\nimport collections\nimport math\nimport itertools\n{USER_CODE}\nif __name__ == '__main__':\n    lines = sys.stdin.read().splitlines()
+    height = [int(x) for x in lines[0].split()] if lines else []\n    print(Solution().maxArea(height))"},
         "test_cases": [
             {"input": "1 8 6 2 5 4 8 3 7\n", "output": "49\n", "hidden": False}
         ]
@@ -105,7 +110,8 @@ PROBLEMS_DATA = [
         "difficulty": DifficultyEnum.MEDIUM,
         "description": "Given an integer array nums, return all the triplets [nums[i], nums[j], nums[k]] such that i != j, i != k, and j != k, and nums[i] + nums[j] + nums[k] == 0.\n\nNotice that the solution set must not contain duplicate triplets.\n\nExample 1:\nInput: nums = [-1,0,1,2,-1,-4]\nOutput: [[-1,-1,2],[-1,0,1]]\n\nExample 2:\nInput: nums = [0,1,1]\nOutput: []\nExplanation: The only possible triplet does not sum up to 0.\n\nExample 3:\nInput: nums = [0,0,0]\nOutput: [[0,0,0]]\nExplanation: The only possible triplet sums up to 0.\n\nConstraints:\n- 3 <= nums.length <= 3000\n- -10^5 <= nums[i] <= 10^5",
         "starter_code": {"python": "class Solution:\n    def threeSum(self, nums: List[int]) -> List[List[int]]:\n        pass"},
-        "driver_code": {"python": "import sys, json\nfrom typing import *\nimport collections\nimport math\nimport itertools\n{USER_CODE}\nif __name__ == '__main__':\n    nums = [int(x) for x in sys.stdin.read().splitlines()[0].split()]\n    res = Solution().threeSum(nums)\n    print(json.dumps(res).replace(\" \", \"\"))"},
+        "driver_code": {"python": "import sys, json\nfrom typing import *\nimport collections\nimport math\nimport itertools\n{USER_CODE}\nif __name__ == '__main__':\n    lines = sys.stdin.read().splitlines()
+    nums = [int(x) for x in lines[0].split()] if lines else []\n    res = Solution().threeSum(nums)\n    print(json.dumps(res).replace(\" \", \"\"))"},
         "test_cases": [
             {"input": "-1 0 1 2 -1 -4\n", "output": "[[-1,-1,2],[-1,0,1]]\n", "hidden": False}
         ]
@@ -139,7 +145,8 @@ PROBLEMS_DATA = [
         "difficulty": DifficultyEnum.HARD,
         "description": "The n-queens puzzle is the problem of placing n queens on an n x n chessboard such that no two queens attack each other.\n\nGiven an integer n, return all distinct solutions to the n-queens puzzle. You may return the answer in any order.\n\nExample 1:\nInput: n = 4\nOutput: [[\".Q..\",\"...Q\",\"Q...\",\"..Q.\"],[\"..Q.\",\"Q...\",\"...Q\",\".Q..\"]]\n\nExample 2:\nInput: n = 1\nOutput: [[\"Q\"]]\n\nConstraints:\n- 1 <= n <= 9\n\nFollow-up: Can you optimize your backtracking approach to use bit manipulation for O(1) space?",
         "starter_code": {"python": "class Solution:\n    def solveNQueens(self, n: int) -> List[List[str]]:\n        pass"},
-        "driver_code": {"python": "import sys, json\nfrom typing import *\nimport collections\nimport math\nimport itertools\n{USER_CODE}\nif __name__ == '__main__':\n    n = int(sys.stdin.read().splitlines()[0])\n    res = Solution().solveNQueens(n)\n    print(json.dumps(res).replace(\" \", \"\"))"},
+        "driver_code": {"python": "import sys, json\nfrom typing import *\nimport collections\nimport math\nimport itertools\n{USER_CODE}\nif __name__ == '__main__':\n    lines = sys.stdin.read().splitlines()
+    n = int(lines[0]) if lines else 0\n    res = Solution().solveNQueens(n)\n    print(json.dumps(res).replace(\" \", \"\"))"},
         "test_cases": [
             {"input": "4\n", "output": "[[\".Q..\",\"...Q\",\"Q...\",\"..Q.\"],[\"..Q.\",\"Q...\",\"...Q\",\".Q..\"]]\n", "hidden": False}
         ]
@@ -161,7 +168,8 @@ PROBLEMS_DATA = [
         "difficulty": DifficultyEnum.EASY,
         "description": "You are climbing a staircase. It takes n steps to reach the top.\n\nEach time you can either climb 1 or 2 steps. In how many distinct ways can you climb to the top?\n\nExample 1:\nInput: n = 2\nOutput: 2 (1 step + 1 step, or 2 steps)\n\nExample 2:\nInput: n = 3\nOutput: 3 (1+1+1, 1+2, 2+1)\n\nConstraints:\n- 1 <= n <= 45\n\nFollow-up: Can you solve it using O(1) space complexity? What about O(log n) time using matrix multiplication?",
         "starter_code": {"python": "class Solution:\n    def climbStairs(self, n: int) -> int:\n        pass"},
-        "driver_code": {"python": "import sys, json\nfrom typing import *\nimport collections\nimport math\nimport itertools\n{USER_CODE}\nif __name__ == '__main__':\n    n = int(sys.stdin.read().splitlines()[0])\n    print(Solution().climbStairs(n))"},
+        "driver_code": {"python": "import sys, json\nfrom typing import *\nimport collections\nimport math\nimport itertools\n{USER_CODE}\nif __name__ == '__main__':\n    lines = sys.stdin.read().splitlines()
+    n = int(lines[0]) if lines else 0\n    print(Solution().climbStairs(n))"},
         "test_cases": [
             {"input": "2\n", "output": "2\n", "hidden": False},
             {"input": "3\n", "output": "3\n", "hidden": True}

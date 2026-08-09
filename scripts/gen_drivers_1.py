@@ -23,7 +23,8 @@ DRIVERS["Reverse String"] = {
     "driver_code": """import sys
 {USER_CODE}
 if __name__ == '__main__':
-    s = list(sys.stdin.read().splitlines()[0])
+    lines = sys.stdin.read().splitlines()
+    s = list(lines[0]) if lines else []
     Solution().reverseString(s)
     print("".join(s))"""
 }
@@ -34,7 +35,8 @@ DRIVERS["Palindrome Number"] = {
     "driver_code": """import sys
 {USER_CODE}
 if __name__ == '__main__':
-    x = int(sys.stdin.read().splitlines()[0])
+    lines = sys.stdin.read().splitlines()
+    x = int(lines[0]) if lines else 0
     res = Solution().isPalindrome(x)
     print("true" if res else "false")"""
 }
@@ -45,7 +47,8 @@ DRIVERS["Valid Parentheses"] = {
     "driver_code": """import sys
 {USER_CODE}
 if __name__ == '__main__':
-    s = sys.stdin.read().splitlines()[0]
+    lines = sys.stdin.read().splitlines()
+    s = lines[0] if lines else ""
     res = Solution().isValid(s)
     print("true" if res else "false")"""
 }
@@ -79,7 +82,8 @@ DRIVERS["Maximum Subarray"] = {
     "driver_code": """import sys
 {USER_CODE}
 if __name__ == '__main__':
-    nums = [int(x) for x in sys.stdin.read().splitlines()[0].split()]
+    lines = sys.stdin.read().splitlines()
+    nums = [int(x) for x in lines[0].split()] if lines else []
     print(Solution().maxSubArray(nums))"""
 }
 
@@ -89,7 +93,8 @@ DRIVERS["Container With Most Water"] = {
     "driver_code": """import sys
 {USER_CODE}
 if __name__ == '__main__':
-    height = [int(x) for x in sys.stdin.read().splitlines()[0].split()]
+    lines = sys.stdin.read().splitlines()
+    height = [int(x) for x in lines[0].split()] if lines else []
     print(Solution().maxArea(height))"""
 }
 
@@ -99,7 +104,8 @@ DRIVERS["3Sum"] = {
     "driver_code": """import sys, json
 {USER_CODE}
 if __name__ == '__main__':
-    nums = [int(x) for x in sys.stdin.read().splitlines()[0].split()]
+    lines = sys.stdin.read().splitlines()
+    nums = [int(x) for x in lines[0].split()] if lines else []
     res = Solution().threeSum(nums)
     print(json.dumps(res).replace(" ", ""))"""
 }

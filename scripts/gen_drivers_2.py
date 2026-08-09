@@ -30,7 +30,8 @@ DRIVERS["N-Queens"] = {
     "driver_code": """import sys, json
 {USER_CODE}
 if __name__ == '__main__':
-    n = int(sys.stdin.read().splitlines()[0])
+    lines = sys.stdin.read().splitlines()
+    n = int(lines[0]) if lines else 0
     res = Solution().solveNQueens(n)
     print(json.dumps(res).replace(" ", ""))"""
 }
@@ -53,7 +54,8 @@ DRIVERS["Climbing Stairs"] = {
     "driver_code": """import sys
 {USER_CODE}
 if __name__ == '__main__':
-    n = int(sys.stdin.read().splitlines()[0])
+    lines = sys.stdin.read().splitlines()
+    n = int(lines[0]) if lines else 0
     print(Solution().climbStairs(n))"""
 }
 
