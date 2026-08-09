@@ -214,7 +214,7 @@ PROBLEMS_DATA = [
         "difficulty": DifficultyEnum.MEDIUM,
         "description": "Given a string s, return the longest palindromic substring in s.\n\nExample 1:\nInput: s = \"babad\"\nOutput: \"bab\"\nExplanation: \"aba\" is also a valid answer.\n\nExample 2:\nInput: s = \"cbbd\"\nOutput: \"bb\"\n\nConstraints:\n- 1 <= s.length <= 1000\n- s consist of only digits and English letters.",
         "starter_code": {"python": "class Solution:\n    def longestPalindrome(self, s: str) -> str:\n        pass"},
-        "driver_code": {"python": "import sys, json\nfrom typing import *\nimport collections\nimport math\nimport itertools\n{USER_CODE}\nif __name__ == '__main__':\n    lines = sys.stdin.read().splitlines()\n    s = lines[0] if lines else \"\"\n    print(Solution().longestPalindrome(s))"},
+        "driver_code": {"python": "import sys, json\nfrom typing import *\nimport collections\nimport math\nimport itertools\n{USER_CODE}\ndef _get_canonical(st):\n    best = ''\n    for i in range(len(st)):\n        for j in range(i + 1, len(st) + 1):\n            sub = st[i:j]\n            if sub == sub[::-1] and len(sub) > len(best):\n                best = sub\n    return best\nif __name__ == '__main__':\n    lines = sys.stdin.read().splitlines()\n    s = lines[0] if lines else ''\n    user_res = Solution().longestPalindrome(s)\n    canonical = _get_canonical(s)\n    if isinstance(user_res, str) and user_res in s and user_res == user_res[::-1] and len(user_res) == len(canonical):\n        print(canonical)\n    else:\n        print(user_res)"},
         "test_cases": [
             {"input": "babad\n", "output": "bab\n", "hidden": False}
         ]
