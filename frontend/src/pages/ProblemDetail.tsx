@@ -912,13 +912,13 @@ export default function ProblemDetail() {
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                           <div>
                                             <h5 className="text-[10px] font-extrabold text-gray-500 uppercase tracking-widest mb-1.5">Your Output</h5>
-                                            <div className={`rounded-xl p-3 font-mono text-sm font-bold whitespace-pre-wrap ${isTcAccepted ? 'bg-emerald-950/20 text-emerald-300 border border-emerald-900/50' : 'bg-red-950/20 text-red-300 border border-red-900/50'}`}>
+                                            <div className={`rounded-xl p-3 font-mono text-sm font-bold whitespace-pre overflow-auto max-h-[300px] ${isTcAccepted ? 'bg-emerald-950/20 text-emerald-300 border border-emerald-900/50' : 'bg-red-950/20 text-red-300 border border-red-900/50'}`}>
                                               {actualStr || <span className="text-gray-600 italic">None</span>}
                                             </div>
                                           </div>
                                           <div>
                                             <h5 className="text-[10px] font-extrabold text-gray-500 uppercase tracking-widest mb-1.5">Expected Output</h5>
-                                            <div className="bg-emerald-950/20 text-emerald-300 border border-emerald-900/50 rounded-xl p-3 font-mono text-sm font-bold whitespace-pre-wrap">
+                                            <div className="bg-emerald-950/20 text-emerald-300 border border-emerald-900/50 rounded-xl p-3 font-mono text-sm font-bold whitespace-pre overflow-auto max-h-[300px]">
                                               {expectedStr || <span className="text-gray-600 italic">None</span>}
                                             </div>
                                           </div>
