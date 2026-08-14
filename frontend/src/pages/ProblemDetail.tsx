@@ -255,9 +255,9 @@ export default function ProblemDetail() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
 
-  const editorRef = useRef<unknown>(null)
+  const editorRef = useRef<any>(null)
 
-  const handleEditorMount = (editor: { addAction: (action: { id: string; label: string; contextMenuGroupId: string; contextMenuOrder: number; run: (ed: { getModel: () => { getFullModelRange: () => unknown }; setSelection: (r: unknown) => void; focus: () => void; getSelection: () => unknown; executeEdits: (src: string, edits: Array<{ range: unknown; text: string; forceMoveMarkers: boolean }>) => void }) => void }) => void }) => {
+  const handleEditorMount = (editor: any) => {
     editorRef.current = editor;
 
     // Add Select All to the right-click / long-press context menu
@@ -266,7 +266,7 @@ export default function ProblemDetail() {
       label: 'Select All',
       contextMenuGroupId: '9_cutcopypaste',
       contextMenuOrder: 1.5,
-      run: function (ed: { getModel: () => { getFullModelRange: () => unknown }; setSelection: (r: unknown) => void; focus: () => void }) {
+      run: function (ed: any) {
         const fullRange = ed.getModel().getFullModelRange();
         ed.setSelection(fullRange);
         ed.focus();
@@ -279,7 +279,7 @@ export default function ProblemDetail() {
       label: 'Paste',
       contextMenuGroupId: '9_cutcopypaste',
       contextMenuOrder: 2.5,
-      run: async function (ed: { getSelection: () => unknown; executeEdits: (src: string, edits: Array<{ range: unknown; text: string; forceMoveMarkers: boolean }>) => void }) {
+      run: async function (ed: any) {
         try {
           const text = await navigator.clipboard.readText();
           ed.executeEdits('custom-paste', [{
@@ -297,7 +297,7 @@ export default function ProblemDetail() {
 
   const handleFormatCode = () => {
     if (!editorRef.current) return;
-    const editor = editorRef.current;
+    const editor = editorRef.current as any;
     
     const model = editor.getModel();
     if (model) {
@@ -871,11 +871,11 @@ export default function ProblemDetail() {
                             const data = JSON.parse(submission.error_message);
                             if (Array.isArray(data)) {
                               const validData = data
-                                .filter((tc: TestCaseResult) => tc.input_data?.trim() || tc.expected_output?.trim() || tc.actual_output?.trim())
+                                .filter((tc: any) => tc.input_data?.trim() || tc.expected_output?.trim() || tc.actual_output?.trim())
                                 .slice(0, 10);
                               return (
                                 <div className="flex flex-col gap-4">
-                                  {validData.map((tc: TestCaseResult, i: number) => {
+                                  {validData.map((tc: any, i: number) => {
                                     const actualStr = String(tc.actual_output || '').trim();
                                     let expectedStr = String(tc.expected_output || '').trim();
                                     
