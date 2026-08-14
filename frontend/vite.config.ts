@@ -18,7 +18,7 @@ export default defineConfig({
   server: {
     port: 3000,
     host: true,
-    allowedHosts: true,
+    allowedHosts: ["hardened-sulfide-probiotic.ngrok-free.dev"],
     watch: {
       usePolling: true,
     },

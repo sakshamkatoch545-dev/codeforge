@@ -4,7 +4,6 @@ import Problems from './pages/Problems'
 import ProblemDetail from './pages/ProblemDetail'
 import Leaderboard from './pages/Leaderboard'
 import Profile from './pages/Profile'
-import Login from './pages/Login'
 import Register from './pages/Register'
 import Home from './pages/Home'
 import SubmissionResult from './pages/SubmissionResult'
@@ -57,7 +56,6 @@ function App() {
       <main className="flex-1 flex flex-col relative z-10">
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/problems" element={<Problems />} />
           <Route path="/problems/:slug" element={<ProblemDetail />} />

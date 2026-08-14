@@ -40,7 +40,7 @@ const Home = () => {
               Start Coding Now
             </Link>
             {!isLoggedIn && (
-              <Link to="/login" className="w-full sm:w-auto px-6 md:px-8 py-3.5 md:py-4 rounded-xl backdrop-blur-md bg-gradient-to-r from-pink-600/80 to-purple-600/80 text-white font-bold text-base md:text-lg hover:scale-105 transform transition-all duration-300 shadow-lg shadow-pink-500/20 border border-white/30">
+              <Link to="/register" className="w-full sm:w-auto px-6 md:px-8 py-3.5 md:py-4 rounded-xl backdrop-blur-md bg-gradient-to-r from-pink-600/80 to-purple-600/80 text-white font-bold text-base md:text-lg hover:scale-105 transform transition-all duration-300 shadow-lg shadow-pink-500/20 border border-white/30">
                 Create an Account
               </Link>
             )}

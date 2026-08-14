@@ -1,21 +1,35 @@
+## ── Stage 1: Build ─────────────────────────────────────────────────────────
 FROM node:20-alpine AS builder
 
 WORKDIR /app
 
-COPY package.json ./
-# We skip package-lock for now as we don't have one generated yet, so just npm install
+COPY package.json package-lock.json* ./
 RUN npm install
 
 COPY . .
 
-# In a real environment, you'd run `npm run build` 
-# RUN npm run build
+# VITE_API_URL is injected at build time as a build arg
+ARG VITE_API_URL
+ENV VITE_API_URL=$VITE_API_URL
 
-# For development purposes, let's just use the dev server in the Docker image
-# or serve the static files. Given this is a full stack docker-compose setup, 
-# we'll run `npm run dev` to support hot reloading when volume mounted.
+RUN npm run build
+
+## ── Stage 2: Serve with nginx ───────────────────────────────────────────────
+FROM nginx:alpine
+
+# Copy built files
+COPY --from=builder /app/dist /usr/share/nginx/html
+
+# nginx config: serve React SPA (all routes → index.html)
+RUN printf 'server {\n\
+    listen 80;\n\
+    root /usr/share/nginx/html;\n\
+    index index.html;\n\
+    location / {\n\
+        try_files $uri $uri/ /index.html;\n\
+    }\n\
+}\n' > /etc/nginx/conf.d/default.conf
 
 EXPOSE 80
 
-# This command runs vite dev server on port 80
-CMD ["npm", "run", "dev", "--", "--port", "80", "--host", "0.0.0.0"]
+CMD ["nginx", "-g", "daemon off;"]

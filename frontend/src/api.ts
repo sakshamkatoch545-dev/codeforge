@@ -1,6 +1,8 @@
 import axios from 'axios'
 
-const API_BASE = '/api/v1'
+// In production (Railway), set VITE_API_URL to the backend's public URL
+// e.g. https://codeforge-backend.up.railway.app/api/v1
+const API_BASE = import.meta.env.VITE_API_URL ?? '/api/v1'
 
 const client = axios.create({
   baseURL: API_BASE,
@@ -189,4 +191,15 @@ export const api = {
     })
     return response.data
   },
+}
+
+export function getUserIdFromToken() {
+  const token = localStorage.getItem('codeforge_token')
+  if (!token) return 'guest'
+  try {
+    const payload = JSON.parse(atob(token.split('.')[1]))
+    return payload.sub || payload.username || 'guest'
+  } catch (e) {
+    return 'guest'
+  }
 }

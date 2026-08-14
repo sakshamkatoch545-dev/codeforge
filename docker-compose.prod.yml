@@ -1,70 +1,69 @@
+# docker-compose.prod.yml
+# Use this for cloud/Railway deployment.
+# The Docker socket mount is removed — the sandbox judge is disabled in this mode.
+# All secrets are read from environment variables (set in Railway dashboard).
+#
+# Local dev:    docker-compose up -d
+# Production:   docker-compose -f docker-compose.prod.yml up -d
+
 name: codeforge
+
 services:
   db:
     image: postgres:15-alpine
-    container_name: codeforge_db
     restart: always
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-postgres}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
       POSTGRES_DB: ${POSTGRES_DB:-codeforge}
-    ports:
-      - "5432:5432"
     volumes:
       - codeforge_postgres_data:/var/lib/postgresql/data
 
   redis:
     image: redis:7-alpine
-    container_name: codeforge_redis
     restart: always
-    ports:
-      - "6379:6379"
     volumes:
       - codeforge_redis_data:/data
 
   backend:
-    build: 
+    build:
       context: ./backend
       dockerfile: Dockerfile
-    container_name: codeforge_backend
     restart: always
     environment:
-      - DATABASE_URL=postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@db:5432/${POSTGRES_DB:-codeforge}
-      - REDIS_URL=redis://redis:6379/0
-      - SECRET_KEY=${SECRET_KEY:-your-super-secret-key-change-in-production}
+      - DATABASE_URL=${DATABASE_URL}
+      - REDIS_URL=${REDIS_URL}
+      - SECRET_KEY=${SECRET_KEY}
+      - OPENAI_API_KEY=${OPENAI_API_KEY:-}
+      - JUDGE_DISABLED=true
     ports:
       - "8000:8000"
     depends_on:
       - db
       - redis
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-    #   - ./backend:/app
+    # NOTE: /var/run/docker.sock is intentionally NOT mounted.
+    # The judge requires Docker-in-Docker which is NOT supported on Railway.
+    # Use a VPS (DigitalOcean/Hetzner) + docker-compose.yml to enable it.
 
   frontend:
     build:
       context: ./frontend
       dockerfile: Dockerfile
-    container_name: codeforge_frontend
+      args:
+        VITE_API_URL: ${VITE_API_URL:-http://localhost:8000/api/v1}
     restart: always
-    environment:
-      - BACKEND_URL=http://backend:8000
     ports:
       - "3000:80"
     depends_on:
       - backend
-    # volumes:
-    #   - ./frontend:/app
-    #   - /app/node_modules
 
   admin_dashboard:
     build:
       context: ./admin_dashboard
       dockerfile: Dockerfile
-    container_name: codeforge_admin
     restart: always
     environment:
-      - DATABASE_URL=postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@db:5432/${POSTGRES_DB:-codeforge}
+      - DATABASE_URL=${DATABASE_URL}
     ports:
       - "8501:8501"
     depends_on:

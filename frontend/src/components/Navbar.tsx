@@ -48,7 +48,7 @@ const getHeaderTheme = (pathname: string) => {
       underline: 'bg-gradient-to-r from-emerald-400 to-cyan-500',
     };
   }
-  if (pathname.startsWith('/login') || pathname.startsWith('/register')) {
+  if (pathname.startsWith('/register')) {
     return {
       shadow: 'shadow-pink-500/15 dark:shadow-pink-500/10',
       border: 'border-pink-200/60 dark:border-pink-500/25',
@@ -158,10 +158,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentUser, onLogout }) => {
               </div>
             ) : (
               <div className="flex items-center gap-3">
-                <Link to="/login" className="px-5 py-2 rounded-xl text-gray-700 dark:text-gray-200 font-bold hover:text-brand-600 dark:hover:text-brand-400 transition-all">
-                  Sign In
-                </Link>
-                <Link to="/register" className="px-5 py-2 rounded-xl bg-gradient-to-r from-brand-600 to-purple-500 text-white font-bold hover:scale-105 transform transition-all duration-300 shadow-lg shadow-brand-500/30">
+                <Link to="/register" className="px-6 py-2.5 text-lg rounded-xl bg-gradient-to-r from-brand-600 to-purple-500 text-white font-bold hover:scale-105 transform transition-transform duration-300 shadow-lg shadow-brand-500/30 will-change-transform">
                   Register
                 </Link>
               </div>
@@ -222,15 +219,8 @@ export const Navbar: React.FC<NavbarProps> = ({ currentUser, onLogout }) => {
             <div className="flex gap-2 pt-1 px-2">
               <Link
                 onClick={() => setIsMobileMenuOpen(false)}
-                to="/login"
-                className="flex-1 py-2.5 text-center rounded-xl font-bold text-sm text-gray-800 dark:text-gray-200 border border-gray-300 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
-              >
-                Sign In
-              </Link>
-              <Link
-                onClick={() => setIsMobileMenuOpen(false)}
                 to="/register"
-                className="flex-1 py-2.5 text-center rounded-xl font-bold text-sm text-white bg-gradient-to-r from-brand-600 to-purple-600 shadow-lg shadow-brand-500/20 transition-all"
+                className="flex-1 py-3 text-center rounded-xl font-bold text-base text-white bg-gradient-to-r from-brand-600 to-purple-600 shadow-lg shadow-brand-500/20 hover:scale-105 transform transition-transform duration-300 will-change-transform"
               >
                 Register
               </Link>

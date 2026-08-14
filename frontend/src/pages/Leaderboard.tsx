@@ -50,21 +50,15 @@ export default function Leaderboard() {
             🔒
           </div>
           <div>
-            <h2 className="text-2xl font-black text-gray-900 dark:text-white">Login Required</h2>
+            <h2 className="text-2xl font-black text-gray-900 dark:text-white">Registration Required</h2>
             <p className="text-gray-600 dark:text-gray-300 text-sm mt-2">
-              Please sign in or register an account to view global rankings, scores, and compete with other coders.
+              Please register an account to view global rankings, scores, and compete with other coders.
             </p>
           </div>
-          <div className="flex gap-4">
+          <div className="flex justify-center">
             <Link
-              to="/login"
-              className="flex-1 py-3 px-4 bg-gradient-to-r from-brand-600 to-indigo-600 hover:from-brand-500 hover:to-indigo-500 text-white font-black rounded-xl text-sm transition-all shadow-lg hover:scale-105 active:scale-95"
-            >
-              Sign In
-            </Link>
-            <Link
-              to="/login?tab=register"
-              className="flex-1 py-3 px-4 bg-gray-100/50 hover:bg-gray-200/50 dark:bg-gray-900/50 dark:hover:bg-gray-800/50 text-gray-700 dark:text-gray-200 border border-white/20 dark:border-white/10 font-black rounded-xl text-sm transition-all shadow-lg hover:scale-105 active:scale-95 backdrop-blur-sm"
+              to="/register"
+              className="w-full py-3.5 px-6 bg-gradient-to-r from-brand-600 to-indigo-600 hover:from-brand-500 hover:to-indigo-500 text-white font-black rounded-xl text-base transition-all shadow-lg hover:scale-105 active:scale-95"
             >
               Register
             </Link>

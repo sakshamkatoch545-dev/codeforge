@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'
 import Editor from '@monaco-editor/react'
-import { api, Problem, Submission, TestCase } from '../api'
+import { api, Problem, Submission, TestCase, getUserIdFromToken } from '../api'
 import { getStarterCode, getWrappedCode as getWrappedCodeFromConfig, getUnwrappedCode } from '../problemsConfig'
 
 const renderFormattedDescription = (text: string | undefined) => {
@@ -358,7 +358,7 @@ export default function ProblemDetail() {
   }, [slug])
 
   const updateStarterCode = (problemObj: Problem, lang: string) => {
-    const saved = localStorage.getItem(`codeforge_code_${problemObj.slug}_${lang}`);
+    const saved = localStorage.getItem(`codeforge_code_${getUserIdFromToken()}_${problemObj.slug}_${lang}`);
     if (saved !== null) {
       setCode(saved);
     } else {
@@ -375,7 +375,7 @@ export default function ProblemDetail() {
     const newCode = val || '';
     setCode(newCode);
     if (problem) {
-      localStorage.setItem(`codeforge_code_${problem.slug}_${language}`, newCode);
+      localStorage.setItem(`codeforge_code_${getUserIdFromToken()}_${problem.slug}_${language}`, newCode);
     }
   }
 
@@ -383,7 +383,7 @@ export default function ProblemDetail() {
     if (!problem) return;
     
     // Remove confirm dialog because mobile browsers sometimes block it, breaking the button
-    localStorage.removeItem(`codeforge_code_${problem.slug}_${language}`);
+    localStorage.removeItem(`codeforge_code_${getUserIdFromToken()}_${problem.slug}_${language}`);
     let defaultCode = getStarterCode(problem.slug, language);
     if ((defaultCode.includes('def solve()') || defaultCode === '// here goes the code') && problem.starter_code && problem.starter_code[language]) {
       defaultCode = problem.starter_code[language];
@@ -517,7 +517,7 @@ export default function ProblemDetail() {
     <div className="flex flex-col lg:flex-row gap-6 mb-12 mt-20 mx-6 max-w-7xl lg:mx-auto">
 
       {/* Problem Description Panel */}
-      <div className="relative z-10 w-full lg:w-1/2 p-8 border border-white/20 dark:border-white/10 glass-panel shadow-2xl rounded-2xl flex flex-col justify-between min-h-[500px]">
+      <div className="relative z-10 w-full lg:w-1/3 p-6 border border-white/20 dark:border-white/10 glass-panel shadow-2xl rounded-2xl flex flex-col justify-between min-h-[500px]">
         <div>
           <Link to="/problems" className="inline-flex items-center gap-1.5 text-sm font-bold text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white mb-6 transition-colors group">
             <span className="transform group-hover:-translate-x-1 transition-transform">←</span> Back to Problems
@@ -552,7 +552,7 @@ export default function ProblemDetail() {
       </div>
 
       {/* Code Editor Panel */}
-      <div className="relative z-10 w-full lg:w-1/2 flex flex-col md:bg-white/40 md:dark:bg-gray-900/40 md:backdrop-blur-md md:glass-panel md:shadow-2xl md:rounded-2xl bg-[#1e1e1e] overflow-hidden min-h-[600px] h-fit">
+      <div className="relative z-10 w-full lg:w-2/3 flex flex-col md:bg-white/40 md:dark:bg-gray-900/40 md:backdrop-blur-md md:glass-panel md:shadow-2xl md:rounded-2xl bg-[#1e1e1e] overflow-hidden min-h-[600px] h-fit">
 
         {/* Mobile Top Bar (LeetCode Style) */}
         <div className="md:hidden flex items-center justify-between px-3 py-2 bg-[#282828] border-b border-[#3e3e42] z-30 shrink-0">

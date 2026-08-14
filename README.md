@@ -16,7 +16,7 @@
 
 ---
 
-## ⚡ Quick Start (Docker)
+## ⚡ Quick Start (Docker — Local)
 
 Get up and running in minutes with Docker Compose:
 
@@ -35,6 +35,72 @@ Get up and running in minutes with Docker Compose:
    - 📊 **Admin Dashboard**: [http://localhost:8501](http://localhost:8501)
 
 ---
+
+## 🚀 Deploy to Railway (Public URL — Always Online)
+
+Host CodeForge on Railway so it's accessible 24/7 from any device, even when your PC is off.
+
+### Prerequisites
+- A [Railway account](https://railway.app) (free)
+- Your code pushed to a GitHub repository
+
+### Step-by-Step
+
+1. **Push to GitHub**:
+   ```bash
+   git add .
+   git commit -m "Add Railway deployment config"
+   git push
+   ```
+
+2. **Create a Railway project**:
+   - Go to [railway.app/new](https://railway.app/new)
+   - Choose **"Deploy from GitHub repo"** → select your repo
+
+3. **Add Postgres & Redis plugins**:
+   - In the Railway project dashboard → **+ New** → **Database** → **PostgreSQL**
+   - **+ New** → **Database** → **Redis**
+   - Railway will auto-set `DATABASE_URL` and `REDIS_URL`
+
+4. **Add the Backend service**:
+   - **+ New** → **GitHub Repo** → select repo → set **Root Directory** to `backend`
+   - Set env variables:
+     ```
+     SECRET_KEY=<run: python -c "import secrets; print(secrets.token_hex(32))">
+     DATABASE_URL=<copied from Postgres plugin>
+     REDIS_URL=<copied from Redis plugin>
+     JUDGE_DISABLED=true
+     ```
+   - Railway auto-detects `railway.toml` and deploys
+
+5. **Add the Frontend service**:
+   - **+ New** → **GitHub Repo** → Root Directory: `frontend`
+   - Set env variable:
+     ```
+     VITE_API_URL=https://<your-backend-service>.up.railway.app/api/v1
+     ```
+   - Get your URLs like `https://codeforge.up.railway.app` 🎉
+
+6. **Add the Admin Dashboard service** (optional):
+   - **+ New** → **GitHub Repo** → Root Directory: `admin_dashboard`
+   - Set `DATABASE_URL`
+
+> [!NOTE]
+> The **code judge** (Docker-in-Docker sandbox) is disabled on Railway. Users can still browse problems, register, and view the leaderboard — but code submissions won't execute. To enable the judge, use a VPS instead (see below).
+
+### VPS Option (Full Judge Support — ~$4–6/month)
+
+For full Docker-in-Docker support (code execution works):
+```bash
+# On your VPS (Hetzner CX11 / DigitalOcean Droplet):
+git clone https://github.com/your-username/codeforge.git
+cd codeforge
+cp .env.example .env   # fill in your secrets
+docker-compose up -d --build
+```
+Point your domain's DNS to the VPS IP, and use [Caddy](https://caddyserver.com) or nginx as a reverse proxy for HTTPS.
+
+
 
 ## 💻 Local Development (Without Docker Compose)
 
